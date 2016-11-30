@@ -1,0 +1,102 @@
+
+. 感谢@kingjiv你是100％正确的。该日历是在获取之前显示我的when法，但无法得到的日期基本上我必须有日期显示在日历前突
+出，所以我不得不async: false（不是真的）。 我已经包括了它演示了如何突出从拉升多个事件代码beforeShowDay选项。运
+用asyc: false固定的问题，其中突出日期的初始平局并不突出。的CSS改变cell的背景色也包括在内。 还有一个小问题，即“一
+年”不显示初始平局，但我有这个只发生在Firefox 4。日历中显示的任何点击。 Safari浏览器正确显示的初始平局。 
+<link href=" CodeGo.net  rel="stylesheet" type="text/css"/>
+<style type="text/css">
+/* Dates with events on them. Text color - red, background - pastel yellow. */
+td.highlight, table.ui-datepicker-calendar tbody td.highlight a { 
+ background: none !important;
+ background-color: #fffac2 !important; 
+ color: #FF0000;
+}
+/* This is Today's day in rightsidebar mini calendar (datepicker). */
+/* Restore style to that of a default day, then just bold it. */
+.ui-state-highlight, .ui-widget-content .ui-state-highlight {
+ border: 1px solid #d3d3d3; 
+ background: #e6e6e6 url( CodeGo.net  50% 50% repeat-x; 
+ font-weight: bold;
+ color: #555555;
+}
+/* This is the selected day in the inline datepicker. */
+.ui-state-active, .ui-widget-content .ui-state-active {
+ color: #000000;
+ opacity: 1.0;
+ filter:Alpha(Opacity=100);
+ border: 1px solid #000000;
+}
+/* Add a little separation between month and year select menus */
+.ui-datepicker select.ui-datepicker-month {
+ width: 42%;
+ margin-right: 6px;
+}
+</style>
+
+<script>
+$(document).ready(function(){
+ // get the current date
+ var today = new Date();
+ var m = today.getMonth(), 
+ d = today.getDate(), 
+ y = today.getFullYear();
+ // Get a list of dates that contain events in THIS month only from database.
+ // Declare and populate 'eventDates' array BEFORE adding "beforeShowDay" option to 
+ // the datepicker. Otherwise, highlightDays() will have an empty 'eventDates' array.
+ var eventDates = [];
+ fetchEventDays(y, m+1);  
+ // Get events for the current year and month.
+ $('#datepicker').datepicker();
+ $('#datepicker').datepicker('option', 'onChangeMonthYear', fetchEventDays);
+ $('#datepicker').datepicker('option', 'beforeShowDay', highlightDays);
+ $('#datepicker').datepicker('option', 'onSelect', getday);
+ $('#datepicker').datepicker('option', 'dateFormat', 'yy-mm-dd');
+ $('#datepicker').datepicker('option', 'changeYear', true);
+ $('#datepicker').datepicker('option', 'changeMonth', true);
+ $('#datepicker').datepicker('option', 'yearRange', '2010:2012');
+ $('#datepicker').datepicker('option', 'showButtonPanel', true);
+ // Disable all dates prior to today.
+ // $('#datepicker').datepicker('option', 'minDate', new Date(y, m, d));
+ // ------------------------------------------------------------------
+ // getday - Replaces the #content div of the current page with 
+ // the content of the page that is created and displayed via perl
+ // ------------------------------------------------------------------
+ function getday(dateText, inst) { 
+  $('#content').load('<%config.db_cgi_url%>/eventmgr.cgi?do=view_day;date='+dateText+' #eventMgr_content', function() {
+//  alert('load was performed. '+dateText);
+  });
+ }
+ // ------------------------------------------------------------------
+ // fetchEventDays - The ajax call below is synchronous (NOT asynchronous).
+ // eventDates array must be populated prior to adding the beforeShowDay option
+ // to the datepicker, otherwise, highlightDays() will have an empty eventDates array.
+ // ------------------------------------------------------------------
+ function fetchEventDays(year, month, inst) {
+  var url ='<%config.db_cgi_url%>/eventmgr-ajax.cgi?do=get_event_dates&yr=' + year + '&mo=' + month;
+  $.ajax({
+   url: url,
+   async: false,
+   success: function(result){
+    var event_dates = result.split(',');
+    for(var i = 0; i < event_dates.length; i++) {
+     var date_parts = event_dates[i].split('-');
+     eventDates.push(new Date(date_parts[0], date_parts[1]-1, date_parts[2]));
+    }      
+   }
+  });
+ }
+ // ------------------------------------------------------------------
+ // highlightDays - Add a custom css class to dates that exist in the
+ // eventDates array. Must also add the css for td.highlight (above).
+ // ------------------------------------------------------------------
+ function highlightDays(date) {
+  for (var i = 0; i < eventDates.length; i++) {
+   if ((eventDates[i].getTime() == date.getTime())) {
+    return [true, 'highlight'];
+   }
+  }
+  return [true, ''];
+ }
+});
+</script>
+

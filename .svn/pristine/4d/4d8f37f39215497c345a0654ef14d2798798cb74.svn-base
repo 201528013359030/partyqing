@@ -1,0 +1,371 @@
+<?php
+use yii\helpers\Html;
+use yii\bootstrap\ActiveForm;
+use yii\captcha\Captcha;
+use yii\jui\DatePicker;
+//use dosamigos\datepicker\DatePicker;
+?>
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="renderer" content="webkit">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>成长档案</title>
+    <?=Html::cssFile('@web/css/bootstrap.min.css')?>
+    <?=Html::cssFile('@web/css/announce.css')?>
+    <?//=Html::cssFile('@web/css/bootstrap-switch.min.css')?>
+    <?=Html::jsFile('@web/js/jquery.js')?>
+    <?=Html::jsFile('@web/js/bootstrap.min.js')?>
+    <?=Html::jsFile('@web/js/iscroll.js')?>
+    <?=Html::jsFile('@web/js/htmlset.js')?>
+</head>
+<style>
+.l-tree .l-tree-icon-none img {
+    margin-bottom: 4px;
+    border: 0;
+    height: 16px;
+    width: 16px;
+    top: 2px;
+    margin-left: 2px;
+}
+.prevpic_iteam{
+	width:20%;
+	float:left;
+	margin:0px 5px 0px 0px;
+}
+.inpBox .imgBoxGuide {
+vertical-align:bottom;
+}
+.inpBox0 {
+
+height: auto;
+margin-bottom: .225em;
+}
+.btnBox .btnSubmit {
+width: 100%;
+background-color: #30BF78;
+}
+.inpBox .imgBox {
+
+margin-bottom: 0px;
+}
+</style>
+<script>
+var isiOS = false;
+var isAndroid = false;
+var u = navigator.userAgent, app = navigator.appVersion;
+isAndroid = u.indexOf('Android') > -1 || u.indexOf('Linux') > -1; //android终端或者uc浏览器
+isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+//    alert('是否是Android：'+isAndroid);
+//    alert('是否是iOS：'+isiOS);
+
+API.init();
+/*
+ * 说明：uploadPic()
+ * 定义了2个全局变量 pic_flag checkdb
+ * 上传图片接口
+ * 
+ * */
+var pic_flag = 0;  //给预上传图片做id标记
+var checkdb = 0;   //处理ios成功返回2遍的bug标记
+var num=0;
+function chooseSheetPhoto(){
+	if(num>8){alert("最多上传9张图片！");return;}
+	pic_flag= pic_flag+1;
+	var op_photo = {
+		"name": "ChoosePhoto", 
+        "callback": "OnChoosePhotoCb", 
+        "params": {
+            "webAppTransferID": "baoxiao"+pic_flag, 
+			"chooseType": "ChooseFromActionSheet"
+        }
+	};
+	API.send_tonative(op_photo);
+}
+function OnChoosePhotoCb(datas){
+	var status = datas.result.status,
+		params = datas.result.params;
+	
+	//这里做一个演示，把数据转成字符串在页面弹出
+	var str_para = JSON.stringify(params);
+	
+	//alert(str_para);
+	uploadGivenFile(params);
+}
+function uploadGivenFile(datas){
+	pic_flag= pic_flag+1;
+	var op = {
+        "name": "UploadGivenFile", 
+        "callback": "OnUploadCb", 
+        "params": {
+            "uploadUrl": "/media_file/", 
+            "fileID": datas.fileID, 
+            "taskID": "taskbaoxiao"+pic_flag, 
+            "nativePath": datas.nativePath
+        }
+	}
+	API.send_tonative(op);
+	//alert(JSON.stringify(op));
+}
+function uploadPic(){
+	chooseSheetPhoto();
+	return;
+	pic_flag= pic_flag+1;
+	//alert(pic_flag);
+	var op = {
+		 "name":"Upload",      //native 的方法名称
+		 "callback":"OnUploadCb",  //可没有
+		 "params":{
+			"uploadUrl": "/media_file/", 
+            "webAppTransferID": "baoxiao"+pic_flag, 
+            "taskID": "taskbaoxiao"+pic_flag
+		 }
+		};
+	webAppTransferID = "baoxiao"+pic_flag;
+	//调用方法 传参数 op
+	API.send_tonative(op);	
+}
+
+function OnUploadCb(datas){
+	var status = datas.result.status,
+		params = datas.result.params;
+	
+	//这里做一个演示，把数据转成字符串在页面弹出
+	//var str_para = JSON.stringify(params);
+	//alert(JSON.stringify(params));
+	if( params.transferStatus=='Success'){
+		checkdb = checkdb+1;
+		if(checkdb == 1){
+			//alert(params.fileID);
+			num = num+1;
+			$('.prevpic_box').css('display','block');
+			var pictemp = '<div class="prevpic_iteam"><img class="attrPic" src="'+params.uploadPath+'"><a class="del_pic" href="javascript:void(0);" >x</a></div>';
+			$('.prevpic_box').append(pictemp);
+			checkdb=0;
+		}else{
+			checkdb=0;
+			return;
+		}
+	}	
+	//alert(str_para);
+}
+/*
+ * 说明：delUploadPic()
+ * 页面上的图片如果不想要了，就删除
+ * 
+ * */
+$(document).ready(function(){
+//删除预上传图片
+$('.prevpic_box').on('click','.del_pic',delUploadPic);
+ 
+function delUploadPic(){
+	$(this).parent().remove();
+	num = num-1;
+}
+});
+function closeWebview(){
+    var op = {
+        "name":"CloseWebView"
+    };
+    API.send_tonative(op);
+}
+var fileId = 0;
+var taskID = 0;
+var fileInfo = [];
+var play = 0;
+
+var isSend = false;
+function send_submit(){
+	var attrpic = [];	
+	if($('.prevpic_box .attrPic').length>0){
+		$('.prevpic_box .attrPic').each(function(i){
+			var img = $(this);
+			var _pic = img.attr('src');
+			attrpic.push(_pic);
+		});
+	}	
+	//alert(JSON.stringify(attrpic));
+	$('#img0').val(JSON.stringify(attrpic));	
+	
+    if(isSend){
+        return false;
+    }
+	if($.trim($("#announceform-content").val()) == ""){
+		$("#announceform-contBox").css("display","block");
+		return false;
+	}
+    isSend = true;
+	$("#sendBtn").css("background-color","#e6e6e6");
+    document.send_form.submit();
+    return false;
+}
+/*
+ * 说明：getAll() 
+ * 提交表单前对表单明细，图片进行获取,审批人获取
+ * 
+ * */
+</script>
+<body class="bg_white">
+	
+<div id="wrap" class="wrap">
+	
+	<!--
+    	作者：786161262@qq.com
+    	时间：2015-07-07
+    	描述：错误提示部分，提示一个错误，保证文字在320下一行显示。控制说明字数
+    -->
+   
+	<div id="announceform-contBox" class="tipBox" style="display:none">		
+		<div class="tipInner">
+			<i class="ficon ic_wanning"></i>发布内容不能为空
+		</div>
+	</div>		
+    <form name="send_form" id="send_form" method="post" enctype="multipart/form-data" action="index.php?r=admin/growupsend/save">	
+	<div class="moGrid">
+		<div class="formBox">
+		      <?php if($c==1):?>
+		      <?php else:?>
+              <span>
+                 <img style="margin-left:30px;margin-top:-35px;width:50px;" src=" <?=$UAvator?>">
+              </span>
+              <?endif?>
+              <div class="inpBox0" style="text-align:center;font-size:12pt;line-height:1.8em;display:inline-block;width:50%;">              
+              <?=$name?>的成长档案</br>
+              <?php if($c==1):?>
+		      <?php else:?>
+              <?=$b[0]?>岁<?=$b[1]?>个月<?=$b[2]?>天
+              <?endif?>
+                    
+            </div>		
+			<div class="inpBox">				
+				<textarea id="announceform-content" class="txtare" name="content" style="-webkit-tap-highlight-color:rgba(0,0,0,0);height: 200px;" placeholder="正文..." onpropertychange="this.style.height=this.scrollHeight + 'px'" oninput="this.style.height=this.scrollHeight + 'px'"></textarea>		            				       
+			</div>			
+			<div id="uploadImg" class="inpBox" style="vertical-align:center">				
+				<!--	描述：上传后显示的缩略图，点击后显示弹出层，在做删除处理                -->
+				<div id="J-showimg" class="imgBox" style="display: none;cursor:pointer;" >
+					<div id="contentShowimg" class="addImg" imgsrc = ""><img id="contentImg" src=""></div>						
+				</div>
+				<!--end-->
+			     <div class="prevpic_box" style="display:block;vertical-align:bottom">
+				 <!--  <div class="prevpic_iteam"><img class="attrPic" src="../web/img/50.png"><a class="del_pic" href="javascript:void(0);" >x</a></div>	
+				 <div class="prevpic_iteam"><img class="attrPic" src="../web/img/50.png"><a class="del_pic" href="javascript:void(0);" >x</a></div>	
+				 -->								
+				 </div> 
+				<!--  描述：点击上传图片                -->			   
+                <div id="addImgBox" class="imgBox imgBoxGuide" style="display: block;height:90px;cursor:pointer;" onclick="uploadPic()">
+					<div class="addImg" >+</div>
+                    <!--a href="#" class="addImg" >+</a>
+                    <input type="file" name="" value="" class="btnfile"-->
+                    <span class="add-pic-guide">添加照片</span>                    
+                </div>                         				    						  					
+			</div>			           
+			<div style="#display: none;">
+                <input id="img0"  name="img0" type="hidden" value=""> 
+                <input id="attachment" name="attachment" type="hidden" value="">
+                <input id="childuid" name="childuid" type="hidden" value="<?=$childuid?>"> 
+                <input id="oid" name="oid" type="hidden" value="<?=$oid?>">               
+			</div>						
+		</div>
+	</div>
+	</form>
+	<div class="moGrid">
+		<div class="btnBox">
+			<a id="sendBtn" href="javascript:void(0);" class="btnIteam btnSubmit" style="text-decoration:none;" onclick='send_submit();'>				
+				<span class="ic_text">发&nbsp;&nbsp;布</span>
+			</a>			
+		</div>
+	</div>
+
+</div>
+<script type="text/javascript">
+
+var win_w = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth,
+    win_h =  document.documentElement.clientHeight || document.body.clientHeight || window.innerHeight,
+    win_scroll_top = document.documentElement.scrollTop || document.body.scrollTop;
+    
+//定义公共函数
+function g( selector ){
+	var method = selector.substr(0,1) == '.'?'getElementsByClassName':'getElementById';
+	return document[method]( selector.substr(1) );
+}
+
+var myscroll_pic;
+var flag = true;
+function scroller_pic(ele){
+	
+	setTimeout(function(){
+	
+		myscroll_pic =new iScroll(ele,{
+						
+			zoom:true,
+			zoomMin:1,
+			zoomMax:1,
+			doubleTapZoom:2,
+			wheelAction: 'zoom',
+            momentum:false,
+			hScrollbar:false, 
+			vScrollbar:false,
+			
+			onZoomEnd:function(){
+				if(this.scale>1){
+					myscroll.stop();
+					myscroll.enabled = false;
+				}else{
+					myscroll.enabled = true;
+				}
+				//console.log( this.scale );
+			}
+			
+		});
+	
+	 },200 );
+	              
+}
+//处理显示的图片在小格里放缩显示
+function showpic(){
+	var box_w = '',
+        img_w = '',
+        img_h = '',
+        index = 0,
+        real_img = { w:'',h:'' };
+        
+    var box = g('#J-showimg'),
+        iteam = g('#J-showimg').getElementsByTagName('img')[0];
+     
+   	setTimeout(function() {
+   		   		
+   		var img =  document.createElement('img');
+   		img.src = iteam.src;
+   		real_img.w = img.width;
+   		real_img.h = img.height;
+   		//console.log(real_img);
+   		var wh = box.clientWidth / box.clientHeight;
+		var imgWh = real_img.w / real_img.h;
+   		
+   		if(wh > imgWh){
+		    iteam.style.width = '100%';		        
+	    }else{
+	    	iteam.style['max-width'] = 'none';
+	        iteam.style.height = '100%';
+	    }	    
+   		//处理左右的值
+	    var left = Math.ceil( (box.clientWidth - box.firstChild.offsetWidth)/2 );
+	    var top = Math.ceil( (box.clientHeight - box.firstChild.offsetHeight)/2 );	    
+	    if(wh > imgWh){
+	        iteam.style['-webkit-transform'] = 'translateY('+top+'px)';		        
+	    }else{
+	    	iteam.style['-webkit-transform'] = 'translateX('+left+'px)';	
+	    }  
+   	
+   	},100);   	   
+}
+showpic();
+//$("[name='AnnounceForm[top]']").bootstrapSwitch();
+
+</script>
+
+</body>
+</html>

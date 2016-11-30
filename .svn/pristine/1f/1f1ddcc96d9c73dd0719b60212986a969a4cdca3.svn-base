@@ -1,0 +1,107 @@
+<?php
+namespace app\modules\admin\controllers;
+use yii;
+use yii\web\Controller;
+use Rest;
+use Client;
+use app\modules\admin\models\AuthToken;
+use app\modules\admin\models\IctWebService;
+
+class EvaluatesController extends Controller
+{
+	public $layout  = false;
+	public $enableCsrfValidation = false;//因为YII2的防止csrf攻击，你则不能多次提交相同的表单。如果你希望当前可以多次重复提交，可以在当前提交的表单controller中添加	
+    public function actionIndex()
+    {
+        //$uid =\Yii::$app->session['user.uid'];
+    	//require_once(dirname(__FILE__)."/config.php");
+    	//$token=\yii::$app->request->get('auth_token');
+    	//print_r($token);
+    	//\Yii::$app->session['token']=$token;
+    	//header("Content-type:text/html;charset=utf-8");
+    	$id=\yii::$app->request->get('id');
+    	$uid=\Yii::$app->session['user.uid'];   	
+    	$auth = new AuthToken();
+    	$auth->authTokenSession();
+    	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+    	header("Content-type:text/html;charset=utf-8");
+    	
+    	$sq0="SELECT id,eid FROM lcevafamilyop where familymuid='".$uid."'AND evaid='".$id."'";
+    	$command = $connection->createCommand($sq0);
+    	$ab = $command->queryAll();
+    	if(isset($ab[0]['id'])){ 
+    		return $this->redirect(['evaluatexs/index',"id"=>$id]);
+    	}    	
+    	$eidd=explode('@',$uid);
+    	$eid=$eidd[1];
+    	//echo $eid;
+    	$sq0="SELECT ename FROM enterprise where uid='".$eid."'";
+    	$command = $connection->createCommand($sq0);
+    	$school = $command->queryAll();    	
+    	$schoolname=$school[0]['ename'];  
+    	  	
+    	$time=date('Y-m-d H:i:s',time());   	
+    	$sq1="SELECT * FROM lcevaluate where id='".$id."'AND status=1 AND isdelete=0";    		 
+        $command = $connection->createCommand($sq1);
+    	$content = $command->queryAll();
+    	$classid=$content[0]['owneroid'];
+    	$starttime=$content[0]['starttime'];
+    	$endtime=$content[0]['endtime'];
+    	$abc="";
+    	//echo $time;
+    	//echo $starttime;
+    	//$time="2016-03-02";
+        if($time<$starttime){//echo "评价未开始"; 
+        	$abc="2";
+        }else if($time>$endtime){//echo "评价已结束"; 
+        	$abc="1";}
+        	
+        $eid=$content[0]['eid'];
+        
+    	$sq5="SELECT id,optiname,teacheruid FROM lcevaoptions where evaid='".$id."'";
+    	$command = $connection->createCommand($sq5);
+    	$data = $command->queryAll();
+    	$count=count($data);
+    	//print_r($data);
+    	//echo $abc;
+        return $this->render('index',[
+        		'content'=>$content,  
+        		'list'=>$data,
+        		'id'=> $id,
+        		'schoolname'=> $schoolname,
+        		'count'=> $count,
+        		'ab'=> $abc,
+        ]);
+    }
+    public function actionSave(){  
+    	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+    	header("Content-type:text/html;charset=utf-8");
+ 
+    	$id=\yii::$app->request->post('id');
+    	$count=\yii::$app->request->post('count');
+    	$uid=\Yii::$app->session['user.uid'];
+    	
+    	$sq1="SELECT eid FROM lcevaluate where id='".$id."'";
+    	$command = $connection->createCommand($sq1);
+    	$content = $command->queryAll();
+    	$eid=$content[0]['eid'];
+    	
+    	for($i=0;$i<$count;$i++){
+    	$aa=\yii::$app->request->post('optivalue'.$i);
+    	$optionid=\yii::$app->request->post('optionid'.$i);
+    	if($aa){
+    	$sql="INSERT INTO lcevafamilyop(eid,evaid,optionid,familymuid,optivalue) VALUES('$eid','$id','$optionid','$uid','$aa')"; //
+    	//file_put_contents("D://wt1.txt","sql:".$a13."\n", FILE_APPEND);
+    	$command = $connection->createCommand($sql);
+    	$command->execute();}else{}
+    	}
+    	//return;
+    	//if($childnext){ 
+        return $this->redirect(['evaluatexs/index',"id"=>$id]);   
+    	//}
+   	      	
+   }
+    
+}

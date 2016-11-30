@@ -1,0 +1,37 @@
+<?php
+namespace app\modules\admin\controllers;
+use yii;
+use yii\web\Controller;
+use Rest;
+use Client;
+use app\modules\admin\models\AuthToken;
+use app\modules\admin\models\IctWebService;
+class ProblemsolvingdetailController extends Controller
+{
+	public $layout  = false;
+    public function actionIndex()
+    {
+    	$No=\yii::$app->request->get('No');
+    	
+ 
+    	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+    	header("Content-type:text/html;charset=utf-8");
+
+    	/**************end********************/
+    	   	
+   	    $sql="SELECT * FROM g_problemsolving where No='".$No."'";
+        $command = $connection->createCommand($sql);
+   	    $info = $command->queryOne();
+   	    
+//    	    更新阅读数
+    	$sq2="update g_problemsolving set ReadCount=ReadCount+1  where   No ='".$No."'";    		
+    	$command = $connection->createCommand($sq2);
+    	$readd= $command->execute(); 
+        		
+        return $this->render('index',[
+        		'info'=>$info,  
+        ]);
+    }
+  
+}

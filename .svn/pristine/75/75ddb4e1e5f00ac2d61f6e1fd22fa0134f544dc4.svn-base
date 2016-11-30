@@ -1,0 +1,563 @@
+<html lang="en-US"><head>
+<meta charset="UTF-8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta id="viewport" name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0">
+<meta name="format-detection" content="telephone=no">
+<meta name="csrf-param" content="_csrf">
+    <meta name="csrf-token" content="NkY4S2tYV09/Nn8MGzQbHQ4UVB8HHyUJdD92KlkWIQphF158Ag4FGQ==">
+<link href="/lightApp/web/css/icon.css" rel="stylesheet"><link href="/lightApp/web/css/mydoc.css" rel="stylesheet"><title>创建报销审批</title>
+<!--[CDATA[YII-BLOCK-HEAD]]--><meta class="foundation-data-attribute-namespace"><meta class="foundation-mq-xxlarge"><meta class="foundation-mq-xlarge-only"><meta class="foundation-mq-xlarge"><meta class="foundation-mq-large-only"><meta class="foundation-mq-large"><meta class="foundation-mq-medium-only"><meta class="foundation-mq-medium"><meta class="foundation-mq-small-only"><meta class="foundation-mq-small"><style></style><meta class="foundation-mq-topbar"></head>
+<body>
+
+
+<div class="off-canvas-wrap" data-offcanvas="">
+	<div class="inner-wrap">
+		
+		<div class="row">
+			
+			<div class="row-tab-empty">&nbsp;</div>
+			<form class="formBody" data-abide="" action="index.php?r=expenses/default/save&amp;uid=52072@12658" method="post" enctype="multipart/form-data" novalidate="novalidate">
+
+				<!--
+				*HTML说明：J_temp内部表单都生成json串保存在其他隐藏的input里面
+				* 参数说明： <input id="groupInfo" name="groupInfo" type="hidden" value="" >
+				*        json 格式为[{"money":"1","flag":"报销类别1","info":"费用明细1"},{"money":"2","flag":"报销类别2","info":"费用明细2"}]
+				*        在“提交”按钮处有说明
+				-->
+				<div id="J_temp">
+					<div class="form-group">
+					<div class="row-tab-nobd">
+						<a class="fr delAdd" href="javascript:void(0);" data-reveal-id="myModal">删除</a>
+						<span class="fc6">报销明细(<em class="no">1</em>)</span>
+					</div>
+					
+					<div class="row">
+				        <div class="small-3 columns">
+				          <label for="right-label" class="center inline">金额(元)</label>
+				        </div>
+				        <div class="small-9 columns">
+				          
+				          <input type="number" name="money" value="" placeholder="请输入数字（必填）" pattern="moneny" required="">
+				          <small class="error">请输入正确的数字,最多2位小数</small>
+				        </div>
+				    </div>
+					
+					<div class="row">
+				        <div class="small-3 columns">
+				            <label class="center inline">报销类别</label>
+				        </div>
+				        <div class="small-9 columns">
+				            <input type="text" name="flag" placeholder="如：采购经费、活动经费（必填）" required="">
+				            <small class="error">请输入报销类别</small>
+				        </div>
+				    </div>
+				    					
+					<div class="row">
+				        <div class="small-3 columns">
+				          <label for="right-label" class="center inline">费用明细</label>
+				        </div> 
+				        <div class="small-9 columns">
+				          <textarea name="info" onpropertychange="this.style.height=this.scrollHeight + 'px'" oninput="this.style.height=this.scrollHeight + 'px'" placeholder="请输入明细描述(必填)" required=""></textarea>	
+				          <small class="error">请输入费用明细描述</small>
+				        </div>
+				    </div>
+					
+					</div>
+					
+				</div>
+				<!-- end J-temp -->
+				
+				
+				<a id="J_add" href="javascript:void(0);" class="expend-form">
+					<em>+</em> 增加报销明细
+				</a>
+				<!--
+				*HTML说明：总报销金额
+				* 参数         ：此处页面计算了，但是没有传给后台
+				* -->
+				<div class="row-tab-empty">总报销金额（元）：<span id="totalMoney" class="fb">0</span></div>
+				<!--
+				*HTML说明：图片与选择审批人
+				* 参数         ：上传图片，与审批人在“提交按钮”处统一可以放在隐藏的input里面了
+				*        目前上传图片的接口地址为虚拟的    "uploadUrl": "https://183.234.48.161:443/media_file/"
+				*        有需要可自行修改
+				* -->
+				<div class="form-group">
+					<div class="row">
+				        <div class="small-3 columns">
+				          <label for="right-label" class="center inline">图片</label>
+				        </div>
+				        <div class="small-9 columns">
+				            <a class="upload_pic ficon icon-camera" href="javascript:void(0);" onclick="uploadPic()"></a>
+				            <div class="prevpic_box" style="display: none;"></div>
+						    
+				        </div>
+				    </div>
+				    <div class="row">
+				        <div class="small-3 position_relative">
+				            <label class="center inline">审批人</label>
+				            <div class="position_right f12">依次审批，一次选择一人</div>
+				        </div>
+				        <div class="small-11 small-offset-1 memberBox"> 
+				            <div class="show_box">
+				            	<div class="prevmember_box">
+				            		<a id="member" class="add_member" href="javascript:void(0);">
+					            		<img src="/lightApp/web/img/pic_add.png" alt="">					            	</a>
+				            	</div>
+				            
+				            	
+				            </div>
+				            <div class="hidden_box">
+				            	<input id="member-input" class="hid-input" value="" type="text" name="approver " required="">		        
+					        	<small class="error">请选择审批人</small>
+				            </div>
+				        </div>
+				    </div>
+				    
+				</div>
+				<!--
+				*HTML说明：隐藏input提交数据说明
+				* 参数         ：groupInfo：<div id="J_temp">内的数据json 格式为[{"money":"1","flag":"报销类别1","info":"费用明细1"},{"money":"2","flag":"报销类别2","info":"费用明细2"}]
+				*        attachment 获取上传的图片路径  ["XXXXXXx.jpg","XXXXXXx.jpg"]
+				*        attruid 获取审批人的uid按照插入顺序获取  ["XXXXXX@XXXX","XXXXXX@xxxx"]
+				*        
+				*        图片可以为不填，但是还会为空[]
+				* -->
+				<div class="small-12 columns">
+					<input id="reimbursement" name="groupInfo" type="hidden" value="">
+					<input id="attachment" name="attachment" type="hidden" value="">
+					<input id="attruid" name="attruid" type="hidden" value="">
+					<input id="otherTotalMoney" name="other[totalMoney]" type="hidden" value="">
+		  			<button type="submit" class="button expand" onclick="getAll();">提交</button>
+		  		</div>
+				
+				
+			</form>
+			
+		</div>
+		
+	</div>
+</div>
+<!--
+*HTML说明：弹出确定窗口
+* -->
+<div id="myModal" class="reveal-modal confirm-modal" data-reveal="" aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+  <p id="modalTitle" class="modal-title">Awesome. I have it.</p>  
+  <div class="row">
+  	    <div class="small-6 columns">
+			<a id="J-actdel" href="javascript:void(0);" class="button tiny expand">确定</a>
+		</div>
+		<div class="small-6 columns">
+			<a id="J-closeModal" class="button tiny secondary expand close-reveal-modal">取消</a>
+		</div>
+  </div>
+  
+</div>
+
+<div id="submitModal" class="reveal-modal submit-modal" data-reveal="" aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+	<p id="submitModal_content"></p>
+</div>
+
+<script src="/lightApp/web/js/vendor/jquery.js"></script><script src="/lightApp/web/js/foundation.min.js"></script><script src="/lightApp/web/js/htmlset.js"></script><script>
+
+//初始化函数
+
+
+API.init();
+
+//时间先不用验证
+$(document).foundation({
+	abide : {
+	    patterns : {
+			moneny:/^[0-9]*(\.[0-9]{1,2})?$/			    	
+		}
+	}
+});
+
+
+
+$(document).ready(function(){
+	//console.log($(document));
+	//获取空表单
+	var temp = $('#J_temp').html();	
+	
+	//新增表单
+	$('#J_add').bind('click',function(){		
+		$('#J_temp').append(temp);
+		setNumber();
+		//reload abide
+		$(document).foundation('abide', 'reflow');
+	});
+	
+	//删除新增表单
+	$('#J_temp').on("click",".delAdd",function(){
+		
+		$('#modalTitle').html('您确定删除'+$(this).next().text()+'?');
+		$(this).parent().parent().addClass('prevDel');			
+	});
+	
+	//确认删除并关闭弹窗
+	$('#J-actdel').on('click',function(){
+		var delnum = Number( $('.prevDel').find('input[name=money]').val() );
+		getTotalNum(delnum);
+		$('#myModal').foundation('reveal', 'close');
+		$('.prevDel').remove();
+		setNumber();
+	});
+	
+	//关闭删除弹窗
+	$('#J-closeModal').on('click', function() {
+		$('#myModal').foundation('reveal', 'close');		
+		$('.prevDel').attr('class','form-group');
+	});
+	
+	//删除预上传图片
+	$('.prevpic_box').on('click','.del_pic',delUploadPic);
+	
+	//计算总金额
+	$('#J_temp').on('blur','input[name=money]',function(){
+		getTotalNum(0);
+	});
+	
+	//交互 选人
+	$('#member').click(function(){
+
+		var op = {
+			 "name":"SelectContacts",      //native 的方法名称
+			 "callback":"OnSelectContactsCb",  //可没有
+			 "params":{"dataType":"department","maxCount":1}  //dateType 记录当前调用的按钮   maxCount 最多能选多少人
+		
+			};
+		//调用方法 传参数 op
+		API.send_tonative(op);
+		
+			
+	});
+	
+	//删除审批人
+	$('.prevmember_box').on('click','.prevmem_iteam',function(){
+		$(this).remove();
+		if($('.prevmember_box .prevmem_iteam').length==0){
+			$('#member-input').focus().blur();
+			$('#member-input').val('');
+		}
+	});
+	
+});
+
+function showModal(txt,time){
+	$('#submitModal_content').html(txt);
+	$('#submitModal').foundation('reveal', 'open');
+	setTimeout(function(){
+		$('#submitModal').foundation('reveal', 'close');
+	},time);
+}
+
+function selectContact(){
+	var op = {
+		 "name":"SelectContacts",      //native 的方法名称
+		 "callback":"OnSelectContactsCb",  //可没有
+		 "params":{"dataType":"department","maxCount":1}  //dateType 记录当前调用的按钮   maxCount 最多能选多少人
+	
+		};
+	//调用方法 传参数 op
+	API.send_tonative(op);
+}
+
+/*
+ * 说明：OnSelectContactsCb(datas)
+ * 选人的callback，并把取回的值，放到表单中
+ * 
+ * */   
+function OnSelectContactsCb(datas){
+			
+	var status = datas.result.status,
+		params = datas.result.params;
+		
+	if( status==0 ){
+		
+		//alert(JSON.stringify(params));
+		
+		if(params.contactCount !=0 ){
+			
+			var attruid = [],
+			    _uid = params.contacts[0].contactInfo.uid;
+			if(!params.contacts[0].contactInfo.avatar){
+				params.contacts[0].contactInfo.avatar = "/lightApp/web/img/temp/avatar.png";
+			}
+			var pictemp = '<div class="prevmem_iteam" data-uid="'+_uid+'" href="javascript:void(0);"><img src="'+params.contacts[0].contactInfo.avatar+'" alt=""><p>'+params.contacts[0].contactInfo.name+'</p><i class="line-h"></i></div>';
+		
+			//var pictemp = '<div class="prevmem_iteam" data-uid="'+_uid+'" href="javascript:void(0);"><img src="/lightApp/web/img/temp/avatar.png" alt=""><p>'+params.contacts[0].contactInfo.name+'</p><i class="line-h"></i></div>';
+			
+			if($('.prevmember_box .prevmem_iteam').length == 0){
+				$('#member').before(pictemp);
+			}else{
+				$('.prevmember_box .prevmem_iteam').each(function(i){
+					var iteam = $(this);
+					var _uid = iteam.attr('data-uid');
+					attruid.push(_uid);
+				});
+				
+				if($.inArray(_uid,attruid)>-1){
+					showModal('已经选过"'+params.contacts[0].contactInfo.name+'"了',1500);	
+				}else{
+					$('#member').before(pictemp);
+				}
+			}
+			
+			
+			
+		}
+		
+		if($('.prevmember_box .prevmem_iteam').length==0){
+			$('#member-input').focus().blur();
+			$('#member-input').val('');
+		}else{
+			$('#member-input').focus().blur();
+			$('#member-input').val('1');
+		}
+				
+	}else{	
+		showPageError('有错误啦，请重新选择！');
+	}
+	
+} 
+
+/*
+ * 说明：getAll() 
+ * 提交表单前对表单明细，图片进行获取,审批人获取
+ * 
+ * */
+function getAll(){	
+	var list = [], 
+	    attrpic = [];
+	    attruid = [];
+	$('#J_temp .form-group').each(function(i){
+		var iteam = {};
+		var group = $(this);
+		var _money = group.find('input[name=money]').val();
+		var _flag = group.find('input[name=flag]').val();
+		var _info = group.find('textarea[name=info]').val();
+		
+		iteam['money'] = _money;
+		iteam['flag'] = _flag;
+		iteam['info'] = _info;
+		
+		list.push(iteam);
+	});
+	
+	if($('.prevpic_box .attrPic').length>0){
+		$('.prevpic_box .attrPic').each(function(i){
+			var img = $(this);
+			var _pic = img.attr('src');
+			attrpic.push(_pic);
+		});
+	}
+	
+	if($('.prevmember_box .prevmem_iteam').length>0){
+		$('.prevmember_box .prevmem_iteam').each(function(i){
+			var iteam = $(this);
+			var _uid = iteam.attr('data-uid');
+			attruid.push(_uid);
+		});
+	}
+	
+	$('#reimbursement').val(JSON.stringify(list));
+	$('#attachment').val(JSON.stringify(attrpic));
+	$('#attruid').val(JSON.stringify(attruid));
+	
+	
+}
+
+/*
+ * 说明：setNumber()
+ * 对新增的表单进行排序操作，例如报销明细1  报销明细2
+ * 
+ * */
+function setNumber(){
+	$('#J_temp .form-group').each(function(i){
+		var group = $(this);
+		group.find('.no').html(i+1);
+	})
+}
+/*
+ * 说明：uploadPic()
+ * 定义了2个全局变量 pic_flag checkdb
+ * 上传图片接口
+ * 
+ * */
+var pic_flag = 0;  //给预上传图片做id标记
+var checkdb = 0;   //处理ios成功返回2遍的bug标记
+
+function chooseSheetPhoto(){
+	pic_flag= pic_flag+1;
+	var op_photo = {
+		"name": "ChoosePhoto", 
+        "callback": "OnChoosePhotoCb", 
+        "params": {
+            "webAppTransferID": "baoxiao"+pic_flag, 
+			"chooseType": "ChooseFromActionSheet"
+        }
+	};
+	API.send_tonative(op_photo);
+}
+
+function OnChoosePhotoCb(datas){
+	var status = datas.result.status,
+		params = datas.result.params;
+	
+	//这里做一个演示，把数据转成字符串在页面弹出
+	var str_para = JSON.stringify(params);
+	
+//	alert(str_para);
+	uploadGivenFile(params);
+}
+function uploadGivenFile(datas){
+	pic_flag= pic_flag+1;
+	var op = {
+        "name": "UploadGivenFile", 
+        "callback": "OnUploadCb", 
+        "params": {
+            "uploadUrl": "/media_file/", 
+            "fileID": datas.fileID, 
+            "taskID": "taskbaoxiao"+pic_flag, 
+            "nativePath": datas.nativePath
+        }
+	}
+	API.send_tonative(op);
+}
+
+function uploadPic(){
+	chooseSheetPhoto();
+	return;
+	pic_flag= pic_flag+1;
+	//alert(pic_flag);
+	var op = {
+		 "name":"Upload",      //native 的方法名称
+		 "callback":"OnUploadCb",  //可没有
+		 "params":{
+			"uploadUrl": "/media_file/", 
+            "webAppTransferID": "baoxiao"+pic_flag, 
+            "taskID": "taskbaoxiao"+pic_flag
+		 }
+		};
+	webAppTransferID = "baoxiao"+pic_flag;
+	//调用方法 传参数 op
+	API.send_tonative(op);
+	
+}
+/*
+ * 说明：OnUploadCb(datas)
+ * 上传图片成功后，获取图片地址放在页面中进行显示
+ * 
+ * */
+
+function OnUploadCb(datas){
+	var status = datas.result.status,
+		params = datas.result.params;
+	
+	//这里做一个演示，把数据转成字符串在页面弹出
+	//var str_para = JSON.stringify(params);
+	if( params.transferStatus=='Success'){
+		checkdb = checkdb+1;
+		if(checkdb == 1){
+			//alert(params.fileID);
+			$('.prevpic_box').css('display','block');
+			var pictemp = '<div class="prevpic_iteam"><a class="del_pic" href="javascript:void(0);" >x</a><img class="attrPic" src="'+params.uploadPath+'"></div>';
+			$('.prevpic_box').append(pictemp);
+			checkdb=0;
+		}else{
+			checkdb=0;
+			return;
+		}
+	}
+	
+	//alert(str_para);
+}
+/*
+ * 说明：delUploadPic()
+ * 页面上的图片如果不想要了，就删除
+ * 
+ * */
+function delUploadPic(){
+	$(this).parent().remove();
+}
+/*
+ * 说明：getTotalNum( delnum )
+ * delnum：要减去的数值，例如报销表单2删除了，那么删除报销2的金额，值为空则为0
+ * 计算总金额数
+ * 
+ * */
+function getTotalNum( delnum ){
+	var money=[],
+		totalMoney = 0;
+	$('#J_temp .form-group').each(function(){
+		var group = $(this);
+		var _money = Number(group.find('input[name=money]').val());
+		totalMoney = addNum(_money,totalMoney);
+		
+	});
+	$('#totalMoney').html(subNum(totalMoney,delnum));
+	$('#otherTotalMoney').val(subNum(totalMoney,delnum));
+
+}
+
+function addNum(a, b) {
+    var c, d, e;
+    try {
+        c = a.toString().split(".")[1].length;
+    } catch (f) {
+        c = 0;
+    }
+    try {
+        d = b.toString().split(".")[1].length;
+    } catch (f) {
+        d = 0;
+    }
+    return e = Math.pow(10, Math.max(c, d)), (mul(a, e) + mul(b, e)) / e;
+}
+ 
+function subNum(a, b) {
+    var c, d, e;
+    try {
+        c = a.toString().split(".")[1].length;
+    } catch (f) {
+        c = 0;
+    }
+    try {
+        d = b.toString().split(".")[1].length;
+    } catch (f) {
+        d = 0;
+    }
+    return e = Math.pow(10, Math.max(c, d)), (mul(a, e) - mul(b, e)) / e;
+}
+function mul(a, b) {
+    var c = 0,
+        d = a.toString(),
+        e = b.toString();
+    try {
+        c += d.split(".")[1].length;
+    } catch (f) {}
+    try {
+        c += e.split(".")[1].length;
+    } catch (f) {}
+    return Number(d.replace(".", "")) * Number(e.replace(".", "")) / Math.pow(10, c);
+}
+ 
+function div(a, b) {
+    var c, d, e = 0,
+        f = 0;
+    try {
+        e = a.toString().split(".")[1].length;
+    } catch (g) {}
+    try {
+        f = b.toString().split(".")[1].length;
+    } catch (g) {}
+    return c = Number(a.toString().replace(".", "")), d = Number(b.toString().replace(".", "")), mul(c / d, Math.pow(10, f - e));
+}
+
+</script>
+
+
+</body></html>

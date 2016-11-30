@@ -1,0 +1,704 @@
+@font-face {
+	font-family: FontAwesome;
+	src: url(font/fontawesome-webfont.eot?#iefix) format("embedded-opentype"), url(font/fontawesome-webfont.woff) format("woff"), url(font/fontawesome-webfont.ttf) format("truetype"), url(font/fontawesome-webfont.svg#fontawesome-webfont) format("svg");
+	font-weight: normal;
+	font-style: normal;
+}
+* {
+	box-sizing: border-box; -webkit-box-sizing: border-box; -moz-box-sizing: border-box;
+}
+*::after {
+	box-sizing: border-box; -ms-text-size-adjust: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; -ms-box-sizing: border-box; -o-box-sizing: border-box; -webkit-text-size-adjust: 100%;
+}
+*::before {
+	box-sizing: border-box; -ms-text-size-adjust: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; -ms-box-sizing: border-box; -o-box-sizing: border-box; -webkit-text-size-adjust: 100%;
+}
+html {
+	
+}
+body {
+	margin: 0px auto; padding: 0px; color: rgb(34, 34, 34); background-color: rgb(248, 248, 248);
+}
+html {
+	height: 100%;
+}
+body {
+	height: 100%;
+}
+div {
+	margin: 0px; padding: 0px; border: 0px currentColor; border-image: none; vertical-align: baseline;
+}
+span {
+	margin: 0px; padding: 0px; border: 0px currentColor; border-image: none; vertical-align: baseline;
+}
+object {
+	margin: 0px; padding: 0px; border: 0px currentColor; border-image: none; vertical-align: baseline;
+}
+iframe {
+	margin: 0px; padding: 0px; border: 0px currentColor; border-image: none; vertical-align: baseline;
+}
+h1 {
+	margin: 0px; padding: 0px; border: 0px currentColor; border-image: none; vertical-align: baseline;
+}
+h2 {
+	margin: 0px; padding: 0px; border: 0px currentColor; border-image: none; vertical-align: baseline;
+}
+h3 {
+	margin: 0px; padding: 0px; border: 0px currentColor; border-image: none; vertical-align: baseline;
+}
+h4 {
+	margin: 0px; padding: 0px; border: 0px currentColor; border-image: none; vertical-align: baseline;
+}
+h5 {
+	margin: 0px; padding: 0px; border: 0px currentColor; border-image: none; vertical-align: baseline;
+}
+h6 {
+	margin: 0px; padding: 0px; border: 0px currentColor; border-image: none; vertical-align: baseline;
+}
+p {
+	margin: 0px; padding: 0px; border: 0px currentColor; border-image: none; vertical-align: baseline;
+}
+blockquote {
+	margin: 0px; padding: 0px; border: 0px currentColor; border-image: none; vertical-align: baseline;
+}
+pre {
+	margin: 0px; padding: 0px; border: 0px currentColor; border-image: none; vertical-align: baseline;
+}
+a {
+	margin: 0px; padding: 0px; border: 0px currentColor; border-image: none; vertical-align: baseline;
+}
+abbr {
+	margin: 0px; padding: 0px; border: 0px currentColor; border-image: none; vertical-align: baseline;
+}
+acronym {
+	margin: 0px; padding: 0px; border: 0px currentColor; border-image: none; vertical-align: baseline;
+}
+address {
+	margin: 0px; padding: 0px; border: 0px currentColor; border-image: none; vertical-align: baseline;
+}
+code {
+	margin: 0px; padding: 0px; border: 0px currentColor; border-image: none; vertical-align: baseline;
+}
+del {
+	margin: 0px; padding: 0px; border: 0px currentColor; border-image: none; vertical-align: baseline;
+}
+dfn {
+	margin: 0px; padding: 0px; border: 0px currentColor; border-image: none; vertical-align: baseline;
+}
+em {
+	margin: 0px; padding: 0px; border: 0px currentColor; border-image: none; vertical-align: baseline;
+}
+q {
+	margin: 0px; padding: 0px; border: 0px currentColor; border-image: none; vertical-align: baseline;
+}
+dl {
+	margin: 0px; padding: 0px; border: 0px currentColor; border-image: none; vertical-align: baseline;
+}
+dt {
+	margin: 0px; padding: 0px; border: 0px currentColor; border-image: none; vertical-align: baseline;
+}
+dd {
+	margin: 0px; padding: 0px; border: 0px currentColor; border-image: none; vertical-align: baseline;
+}
+ol {
+	margin: 0px; padding: 0px; border: 0px currentColor; border-image: none; vertical-align: baseline;
+}
+ul {
+	margin: 0px; padding: 0px; border: 0px currentColor; border-image: none; vertical-align: baseline;
+}
+li {
+	margin: 0px; padding: 0px; border: 0px currentColor; border-image: none; vertical-align: baseline;
+}
+fieldset {
+	margin: 0px; padding: 0px; border: 0px currentColor; border-image: none; vertical-align: baseline;
+}
+form {
+	margin: 0px; padding: 0px; border: 0px currentColor; border-image: none; vertical-align: baseline;
+}
+label {
+	margin: 0px; padding: 0px; border: 0px currentColor; border-image: none; vertical-align: baseline;
+}
+legend {
+	margin: 0px; padding: 0px; border: 0px currentColor; border-image: none; vertical-align: baseline;
+}
+table {
+	margin: 0px; padding: 0px; border: 0px currentColor; border-image: none; vertical-align: baseline;
+}
+th {
+	margin: 0px; padding: 0px; border: 0px currentColor; border-image: none; vertical-align: baseline;
+}
+td {
+	margin: 0px; padding: 0px; border: 0px currentColor; border-image: none; vertical-align: baseline;
+}
+tr {
+	margin: 0px; padding: 0px; border: 0px currentColor; border-image: none; vertical-align: baseline;
+}
+caption {
+	margin: 0px; padding: 0px; border: 0px currentColor; border-image: none; vertical-align: baseline;
+}
+article {
+	display: block;
+}
+aside {
+	display: block;
+}
+dialog {
+	display: block;
+}
+footer {
+	display: block;
+}
+header {
+	display: block;
+}
+section {
+	display: block;
+}
+footer {
+	display: block;
+}
+nav {
+	display: block;
+}
+figure {
+	display: block;
+}
+menu {
+	display: block;
+}
+input[type='checkbox'] {
+	padding: 0px; box-sizing: border-box;
+}
+input[type='radio'] {
+	padding: 0px; box-sizing: border-box;
+}
+input {
+	user-select: text;
+}
+input:focus {
+	user-select: text;
+}
+input:active {
+	user-select: text;
+}
+img {
+	height: auto; max-width: 100%;
+}
+object {
+	height: auto; max-width: 100%;
+}
+img {
+	border: currentColor; border-image: none; -ms-interpolation-mode: bicubic;
+}
+a {
+	text-decoration: none;
+}
+button {
+	margin: 0px; padding: 0px; vertical-align: middle;
+}
+input {
+	margin: 0px; padding: 0px; vertical-align: middle;
+}
+select {
+	margin: 0px; padding: 0px; vertical-align: middle;
+}
+textarea {
+	margin: 0px; padding: 0px; vertical-align: middle;
+}
+textarea {
+	resize: none;
+}
+button {
+	cursor: pointer; -webkit-appearance: button; -moz-appearance: button;
+}
+input[type='button'] {
+	cursor: pointer; -webkit-appearance: button; -moz-appearance: button;
+}
+input[type='reset'] {
+	cursor: pointer; -webkit-appearance: button; -moz-appearance: button;
+}
+input[type='submit'] {
+	cursor: pointer; -webkit-appearance: button; -moz-appearance: button;
+}
+table {
+	border-collapse: collapse; border-spacing: 0;
+}
+td {
+	margin: 0px; padding: 0px;
+}
+th {
+	margin: 0px; padding: 0px;
+}
+b {
+	font-weight: bold;
+}
+strong {
+	font-weight: bold;
+}
+dl {
+	margin-top: 0px; margin-bottom: 20px;
+}
+dt {
+	line-height: 1.4285;
+}
+dd {
+	line-height: 1.4285;
+}
+dt {
+	font-weight: bold;
+}
+ul {
+	margin-top: 0px; margin-bottom: 10px;
+}
+ol {
+	margin-top: 0px; margin-bottom: 10px;
+}
+ul ul {
+	margin-bottom: 0px;
+}
+ol ul {
+	margin-bottom: 0px;
+}
+ul ol {
+	margin-bottom: 0px;
+}
+ol ol {
+	margin-bottom: 0px;
+}
+ol {
+	list-style-position: inside;
+}
+ul {
+	list-style: none; margin: 0px; padding: 0px;
+}
+li {
+	list-style: none; margin: 0px; padding: 0px;
+}
+fieldset {
+	margin: 0px 2px; padding: 0.35em 0.62em 0.75em; border: 1px solid rgb(192, 192, 192); border-image: none;
+}
+legend {
+	padding: 0px; border: 0px currentColor; border-image: none;
+}
+a {
+	color: rgb(34, 34, 34); text-decoration: none;
+}
+a:focus {
+	outline: dotted thin; outline-offset: -2px;
+}
+input {
+	font-size: 1.2rem;
+}
+select {
+	font-size: 1.2rem;
+}
+option {
+	font-size: 1.2rem;
+}
+textarea {
+	font-size: 1.2rem;
+}
+a {
+	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+a:focus {
+	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+input:focus {
+	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+.clear {
+	clear: both;
+}
+.clearfix::after {
+	height: 0px; clear: both; display: block; visibility: hidden; content: ".";
+}
+* html .clearfix {
+	-ms-zoom: 1;
+}
+.bg_white {
+	background: rgb(255, 255, 255);
+}
+.fl {
+	float: left;
+}
+.fr {
+	float: right;
+}
+.textCut {
+	overflow: hidden; white-space: nowrap; -ms-text-overflow: ellipsis; -o-text-overflow: ellipsis;
+}
+p {
+	margin: 0px 0px 10px;
+}
+.hide {
+	display: none;
+}
+.fl {
+	float: left;
+}
+.fr {
+	float: right;
+}
+.icLogo {
+	background: url("../img/share/logo.png") no-repeat;
+}
+.icon {
+	vertical-align: top; display: inline-block; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -ms-background-size: cover; -o-background-size: cover;
+}
+.ic_check::before {
+	content: "\f096";
+}
+.active .ic_check::before {
+	content: "\f046";
+}
+.ic_checked::before {
+	content: "\f046";
+}
+.ic_eye::before {
+	content: "\f06e";
+}
+.ic_arrow_right::before {
+	content: "\f105";
+}
+.ic_user::before {
+	content: "\f007";
+}
+.ic_search::before {
+	content: "\f002";
+}
+.ic_atta::before {
+	content: "\f0c6";
+}
+.ic_file::before {
+	content: "\f0f6";
+}
+.ic_x::before {
+	content: "\f00d";
+}
+.ic_wanning::before {
+	content: "\f05a";
+}
+.ic_delbox::before {
+	content: "\f014";
+}
+.ficon {
+	font-family: FontAwesome; font-style: normal; font-weight: normal; text-decoration: inherit; display: inline-block; -webkit-font-smoothing: antialiased;
+}
+.ficon::before {
+	text-decoration: inherit; display: inline-block; speak: none;
+}
+.wrap {
+	background: rgb(255, 255, 255); margin: 0px auto; width: 100%; height: 100%;
+}
+.moGrid {
+	margin: 0px auto; width: 90%; overflow: hidden; padding-bottom: 0.8em; clear: both;
+}
+.topTag {
+	padding: 1em 0px; border-bottom-color: rgb(189, 187, 186); border-bottom-width: 1px; border-bottom-style: solid;
+}
+.topTag .icon {
+	width: 230px; height: 34px;
+}
+.header {
+	
+}
+.header h1 {
+	margin: 0.62em 0px; font-size: 1.6em; display:inline-block;
+}
+.header .lead {
+	height: 2.5em; color: rgb(167, 167, 167); font-size: 1em; border-bottom-color: rgb(208, 208, 208); border-bottom-width: 1px; border-bottom-style: solid;
+}
+.header .span{position:relative;float:right; margin-top:0.62em;}
+
+.header .lead span.fl {
+	margin-right: 10px;
+}
+.header .lead span.fr {
+	margin-left: 10px;
+}
+.header .lead span em {
+	margin: 0px 4px; color: rgb(187, 187, 187);
+}
+.header .lead span i {
+	margin: 0px 4px; color: rgb(187, 187, 187);
+}
+.header .lead span .icon {
+	margin-top: 0.2em;
+}
+.tabNum {
+	padding: 0.62em 0px; height: 2em; color: rgb(167, 167, 167); font-size: 1em;
+}
+.tabNum span.fr {
+	margin-left: 10px;
+}
+.tabNum span i {
+	margin: 0px 4px; color: rgb(187, 187, 187);
+}
+.tabIteam {
+	background: rgb(238, 238, 238); height: 1.5em; color: rgb(153, 153, 153); line-height: 1.5; text-indent: 1.25em; margin-bottom: 0.87em;
+}
+.memBox {
+	margin: 1.25em 0px; width: 100%; font-size: 0px;
+}
+.memIteam {
+	width: 80px; height: 120px; vertical-align: top; display: inline-block;
+}
+.memIteam p {
+	margin: 0px;
+}
+.memIteam .pic {
+	background: rgb(238, 238, 238); width: 80px; height: 80px;
+}
+.memIteam .pic img {
+	width: 100%;
+}
+.memIteam .picName {
+	width: 100%; height: 22px; text-align: center; line-height: 22px; overflow: hidden; font-size: 14px;
+}
+.content {
+	width: 100%; color: rgb(68, 68, 68); font-size: 1em;
+}
+.content p {
+	margin:0px auto;text-align: justify; line-height: 1.8; margin-bottom: 0.8em; -ms-text-justify: distribute-all-lines;
+}
+.content p img {
+	margin: 0px auto; display: block;
+}
+.content p a {
+	padding: 0px 4px; color: rgb(42, 149, 217);
+}
+.content pre {
+	text-align: justify; line-height: 1.8; margin-bottom: 0.8em; white-space: pre-wrap; -ms-text-justify: distribute-all-lines; -ms-word-wrap: break-word;
+}
+.btnBox {
+	margin: 10px 0px; width: 100%; height: 3.25em; text-align: center;
+}
+.btnBox .btnIteam {
+	border-radius: 5px; height: 3.25em; color: rgb(255, 255, 255); line-height: 3.25; vertical-align: top; display: inline-block; -webkit-border-radius: 5px;
+}
+.btnBox .btnCheck {
+	/*width: 100%;*/ margin-right: 8px; background-color: rgb(42, 138, 212);
+}
+.btnBox .btnMem {
+	width: 56%; color: rgb(68, 68, 68); background-color: rgb(242, 242, 242);
+}
+.btnBox .btnAtta {
+	width: 40%; color: rgb(68, 68, 68); background-color: rgb(242, 242, 242);
+}
+.btnBox .active {
+	color: rgb(68, 68, 68); background-color: rgb(242, 242, 242);
+}
+.btnBox .btnSubmit {
+	width: 100%; background-color: rgb(42, 138, 212);
+}
+.attaBox {
+	margin: 0px auto; padding: 10px 10px 20px 20px; border: 1px solid rgb(208, 208, 208); border-image: none; width: 94%; position: relative;
+}
+.attaBox .ic_atta {
+	left: -10px; top: 4px; color: rgb(187, 187, 187); font-size: 30px; position: absolute; background-color: rgb(255, 255, 255); -webkit-transform: scale(17deg);
+}
+.attaBox .attaIteam {
+	background: rgb(248, 248, 248); padding: 10px; color: rgb(68, 68, 68); margin-bottom: 8px; display: block;
+}
+.attaBox .attaIteam .ic_file {
+	color: rgb(68, 68, 68); margin-right: 8px;
+}
+.searchBox {
+	margin: 1em auto 0px; width: 94%; height: 2.25em;
+}
+.searchInner {
+	background: rgb(242, 242, 242); border-radius: 5px; border: 1px solid rgb(208, 208, 208); border-image: none; width: 100%; height: 1.87em; -webkit-border-radius: 5px;
+}
+.searchBox .inpSearch {
+	background: none; border: currentColor; border-image: none; width: 82%; height: 1.87em; padding-left: 0.4em; font-size: 1em; vertical-align: top; float: left; display: inline-block; box-sizing: content-box; -webkit-box-sizing: content-box; -webkit-appearance: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); -moz-tap-highlight-color: rgba(0, 0, 0, 0); tap-highlight-color: rgba(0, 0, 0, 0);
+}
+.searchBox .ficon {
+	width: 16%; height: 1.87em; text-align: center; color: rgb(153, 153, 153); line-height: 1.875; float: right;
+}
+.listBox {
+	width: 100%;
+}
+.listIteam {
+	
+}
+.listInner {
+	padding-top: 10px; padding-left: 4%; border-bottom-color: rgb(208, 208, 208); border-bottom-width: 1px; border-bottom-style: solid; display: block; position: relative;
+}
+.listInfo {
+	
+}
+.listInfo .ficon {
+	background: rgb(214, 47, 47); padding: 0px 4px; border-radius: 5px; height: 1.12em; text-align: center; color: rgb(255, 255, 255); line-height: 1.125; font-size: 0.75em; margin-top: 2px; margin-right: 2px; vertical-align: top; -webkit-border-radius: 5px;
+}
+.listInfo .title {
+	width: 84%; color: rgb(68, 68, 68); line-height: 1.125; overflow: hidden; font-size: 1.12em; vertical-align: top; display: inline-block; max-height: 2.2em;
+}
+.listInfo .date {
+	color: rgb(153, 153, 153);
+}
+.listInner .tip {
+	top: 50%; width: 30px; height: 40px; right: 0px; color: rgb(222, 222, 222); line-height: 40px; overflow: hidden; font-size: 20px; margin-top: -20px; position: absolute;
+}
+.listIteam .empty {
+	text-align: center; color: rgb(140, 140, 140); padding-top: 120px; position: relative;
+}
+.listIteam .empty::before {
+	left: 50%; top: 0px; width: 100px; height: 100px; color: rgb(204, 204, 204); font-family: FontAwesome; font-size: 88px; position: absolute; z-index: 1; content: "\f0f4"; transform: translateX(-50px); -webkit-transform: translateX(-50px);
+}
+.tipBox {
+	background: rgb(233, 48, 48); color: rgb(252, 228, 169);
+}
+.tipInner {
+	margin: 0px auto; padding: 0.6em 0px; width: 90%;
+}
+.tipInner .ficon {
+	margin-right: 8px;
+}
+.formBox {
+	width: 100%; margin-top: 1.25em;
+}
+.inpBox {
+	height: auto; clear: both; margin-bottom: 0.62em;
+}
+.inpBox .inp {
+	padding: 10px 8px; border-radius: 5px; border: 1px solid rgb(208, 208, 208); border-image: none; width: 94%; height: 24px; line-height: 24px; font-size: 0.87em; box-sizing: content-box; -webkit-box-sizing: content-box; -webkit-appearance: none; -webkit-border-radius: 5px;
+}
+.inpBox .txtare {
+	padding: 8px; border-radius: 5px; border: 1px solid rgb(208, 208, 208); border-image: none; width: 100%; font-size: 0.87em; -ms-overflow-y: hidden; min-height: 80px; -webkit-appearance: none; -webkit-border-radius: 5px;
+}
+.inpBox .imgBox {
+	width: 80px; height: 80px; overflow: hidden; margin-right: 10px; margin-bottom: 10px; float: left; position: relative;
+}
+.inpBox .imgBox .addImg {
+	border: 1px solid rgb(208, 208, 208); border-image: none; width: 80px; height: 80px; text-align: center; color: rgb(221, 221, 221); line-height: 80px; overflow: hidden; font-size: 60px; display: block;
+}
+.inpBox .imgBox .addImg img {
+	vertical-align: top;
+}
+.inpBox .imgBox .btnfile {
+	left: 0px; top: 0px; font-size: 80px; position: absolute; opacity: 0; -webkit-appearance: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); -moz-tap-highlight-color: rgba(0, 0, 0, 0); tap-highlight-color: rgba(0, 0, 0, 0);
+}
+.inpBox .btnAtta {
+	padding: 0px 10px; border-radius: 5px; width: 40%; height: 3.25em; color: rgb(68, 68, 68); line-height: 3.25; overflow: hidden; vertical-align: top; display: inline-block; position: relative; background-color: rgb(242, 242, 242); -webkit-border-radius: 5px;
+}
+.inpBox .btnAtta .btnfile {
+	left: 0px; top: 0px; font-size: 40px; position: absolute; opacity: 0; -webkit-appearance: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); -moz-tap-highlight-color: rgba(0, 0, 0, 0); tap-highlight-color: rgba(0, 0, 0, 0);
+}
+.inpBox .btnAtta .ic_atta {
+	color: rgb(68, 68, 68); transform: rotate(45deg); -webkit-transform: rotate(45deg);
+}
+.inpBox_atta {
+	margin: 0px auto; width: 100%;
+}
+.inpBox_atta .attaIteam {
+	background: rgb(248, 248, 248); padding: 10px; color: rgb(68, 68, 68); margin-bottom: 0.62em; display: block;
+}
+.inpBox_atta .attaIteam .ic_file {
+	color: rgb(68, 68, 68); margin-right: 8px;
+}
+.inpBox_atta .attaIteam .ic_x {
+	padding: 10px 14px; color: rgb(68, 68, 68); margin-top: -10px; margin-right: -10px;
+}
+.nameList {
+	overflow: auto; padding-right: 10px; -ms-overflow-y: scroll; max-height: 4.47em; -webkit-overflow-scrolling: touch;
+}
+.nameList span {
+	color: rgb(102, 102, 102);
+}
+.choosename {
+	
+}
+.choosename h3 {
+	height: 22px; line-height: 22px; font-size: 14px; font-weight: bold; margin-top: 20px;
+}
+.chooseTop label {
+	padding: 8px 0px 8px 24px; width: 97%; border-bottom-color: rgb(237, 237, 237); border-bottom-width: 1px; border-bottom-style: dotted;
+}
+.radio_group label {
+	padding: 8px 0px 8px 24px; width: 97%; border-bottom-color: rgb(237, 237, 237); border-bottom-width: 1px; border-bottom-style: dotted;
+}
+.showPic {
+	background: rgb(42, 42, 42); text-align: center; color: rgb(255, 255, 255); overflow: hidden; z-index: 1;
+}
+.showPic .bigImg img {
+	vertical-align: middle; max-width: 100%; -webkit-transition: opacity .3s ease-out;
+}
+.showPic .toolCard {
+	left: 0px; width: 100%; text-align: center; bottom: 30px; color: rgb(255, 255, 255); line-height: 30px; position: absolute; z-index: 99;
+}
+.showPic .toolCard a {
+	background: rgba(128, 128, 128, 0.4); border-radius: 2px; width: 72px; height: 30px; text-align: center; color: rgb(255, 255, 255); line-height: 30px; font-size: 16px; display: block; box-shadow: inset 0px 0px 1px rgba(0,0,0,0.3); -webkit-border-radius: 2px; -webkit-box-shadow: 0 0 1px rgba(0, 0, 0, .3) inset;
+}
+.showPic .toolCard .close {
+	margin: 0px 0px 0px 15px; left: 0px; top: 0px; float: left; position: absolute;
+}
+.showPic .toolCard .del {
+	margin: 0px 15px 0px 0px; float: right;
+}
+.showPic .toolCard .del .ficon {
+	margin: 0px 0px 0px 10px; float: left;
+}
+@media screen and (min-width:640px)
+{
+.wrap {
+	width: 640px;
+}
+}
+#pullDown {
+	background: rgb(255, 255, 255); padding: 5px 10px; height: 40px; color: rgb(136, 136, 136); line-height: 40px; font-size: 14px; font-weight: bold; border-bottom-color: rgb(204, 204, 204); border-bottom-width: 1px; border-bottom-style: solid;
+}
+#pullUp {
+	background: rgb(255, 255, 255); padding: 5px 10px; height: 40px; color: rgb(136, 136, 136); line-height: 40px; font-size: 14px; font-weight: bold; border-bottom-color: rgb(204, 204, 204); border-bottom-width: 1px; border-bottom-style: solid;
+}
+#pullDown .pullDownIcon {
+	background: url("../img/pull-icon@2x.png") no-repeat 0px 0px / 40px 80px; width: 40px; height: 40px; float: left; display: block; -webkit-background-size: 40px 80px; -webkit-transition-property: -webkit-transform; -webkit-transition-duration: 250ms;
+}
+#pullUp .pullUpIcon {
+	background: url("../img/pull-icon@2x.png") no-repeat 0px 0px / 40px 80px; width: 40px; height: 40px; float: left; display: block; -webkit-background-size: 40px 80px; -webkit-transition-property: -webkit-transform; -webkit-transition-duration: 250ms;
+}
+#pullDown .pullDownIcon {
+	-webkit-transform: rotate(0deg) translateZ(0) scale(.5);
+}
+#pullUp .pullUpIcon {
+	-webkit-transform: rotate(-180deg) translateZ(0) scale(.5);
+}
+.flip#pullDown .pullDownIcon {
+	-webkit-transform: rotate(-180deg) translateZ(0) scale(.5);
+}
+.flip#pullUp .pullUpIcon {
+	-webkit-transform: rotate(0deg) translateZ(0) scale(.5);
+}
+.loading#pullDown .pullDownIcon {
+	background-position: 0px 100%; -webkit-transform: rotate(0deg) translateZ(0) scale(.5); -webkit-transition-duration: 0ms; -webkit-animation-name: loading; -webkit-animation-duration: 2s; -webkit-animation-iteration-count: infinite; -webkit-animation-timing-function: linear;
+}
+.loading#pullUp .pullUpIcon {
+	background-position: 0px 100%; -webkit-transform: rotate(0deg) translateZ(0) scale(.5); -webkit-transition-duration: 0ms; -webkit-animation-name: loading; -webkit-animation-duration: 2s; -webkit-animation-iteration-count: infinite; -webkit-animation-timing-function: linear;
+}
+#scroller {
+	padding-bottom: 60px;
+}
+.nav_btm {
+	background: rgb(250, 250, 250); left: 0px; width: 100%; height: 60px; bottom: 0px; overflow: hidden; border-top-color: rgb(227, 227, 227); border-top-width: 1px; border-top-style: solid; position: fixed;
+}
+.nav_btm a.navLink {
+	background: rgb(242, 242, 242); border: 1px solid rgb(208, 208, 208); border-image: none; width: 96%; height: 40px; text-align: center; color: rgb(69, 69, 69); line-height: 40px; font-weight: bold; margin-top: 10px; margin-right: auto; margin-left: auto; display: block;
+}
+.inpBox .imgBox .add-pic-guide {
+	display: none;
+}
+.inpBox .imgBoxGuide {
+	width: 204px; margin-right: 0px;
+}
+.inpBox .imgBoxGuide .add-pic-guide {
+	left: 84px; top: 30px; width: 120px; height: 15px; text-indent: -300px; display: inline-block; position: absolute; background-image: url("../img/add-pic-guide.32.png"); background-repeat: no-repeat; background-size: contain;
+}
+.ic_edit::before {
+	font-family: FontAwesome; font-size: 34px; display: block; content: "\f040";
+}
+.listIteam {
+	position: relative;
+}
+.listIteam .info_del {
+	padding: 10px; left: 14em; bottom: 0px; color: rgb(51, 153, 255); font-size: 0.87em; position: absolute;
+}

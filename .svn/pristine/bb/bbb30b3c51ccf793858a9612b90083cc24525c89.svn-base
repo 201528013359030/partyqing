@@ -1,0 +1,386 @@
+
+var	currpage = 1,
+	win_w = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth,
+    win_h =  document.documentElement.clientHeight || document.body.clientHeight || window.innerHeight,
+    win_scroll_top = document.documentElement.scrollTop || document.body.scrollTop,
+    ua_android = navigator.userAgent.match(/Android ([3-9][._][0-9])/),
+    us_os = navigator.userAgent.match(/OS ([5-9])_\d[_\d]*/);
+
+/*
+ * 名称：公共函数
+ * 作用：通用函数 g()  getNextElement()
+ */
+
+//定义公共函数
+function g( selector ){
+	var method = selector.substr(0,1) == '.'?'getElementsByClassName':'getElementById';
+	return document[method]( selector.substr(1) );
+}
+
+//获得兄弟节点
+function getNextElement(node){    
+    if(node.nextSibling.nodeType == 1){    //判断下一个节点类型为1则是“元素”节点   
+        return node.nextSibling;    
+    }    
+    if(node.nextSibling.nodeType == 3){      //判断下一个节点类型为3则是“文本”节点  ，回调自身函数  
+        return getNextElement(node.nextSibling);    
+    }    
+    return null;
+}
+
+//处理加载图片
+function loadImg( src,oli ){
+	
+	var img = new Image();
+		img.src = src;
+
+		img.onload = function(){
+			
+			var wh = oli.clientWidth / oli.clientHeight;
+		    var imgWh = img.width / img.height;
+			
+		    if(wh > imgWh){
+		        img.style.width = '100%';		        
+		    }else{
+		    	img.style['max-width'] = 'none';
+		        img.style.height = '100%';
+		    }
+		    		
+		    oli.appendChild(img);
+		    //处理左右的值
+		    var left = Math.ceil( (oli.clientWidth - oli.firstChild.offsetWidth)/2 );
+		    var top = Math.ceil( (oli.clientHeight - oli.firstChild.offsetHeight)/2 );
+		    
+		    if(wh > imgWh){
+		        img.style['-webkit-transform'] = 'translateY('+top+'px)';		        
+		    }else{
+		    	img.style['-webkit-transform'] = 'translateX('+left+'px)';	
+		    }  
+		    
+    	}				
+		
+		img.onerror = function(){
+			oli.appendChild('<../../img/share/occupying_three.png');
+		}
+}
+
+/*
+ * 名称：audio_play( elem )
+ * 作用：播放音频
+ */
+
+function audio_play( elem ){
+	var audioInner = elem;
+	var icon = audioInner.getElementsByTagName('span')[0];
+	var audio = getNextElement(elem);
+	var cls = icon.className;
+	g('.ic_audio')[0].style.display = 'none';
+			
+	if( audio.paused ){
+		//添加相应的class
+		cls += ' ic_voicing ';
+		icon.className = cls;
+		audio.load();//重新播放
+		audio.play();
+	}else{
+		if( /ic_voicing/.test( cls ) ){
+			cls = cls.replace( /\s*ic_voicing\s*/,'' );
+			icon.className = cls;
+		}
+		audio.pause();
+	}	
+	audio.addEventListener('ended', function () {  
+    	if( /ic_voicing/.test( cls ) ){
+			cls = cls.replace( /\s*ic_voicing\s*/,'' );
+			icon.className = cls;
+		}
+	}, false);
+}
+
+
+/*
+ * 名称：showpic()
+ * 作用：把图片添加入li中，9格显示 * 
+ */
+function showpic(){
+	
+	var box_w = '',
+        img_w = '',
+        img_h = '',
+        index = 0,
+        real_img = { w:'',h:'' };
+        
+    var box = g('#picList_1'),	
+	    iteam = box.getElementsByTagName('li');
+	
+	//如果图片多于1个，添加9宫格结构
+	if(maxnum>1){
+		box.className += ' picGroup ';
+	
+		//取9个格子的宽度
+		box_w = Math.ceil( box.clientWidth/3-10 );
+		
+		for( var i=0; i<iteam.length; i++ ){
+			
+			iteam[i].index = i;	  //1 2 3 4 ...
+			iteam[i].style.width = box_w + 'px';
+			iteam[i].style.height = box_w + 'px';
+			iteam[i].style.marginRight = '6px';
+			
+			var oli = iteam[i];  
+			var imgsrc = oli.getAttribute('imgSrc');
+			//加载图片
+			loadImg(imgsrc, oli);
+			//点击图片处理图片放大
+			oliClick(iteam, oli);		
+		}
+   }else{
+		var maxH = '180px',
+			maxW = '180px';
+		iteam[0].style.width = '100%';
+		iteam[0].style['max-height'] = maxH;
+		iteam[0].style.overflow = 'hidden';
+		var oli = iteam[0];  
+		var imgsrc = oli.getAttribute('imgSrc');
+		//加载图片
+		var img = new Image();
+		img.src = imgsrc;
+		img.onload = function(){
+			var wh = oli.clientWidth / oli.clientHeight;
+		    var imgWh = img.width / img.height;
+			
+		    if(wh > imgWh){
+		        img.style['max-width'] = maxW;	
+		        console.log("wh>imgwh");
+		    }else{
+		    	img.style['max-height'] = maxH;
+		    }
+		    		
+		    oli.appendChild(img);
+		}
+		img.onerror = function(){
+			oli.appendChild('<../../img/share/occupying_three.png');
+		}
+		//点击图片处理图片放大
+		oliClick(iteam, oli);
+   }
+}
+if(maxnum!=0){
+	showpic();
+}
+
+/*
+ * 名称：oliClick( iteam,oli )
+ * 作用：处理li点击图片放大使用  picslider 获取当前是哪个
+ */
+function oliClick( iteam,oli ){
+	oli.onclick = function(){
+		
+		g('#wrap').style.display = 'none';
+		picslider( iteam, oli.index );
+		//console.log(oli.index);
+	}
+}
+
+/*
+ * 名称：picslider( iteam, oli.index );
+ * 作用：点击放大函数，包含左右滑动等相关内容
+ */
+function picslider( elem,id ){
+	//id为当前li的索引 elem 为li的集合
+	currpage = id+1;   //当前点击是第几个图片
+	
+	var b = document.body,
+		el = '',
+		imglist = [],     //所有图片的数组
+		//currpage = id+1,
+		showPage= !0,
+		showCtrlBtn= !0,
+		_html = '',
+		_img = '';
+		
+	//取出li里面的img内容 组成一个 imglist 数组
+	
+	for( var i=0; i<elem.length; i++ ){		
+		_img = elem[i].getAttribute('imgSrc');
+		//取出所有src
+		imglist.push(_img);		
+	}
+	
+	//创建一个弹出jslider弹出框 并加载所有img
+	
+	el = document.createElement('div');
+	el.className = 'jslider';
+	
+	el.id = 'J-slider';
+	
+	b.appendChild(el);
+	_html += '<div id="J-slider-cont" class="">';
+	
+	for( var i=1; i<=elem.length; i++ ){
+		_html += '<div id="J-wrapper' + i + '" class="jwrap" style="-webkit-transform:translate3d(0,0,0);width:' + win_w + 'px;height:' + win_h + 'px"><div id="J-scroller' + i + '" class="scroller" style=" transform-origin: 0px 0px 0px;-transform-origin: 0px 0px 0px;-webkit-transition: -webkit-transform .5s;"></div></div>';
+	};
+	
+	if (_html += "</div>", showCtrlBtn) {
+		var j = i || h && navigator.userAgent.indexOf("UCBrowser") > 0 ? "fixed" : "absolute";
+		_html += '<div class="ctrlBar" style="position:' + j + '"><a class="jclose" id="J-close" href="javascript:;">关闭</a>', showPage && imglist.length > 1 && (_html += '<span id="J-curPage" class="curPage">' + currpage + '</span><span id="J-pageCount" class="pageCount">/' + maxnum + "</span>"), _html += "</div>"
+	}
+	
+	el.innerHTML = _html;
+	
+	el.style.cssText = "margin:auto;overflow:hidden;width:" + win_w + "px;";
+	
+	//给整体外框赋值，宽度 maxnum * win_w
+	var cont = g('#J-slider-cont');
+	cont.style.cssText = "position:relative;top:0px;left:0px;width:" + maxnum * win_w + "px;height:" + win_h + "px";
+	
+	
+	
+	//加载大图
+	var loadImg = function( id ){
+		//id 为索引，
+		var id_num = id+1;
+		var ele = g('#J-scroller'+id_num);
+		var b;
+		
+		if(ele){
+			ele.parentNode.className += ' loading ';
+		}
+		
+		var imgbig = new Image();
+		imgbig.onload = function(){
+			ele.parentNode.className = ele.parentNode.className.replace(/\s*loading\s*/,'');
+			ele.style['line-height'] = win_h +'px';		
+			imgbig.style.opacity = '1';			
+		}
+		
+		imgbig.src = imglist[ id ];
+		ele.appendChild( imgbig );
+		
+		document.addEventListener('DOMContentLoaded', scroller_pic('J-wrapper'+id_num), false);
+	}
+	
+	
+	for( var i=0;i<elem.length; i++ ){
+		loadImg( i );    // 0 1 2 3 4
+	}
+	
+	//点击后，移动到当前位置
+	//cont.style.webkitTransform = "translate(-" + id * win_w + "px,0px) translateZ(0)";
+	
+	
+	document.addEventListener('DOMContentLoaded', scroller('J-slider'), false);
+	
+	//点击关闭按钮 去掉 jslider
+	g('#J-close').onclick = function(){
+		b.removeChild(el);
+		el = null;
+		g('#wrap').style.display = 'block';
+	}
+	
+} 
+var myscroll;
+
+
+function scroller(ele) {
+	
+	myscroll = new iScroll(ele, {
+		snap: true,
+		momentum: false,
+		hScrollbar: false,
+	 });
+	 
+}
+
+function scroller(ele){
+	
+	var ini_x = -(currpage-1) * win_w;  //设置初始值
+	
+	setTimeout(function(){
+	
+		myscroll =new iScroll(ele,{
+			
+			x : ini_x,
+			y : 0,
+			snap:true,
+            momentum:false,
+			hScrollbar:false, 
+			vScrollbar:false,
+			onScrollStart:function(){
+				//alert("start scroll");
+			},
+			onScrollEnd : function(){
+				if(g("#J-curPage")){
+					g("#J-curPage").innerHTML=this.currPageX+1;
+				}
+			},
+						
+		}); 
+	
+	 },100 );
+	 
+	
+	              
+}
+var myscroll_pic;
+var flag = true;
+function scroller_pic(ele){
+	
+	setTimeout(function(){
+	
+		myscroll_pic =new iScroll(ele,{
+						
+			zoom:true,
+			zoomMin:1,
+			zoomMax:1,
+			doubleTapZoom:2,
+			wheelAction: 'zoom',
+            momentum:false,
+			hScrollbar:false, 
+			vScrollbar:false,
+			
+			onZoomEnd:function(){
+				if(this.scale>1){
+					myscroll.stop();
+					myscroll.enabled = false;
+				}else{
+					myscroll.enabled = true;
+				}
+				//console.log( this.scale );
+			}
+			
+		});
+	
+	 },200 );
+	              
+}
+
+function tabs(){
+	var toolInfo = g('.toolInfo');
+	var commentBox = g('.commentBox');
+		
+	for(var i=0; i<toolInfo.length; i++){
+		
+		toolInfo[i].index = i; 	
+		
+		toolInfo[i].onclick = function(){
+			
+			for( var j=0; j<toolInfo.length; j++ ){
+				
+				toolInfo[j].className = toolInfo[j].className.replace( /\s*toolCurrent\s*/,'' );
+				commentBox[j].style.display = 'none';
+				
+			}
+			
+			toolInfo[this.index].className += ' toolCurrent ';
+			commentBox[this.index].style.display = 'block';
+			
+		}
+	}
+	
+	
+}
+tabs();
+
+
+

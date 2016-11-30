@@ -1,0 +1,181 @@
+<?php
+/* @var $this yii\web\View */
+use yii\helpers\Html;
+use yii\bootstrap\Nav;
+use yii\bootstrap\NavBar;
+use yii\widgets\Breadcrumbs;
+use app\assets\AppAsset;
+use yii\web\View;
+?>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta id="viewport" name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0">
+<meta name="format-detection" content="telephone=no">
+<title>每周课表</title>
+<?//=Html::cssFile('@web/css0/tempshare.css')?>
+<?=Html::cssFile('@web/css0/font-awesome.css')?>
+<!-- <link href="//cdn.bootcss.com/font-awesome/3.0.2/css/font-awesome.css" rel="stylesheet"> -->
+<style>
+table{	
+margin:3px;
+width:99%;
+margin-top:6px;	
+border-collapse: collapse;
+text-align:center;
+border-radius: 15px; 
+-moz-border-radius: 15px; 
+-webkit-border-radius: 15px;			
+}
+th{
+background-color:#54c7db;	
+color:#fff;		
+}
+.radius1{
+-border-top-left-radius: 15px;
+-webkit-border-top-left-radius: 15px;
+-moz-border-top-left-radius: 15px;
+border:0;}
+.radius2{
+-border-top-right-radius: 15px;
+-webkit-border-top-right-radius: 15px;
+-moz-border-top-right-radius: 15px;		
+border:0;}
+tr{
+background-color:#e9eef5;	
+}
+th,td{
+border:1px solid #addce4;
+padding:10px;	
+height:25px;
+width:15%;	
+}
+.head{
+height:70px;	
+}
+.row-bt-button a {
+display: block;
+width: 90px;
+height: 40px;
+line-height: 40px;
+margin: 0px auto;
+text-align: center;
+border: 1px #54c7db solid;
+background: #54c7db;
+color: #fff;
+-webkit-border-radius: 4px;	
+text-decoration: none;
+}
+.row-bt-button.left {position:fixed;bottom:0;left:0}
+.row-bt-button.right {position:fixed;bottom:0;right:0}
+.under{text-decoration: none;}
+</style>
+<script>
+
+</script>
+</head>
+<body>
+<div style="padding-bottom: 10px">
+
+<table >
+  <tr class="head">  
+    <th class="radius1">本周</br>04~10</th>
+    <th >时间</th>
+    <th >课程</th> 
+    <th class="radius2">课件</th>   
+  </tr>
+   <?php foreach ($list[0] as $key=>$value): ?>
+  <tr>
+    <?php if($key=="0"):?> 
+    <td rowspan=<?=$list[0][0]['count']?> style="white-space:nowrap;">星期一</br><span style="color:grey">04-10</span><?//=$value['name']?></td>       
+    <?endif?>
+    <td style="white-space:nowrap;"><?=$value['coursehour']?></td>
+    <td ><?=$value['name']?></td>
+    <td ><a class="under" href="#"><I class="icon-search"></I></a></td>        
+   </tr>
+   <? endforeach?>  
+   <?php foreach ($list[1] as $key=>$value): ?>
+   <tr style="background-color:#c4e7ed;">
+   <?php if($key=="0"):?> 
+    <td rowspan=<?=$list[1][0]['count']?> style="white-space:nowrap;">
+    <div style="padding-top:12px;-width:60px;height:48px;background-color:#54c7db;-webkit-border-radius:50%;color:#fff">
+         今天</br>04-10</div><?//=$value['name']?></td> 
+   <?endif?>         
+    <td style="white-space:nowrap;"><?=$value['coursehour']?></td>
+    <td ><?=$value['name']?></td>
+    <td ><a class="under" href="#"><I class="icon-search"></I></a></td>      
+  </tr>
+  <? endforeach?> 
+   <?php foreach ($list[2] as $key=>$value): ?>
+  <tr>
+    <?php if($key=="0"):?> 
+    <td rowspan=<?=$list[2][0]['count']?> style="white-space:nowrap;">星期三</br><span style="color:grey">04-10</span><?//=$value['name']?></td>       
+    <?endif?>
+    <td style="white-space:nowrap;"><?=$value['coursehour']?></td>
+    <td ><?=$value['name']?></td>
+    <td ><a class="under" href="#"><I class="icon-search"></I></a></td>        
+  </tr>
+  <? endforeach?> 
+   <?php foreach ($list[3] as $key=>$value): ?>
+  <tr>
+    <?php if($key=="0"):?> 
+    <td rowspan=<?=$list[3][0]['count']?> style="white-space:nowrap;">星期四</br><span style="color:grey">04-10</span><?//=$value['name']?></td>       
+    <?endif?>
+    <td style="white-space:nowrap;"><?=$value['coursehour']?></td>
+    <td ><?=$value['name']?></td>
+    <td ><a class="under" href="#"><I class="icon-search"></I></a></td>        
+  </tr>
+  <? endforeach?> 
+    <?php foreach ($list[4] as $key=>$value): ?>
+  <tr>
+    <?php if($key=="0"):?> 
+    <td rowspan=<?=$list[4][0]['count']?> style="white-space:nowrap;">星期五</br><span style="color:grey">04-10</span><?//=$value['name']?></td>       
+    <?endif?>
+    <td style="white-space:nowrap;"><?=$value['coursehour']?></td>
+    <td ><?=$value['name']?></td>
+    <td ><a class="under" href="#"><I class="icon-search"></I></a></td>        
+  </tr>
+  <? endforeach?> 
+  <?php foreach ($list[5] as $key=>$value): ?>
+  <tr>
+    <?php if($key=="0"):?> 
+    <td rowspan=<?=$list[5][0]['count']?> style="white-space:nowrap;">星期六</br><span style="color:grey">04-10</span><?//=$value['name']?></td>       
+    <?endif?>
+    <td style="white-space:nowrap;"><?=$value['coursehour']?></td>
+    <td ><?=$value['name']?></td>
+    <td ><a class="under" href="#"><I class="icon-search"></I></a></td>        
+  </tr>
+  <? endforeach?> 
+  
+  
+  <?php foreach ($list as $key0=>$value0): ?>
+  <?php foreach ($list[$key0] as $key=>$value): ?>
+  <tr>
+    <?php if($key=="0"):?> 
+     <td rowspan=<?=$list[$key0][0]['count']?> style="white-space:nowrap;">星期日</br><span style="color:grey">04-10</span><?//=$value['name']?></td>       
+   
+    <?endif?>
+    <td style="white-space:nowrap;"><?=$value['coursehour']?></td>
+    <td ><?=$value['name']?></td>
+    <td ><a class="under" href="#"><I class="icon-search"></I></a></td>        
+  </tr>
+  <? endforeach?>  
+  <? endforeach?>   
+</table>
+ <? //endforeach?> 
+<div class="row-bt-button left" >
+  	<a href="javascript:void(0);" onclick="">上一周</a>
+</div>
+<div class="row-bt-button right" >
+  	<a href="javascript:void(0);" onclick="">下一周</a>
+</div> 
+</div>
+	<input type="hidden" id="count" value=<?//=$sex2?>>
+</body>
+</html>
+<script type="text/javascript">
+
+</script>

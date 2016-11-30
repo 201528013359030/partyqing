@@ -1,0 +1,133 @@
+<?php
+/* @var $this yii\web\View */
+use yii\helpers\Html;
+use yii\bootstrap\Nav;
+use yii\bootstrap\NavBar;
+use yii\widgets\Breadcrumbs;
+use app\assets\AppAsset;
+use yii\web\View;
+?>
+<style>
+<!--
+-->
+</style>
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta content="telephone=no" name="format-detection" />
+<title>详情</title>
+<?=Html::cssFile('@web/css/announce.css')?>
+<?=Html::cssFile('@web/css/bootstrap.css')?>
+<?=Html::jsFile('@web/js/iscroll.js')?>
+<?=Html::jsFile('@web/js/jquery.js')?>
+<?=Html::jsFile('@web/js/bootstrap.js')?>
+<?=Html::jsFile('@web/js/htmlset.js')?>
+</head>
+<body>
+	
+<div id="wrap" class="wrap">
+	<div class="moGrid">		
+		<div class="header">
+			<h1><?=$info['Title']?></h1>
+			<p class="lead">
+                <span class="fr corFocus">
+                    <i class="ficon ic_eye"></i>
+                        <?=$info['ReadCount']?>
+                </span>
+				<span class="fl corDate"><?=$info['UpdateTime']?></span> <span class="fl corFocus"><?=$info['PublishUser']?></span>
+			</p>
+		</div>
+	</div>
+	<div class="moGrid">	
+		<div class="content">
+			<!-- <p>				
+				<img src="images/temp1.jpg">
+			</p> -->
+			<p>
+			<?=$info['Content']?>
+			</p>
+		</div>
+	</div>
+	<div class="moGrid" id="attaBox">
+		<?php if($attachList!=""):?> 
+		<div class="attaBox">
+			<i class="ficon ic_atta"></i>
+            <div href="#" class="attaIteam" style="cursor:pointer;" onclick='download_file("<?=$attachList['path']?>","<?=$attachList['name']?>","<?=$attachList['size']?>","<?=$attachList['url']?>");'>
+				<i class="ficon ic_file"></i><?=$attachList['name']?>
+			</div>		
+		</div>
+	<?endif?>
+	</div>
+	<div class="moGrid">
+		<div class="btnBox">
+	
+		</div>
+	</div>
+</div>
+<input type="hidden" id="confrimed_count" value=<?//=$confirmed_count?>></input>
+
+<script type="text/javascript">
+
+var cls;
+
+function g( selector ){
+	var method = selector.substr(0,1) == '.'?'getElementsByClassName':'getElementById';
+	return document[method]( selector.substr(1) );
+}	
+
+var u = navigator.userAgent, app = navigator.appVersion;
+var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Linux') > -1; //android终端或者uc浏览器
+var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+API.init();
+function download_file(file,name,size,url){
+    //if(!download_start(name,url,size)){
+   // }
+   // window.location.href='index.php?r=admin/noticecontent/download&file='+file+'&name='+name;
+   // return false;
+    if(isAndroid || isiOS){
+        download_start(name,url,size);
+    }else{
+        download_start(name,url,size);
+        window.location.href='index.php?r=admin/schoolrulesdetail/download&file='+file+'&name='+name;
+    }
+    return false;
+}
+var fileID = 1;
+var taskID = 1;
+function download_start(name,url,size){
+    var op = {
+        "name": "Download",
+        "callback": "OnDownloadCb",
+        "params": {
+            "fileName": name,
+            "fileID": fileID++,
+            "taskID": taskID++,
+            "size": size,
+            "path": url,
+        }
+    };
+    //alert(JSON.stringify(op));
+    API.send_tonative(op);
+}
+function OnDownloadCb(param){
+    params = param.result.params; 
+    //alert(JSON.stringify(params));
+    if(params.transferStatus == 'Success'){
+        alert("下载成功");
+    }else if(params.transferStatus == 'Failure'){
+        alert("下载失败");
+    }
+
+}
+</script>
+
+
+</body>
+</html>
+
+
+
+

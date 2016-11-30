@@ -1,0 +1,39 @@
+<?php
+namespace app\modules\admin\controllers;
+use Yii;
+use Rest;
+use Client;
+use app\modules\admin\models\IctWebService;
+use app\modules\admin\models\AuthToken;
+use app\models\Curl;
+class MainschoolController extends \yii\web\Controller
+{
+	public $enableCsrfValidation = false;//yii默认表单csrf验证，如果post不带改参数会报错！
+//    public $layout  = 'main';
+    public $layout  = 'announce';
+//    public $layout  = 'layout';
+    public function actionIndex()
+    {    
+    	
+    	//require_once(dirname(__FILE__)."/config.php");
+    	$token=\yii::$app->request->get('auth_token');
+    	//print_r($token);
+    	\Yii::$app->session['token']=$token;
+    	$uid=\yii::$app->request->get('uid');//学员uid
+    	\Yii::$app->session['user.uid']=$uid;
+    	//print_r($token);
+    	$auth = new AuthToken();
+    	$auth->authTokenSession();
+    	$connection = Yii::$app->db;
+    	$connection->open();
+        $sq3="SELECT mtype FROM lcmemdata WHERE muid='".$uid."'";
+        $command = $connection->createCommand($sq3);
+        $usr = $command->queryAll();
+        if($usr[0]["mtype"]==1){$type=1;}else{$type=0;}
+        return $this->render('index', [  
+        		'uid'=>$uid,
+        		'type'=>$type
+        		]);              
+    }
+
+}

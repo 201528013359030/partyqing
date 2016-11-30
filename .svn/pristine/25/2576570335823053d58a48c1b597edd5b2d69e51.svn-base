@@ -1,0 +1,144 @@
+<?php
+
+namespace app\modules\admin\controllers;
+
+use Yii;
+use app\modules\admin\models\IctWebService;
+use app\modules\admin\models\AuthToken;
+use app\models\Curl;
+
+class GrowupsendController extends \yii\web\Controller
+{
+	public $enableCsrfValidation = false;//yii默认表单csrf验证，如果post不带改参数会报错！
+//    public $layout  = 'main';
+    public $layout  = 'announce';
+//    public $layout  = 'layout';
+    public function actionIndex()
+    {    
+        $childuid=\yii::$app->request->get('uid');  //孩子
+        $class=\yii::$app->request->get('oid');  //班级
+        $connection = Yii::$app->db;
+        $connection->open();  //初始化数据库
+        header("Content-type:text/html;charset=utf-8");
+        if(isset($childuid)){
+        $sq5='SELECT name,birthday,classid FROM lcchildren WHERE id='.$childuid;
+        $command = $connection->createCommand($sq5);
+        $child = $command->queryAll();
+        $name=$child[0]['name'];
+        $birthday0=$child[0]['birthday'];
+       
+        //$birthday0=strtotime($birthday0);
+       // $birthday0="2012-10-09";
+        $now=date('Y-m-d',time());
+        function DiffDate($date1, $date2) {
+        
+        	list($y1, $m1, $d1) = explode('-', $date1);//出生日期2013-6-20
+        	list($y2, $m2, $d2) = explode('-', $date2);//现在 2016-3-4
+        	$y = $m = $d = $_m = 0;
+        	if($d1>$d2){
+        		$d2=$d2+30; 
+        		$m2=$m2-1;
+        	}
+        	if($m1>$m2){
+        		$m2=$m2+12;
+        		$y2=$y2-1;
+        	}
+        	$y=$y2-$y1;
+        	$m=$m2-$m1;
+        	$d=$d2-$d1;
+        	return array($y, $m, $d);
+        }
+        $b=DiffDate($birthday0,$now);
+       // print_r($birthday0.'</br>');
+       // print_r($now.'</br>');
+       // print_r($b);
+        return $this->render('index', [
+        		'childuid' => $childuid,
+        		'name' => $name,
+        		'b' => $b,
+        		'c' => 0,
+        		'oid' =>"",
+        		]);
+        }
+        if(isset($class)){
+        	$sq0="SELECT name FROM lcorganidata WHERE oid='".$class."' AND orgatype=1";//6600
+        	$command = $connection->createCommand($sq0);
+        	$cla = $command->queryAll();          	
+        	$name=$cla[0]['name'];
+        	$c=1;
+        	return $this->render('index', [        		
+        			'name' => $name,        	
+        			'oid' => $class,
+        			'c' => $c,
+        			'childuid' => "",
+        			]);        			
+        }       
+    }
+    public function actionSave()
+    {   
+    	$childuid=\yii::$app->request->post('childuid');
+    	$content=\yii::$app->request->post('content');
+    	$contentimg=\yii::$app->request->post('img0'); 
+    	$sender="345";   
+    	$oid=\yii::$app->request->post('oid');
+    	// equivalent to: $name = isset($_POST['name']) ? $_POST['name'] : null;
+    	//$name = $request->post('name', '');
+    	// equivalent to: $name = isset($_POST['name']) ? $_POST['name'] : '';
+    	//添加了默认值
+    	//$img= json_decode($contentImg0,true);
+    	//$imgname=$img["name"];
+    	//$imgsize=$img["size"];
+    	//$path=$img["path"];
+       // file_put_contents("D://wt.txt", json_decode($contentImg0) ."\n", FILE_APPEND);
+        //file_put_contents("D://wt.txt", $c ."\n", FILE_APPEND);
+        /****传图片****/
+    //	$content = str_replace(PHP_EOL, "</br>", $content);
+    	$content = str_replace(' ', "&nbsp;", $content);
+     /*	if($contentimg){
+    	
+    		$wip ="192.168.139.202";
+    		$photoip = "http://".$wip;
+    		$path = json_decode($contentimg,true);
+    		$tmpUrl = explode("media_file/",$path['path']);
+    		//$data['content'] = $data['content'].'<img src="'.$tls.$offline_ip['result']['wip']."/media_file/".$tmpUrl[1].'"/>';
+    		$img=$photoip."/media_file/".$tmpUrl[1]; 		
+    		//$data['content'] = $data['content'].'<img src="'.$photoip."/media_file/".$tmpUrl[1].'"/>';
+    		//$data['content'] = '<p>'.$data['content'].'</p>';
+       }
+    	/****传图片end****/
+    	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+    	header("Content-type:text/html;charset=utf-8");
+    	if($childuid){
+    	$sq5='SELECT name,birthday,classid,eid FROM lcchildren WHERE id='.$childuid;
+    	$command = $connection->createCommand($sq5);
+    	$child = $command->queryAll();
+    	$name=$child[0]['name'];
+    	$classuid=$child[0]['classid'];
+    	$schooluid=$child[0]['eid'];
+     	
+    	$sql="INSERT INTO childrecord(schooluid,classuid,childuid,detail,picurl,sender) VALUES('$schooluid','$classuid','$childuid','$content','$contentimg','$sender')"; //
+    	//file_put_contents("D://wt1.txt","sql:".$a13."\n", FILE_APPEND);
+    	$command = $connection->createCommand($sql);
+    	$command->execute();
+    	}
+    	if($oid){
+    		$sq6='SELECT eid FROM lcorganidata WHERE oid='.$oid.' and orgatype=1';
+    		$command = $connection->createCommand($sq6);
+    		$child = $command->queryAll();
+    		$schooluid=$child[0]['eid'];
+    	
+    		$sql="INSERT INTO childrecord(schooluid,classuid,detail,picurl,sender,depend) VALUES('$schooluid','$oid','$content','$contentimg','$sender','1')"; //
+    		//file_put_contents("D://wt1.txt","sql:".$a13."\n", FILE_APPEND);
+    		$command = $connection->createCommand($sql);
+    		$command->execute();
+    	}
+        return $this->render('finish',[
+        		//'content' => $content,       	
+        		'img' => $contentimg,  
+        		//'c' => $img,
+        ]);
+       // return $this->redirect(['announce/index',"send"=>"succeed","gid"=>Yii::$app->request->post('AnnounceForm')['group']]);
+      
+    }
+}

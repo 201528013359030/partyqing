@@ -1,0 +1,158 @@
+<?php
+namespace app\modules\admin\controllers;
+use yii;
+use yii\web\Controller;
+use Rest;
+use Client;
+class SignController extends Controller
+{
+	public $layout  = false;
+    public function actionIndex()
+    {
+    	require_once(dirname(__FILE__)."/config.php");
+       	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+    	$id=\yii::$app->request->get('id');
+    	$uid=\yii::$app->request->get('uid');
+    	$token=\yii::$app->request->get('auth_token');
+    	$timenow=time();
+    	$timenow=date("Y-m-d",$timenow);
+    	//print_r($timenow);
+    	$sq0="SELECT YDNo FROM y_cdata where Cvalue2='".$timenow."' AND YCNo=".$id." AND CName='coursetime'";
+    	$command = $connection->createCommand($sq0);
+    	$permit=$command->queryAll();
+    	if(!$permit){    
+    		            $content="今天没有课程！";  
+    		            return $this->render('index_d',[
+    		            		'content' => $content,
+    		            		]);
+    	}else    	
+    	if($id){
+    	       $uid=\yii::$app->request->get('uid');
+    	       if($uid){
+    	        //\Yii::$app->session['user.uid']=$uid; 
+    	         $lesson=$permit[0]['YDNo'];   	           
+    	        /***********签到************/ 
+    	        $sq2="SELECT * FROM stusign where course=".$id." AND uid='".$uid."' AND lesson='".$lesson."'";
+    	        $command = $connection->createCommand($sq2);
+    	        $confirm= $command->queryAll();
+    	        if($confirm){
+    		            $content="您已签到过！";  //重复注册
+    		            return $this->render('index_d',[
+    		            		'content' => $content,
+    		            		]);
+    	        }else{    
+    	        	//获取个人信息
+    	        	$data0=array();
+    	        	$data0["api_key"]=$api_key;
+    	        	$data0["auth_token"]="$token";
+    	        	$data0["user_id"]="$uid";
+    	        	$data0["query_id"]="$uid";
+    	        	//print_r($data0);
+    	        	$pc0= $elggclient->post('/rest/json/?method=ldap.client.get.user.info',$data0);
+    	        
+    	        	$time=time();
+    	        	$time0=date("Y-m-d H:i:s",$time);
+    	        	//   	print($time0);
+    	        	//$com=$pc0['result']['department'][0];
+    	        	//$company=explode('/',$com);
+    	        	$name=$pc0['result']['membername'][0];
+    	        	$phone=$pc0['result']['mobile'][0];
+    	        	if(!$name||!$phone){
+    	        		$content="无法获取用户信息！";  //重复注册
+    	        		return $this->render('index_d',[
+    	        				'content' => $content,
+    	        				]);
+    	        	}
+    	        	/***************加群start********************/
+    	        	 
+    	        	$sq6="SELECT GNumber FROM Y_Course where YCNo=".$id;
+    	        	$command = $connection->createCommand($sq6);
+    	        	$guid=$command->queryAll();
+    	        	$guid=$guid[0]['GNumber'];
+    	        	$authtoken= $elggclient->post('/rest/json/?method=auth.gettoken',array("name"=>"buliping","password"=>"123456","flag"=>"1","api_key"=>$api_key));
+    	         	$authtoken=$authtoken['result']['auth_token'];
+    	        	$data6=array();
+    	        	//$data["name"]="aaa";
+    	        	//$data["eid"]="52978";
+    	        	//$data["type"]="2";
+    	        	$data6["uid[0]"]="$uid";
+    	        	$data6["guid"]="$guid";
+    	        	//$data6["auth_token"]="$token";
+    	        	$data6["auth_token"]="$authtoken";
+    	        	$data6["api_key"]=$api_key;
+    	        	//print_r($data6);
+    	        
+    	        	//$pc6= $elggclient->post('/rest/json/?method=group.invite.join',$data6);
+    	        	$pc= $elggclient->post('/rest/json/?method=group.invite.join',$data6);
+    	        	//print_r($pc);
+    	        	/***************加群end********************/    	 
+        /****************发通知******************/
+        /*轻应用接口*/
+    	
+        $eid=explode('@',$uid);
+        //print_r($eid);
+        $data=array();
+        $data["id"]="1";
+        $data["api_key"]=$api_key;
+        //$data["eid"]=\Yii::$app->params['eid'];
+        $data["eid"]="$eid[1]";
+        $data["title"]="签到成功";
+        $data["url"]="/notice/web/index.php?r=admin/announce/index&uid=&eguid=&auth_token=&gid=&nid=&provider=sipsys";
+        //$data["url"]="";"/notice/web/index.php?r=admin/noticecontent/index&uid=&eguid=&auth_token=&id=";
+        $data["auth_token"]="$token";
+        $data["uids[0]"]="$uid";
+        //print_r($data);
+        $pc= $elggclient->post('/rest/json/?method=lapp.notice',$data);    
+         
+
+        /****************获取企业name******************/
+        $data2=array();
+        $data2["user_id"]="$uid";
+        $data2["id_list[0]"]="$uid";
+        $data2["attr_list[0]"]="departmentnumber";
+        //$data2["attr_list[1]"]="departmentdn";
+        $data2["auth_token"]="$token";
+        $data2["api_key"]=$api_key;
+        $pc2= $elggclient->post('/rest/json/?method=ldap.client.get.node.info',$data2);
+        $oid0=$pc2['result'][0]['data']['departmentnumber'][0];
+        //print_r($oid0);
+        $oid2=explode('/',$oid0);
+        $oid=$oid2[1];
+        $company=$oid2[0];
+        /****************记录签到******************/
+        $sql="INSERT INTO stusign(course,uid,lesson,name,company,phone) VALUES('$id','$uid','$lesson','$name','$company','$phone')";
+        //file_put_contents("D://wj.txt","sql:".$sql."\n", FILE_APPEND);
+        $command = $connection->createCommand($sql);
+        $command->execute();
+          // $sq3="INSERT INTO noticeinfo(type,title,content,attach,sender,comment_switch,enterpris_id,time,confirmNum,receiverType,confirm) VALUES('1','签到成功','xxx企业学员xxx已经于xxx时分秒签到','0',78506@23697','1','653349393b7da41c3c2fc60cb963e36d','1448937455','0','4','1')";
+        /***************插入公告内容*****************/
+    	$content=$company." 企业学员 ".$name." 已经于".$time0."签到。已邀请您加入该课程的群组，欢迎进群讨论和提问！";
+        $sq3="INSERT INTO noticeinfo(announce_id, type, title, content, attach, sender, comment_switch, enterpris_id, time, confirmNum, sender_name, receiverType,confirm, top_time, top_day) VALUES (NULL, '0', '签到成功', '$content', '0', '$uid', '0', '653349393b7da41c3c2fc60cb963e36d', '$time', '0', '管理员', '0', '0', '0', '0')";
+        $command = $connection->createCommand($sq3);
+        $command->execute();
+        /***************记录发送目标*****************/
+        $sq8="SELECT * FROM noticeinfo where sender='$uid' AND time='$time'";
+        $command = $connection->createCommand($sq8);
+        $ann=$command->queryAll();
+  // print_r($ann[0]['announce_id']);
+        $announce_id =$ann[0]['announce_id'];
+
+        $sq5="INSERT INTO noticereader(uid,relation,announce_id,time) VALUES('$uid','unread','$announce_id','$time')";
+        //file_put_contents("D://wj.txt","sql:".$sql."\n", FILE_APPEND);$announce->time = time();
+        $command = $connection->createCommand($sq5);
+        $command->execute();
+        return $this->render('index',[
+        		//'model' => $model,
+        		]);
+              }//重复注册end
+          }else{         	
+          	$content="您还不是注册用户！";  //重复注册
+          	return $this->render('index_d',[
+          			'content' => $content,
+          			]);
+          }
+       }
+
+    }
+}

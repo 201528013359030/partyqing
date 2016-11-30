@@ -1,0 +1,30 @@
+* {
+	box-sizing: border-box; -ms-text-size-adjust: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; -ms-box-sizing: border-box; -o-box-sizing: border-box; -webkit-text-size-adjust: 100%;
+}
+.icAct {
+	background: url("../img/tempshare/tag_act.png") no-repeat;
+}
+.icInfo {
+	background:url("../img/tag_info.png") no-repeat;
+}
+.icInfo1 {
+	background:url("../img/tag_info3.png") no-repeat;
+}
+.icNotice {
+	background: url("../img/tempshare/tag_notice.png") no-repeat;
+}
+.icEye {
+	background: url("../img/ico_eye.png") no-repeat; width: 1em; height: 0.82em;
+}
+.icDown {
+	background: url("../img/ico_download.png") no-repeat; width: 1.5em; height: 1.5em;
+}
+.icLink {
+	background: url("../img/tempshare/ico_link.png") no-repeat; width: 1em; height: 1em;
+}
+.icon {
+	vertical-align: top; display: inline-block; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -ms-background-size: cover; -o-background-size: cover;
+}
+.corFocus {
+	color: rgb(180, 33, 44);
+}

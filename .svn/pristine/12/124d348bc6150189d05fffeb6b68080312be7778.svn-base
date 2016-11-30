@@ -1,0 +1,49 @@
+<?php
+/* @var $this yii\web\View */
+use yii\helpers\Html;
+use yii\bootstrap\Nav;
+use yii\bootstrap\NavBar;
+use yii\widgets\Breadcrumbs;
+use app\assets\AppAsset;
+use yii\web\View;
+?>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+
+<title>iScroll demo: Event Passthrough</title>
+<?=Html::jsFile('@web/js0/build/iscroll.js')?>
+<script type="text/javascript">
+var myScroll;
+function loaded () {
+	myScroll = new IScroll('#wrapper', { eventPassthrough: true, scrollX: true, scrollY: false, preventDefault: false });
+}
+</script>
+
+<style type="text/css">
+#wrapper {
+	height: 60px;
+	width: 100%;
+	overflow: hidden;
+}
+#scroller {
+	width: 2400px;
+}
+</style>
+</head>
+<body onload="loaded()">
+<div id="wrapper">
+	<div id="scroller">
+		<ul>
+			<li>Pretty cell 1</li>
+			<li>Pretty cell 2</li>
+			<li>Pretty cell 3</li>
+			<li>Pretty cell 4</li>
+		</ul>
+	</div>
+</div>
+<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+</body>
+</html>

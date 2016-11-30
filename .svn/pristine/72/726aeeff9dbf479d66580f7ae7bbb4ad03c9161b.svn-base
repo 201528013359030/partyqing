@@ -1,0 +1,73 @@
+<?php
+namespace app\modules\admin\controllers;
+use Yii;
+use yii\web\Controller;
+use app\modules\admin\models\AuthToken;
+use app\modules\admin\models\IctWebService;
+/**
+ * StudentController implements the CRUD actions for Studentinfo model.
+ */
+class SignpicController extends Controller
+{
+	public $enableCsrfValidation = false;//yii默认表单csrf验证，如果post不带改参数会报错！
+	public $layout  = false;
+
+    public function actionIndex()
+    {
+    	$cid=\yii::$app->request->get('cid');
+    	$year=\yii::$app->request->get('year');
+    	$token=\yii::$app->request->get('token');
+    	if($token){
+    		\Yii::$app->session['token']=$token;
+    	}
+    	if($cid){
+    		//\Yii::$app->session['user.uid']=$uid;
+    	}
+    	$token=\Yii::$app->session['token'];
+    	//print_r($token);
+    	//$auth = new AuthToken();
+    	//$auth->authTokenSession();
+    	if($year){$yearnow=$year;
+    	}else{
+    	$yearnow=date('Y',time());
+    	}
+    	header("Content-type:text/html;charset=utf-8");
+    	$connection = Yii::$app->db;
+    	$connection->open();
+    	
+    	for($i=1;$i<13;$i++){
+    		if($i<10){$time0=$yearnow."-0".$i; }else{
+    		$time0=$yearnow."-".$i;}
+    		//echo $time0."\n";
+    	    $sq0="SELECT id FROM childsign WHERE childuid='".$cid."' AND DATE_FORMAT(timein,'%Y-%m')='".$time0."' GROUP BY DATE(timein)";
+    	    $command = $connection->createCommand($sq0);
+    	    $data[$i]= $command->queryAll();
+    	    //$data[$i]['count']=count($data[$i]);
+    	    if($i==1){$days=count($data[1]);}else{
+    	    $days=count($data[$i]).",".$days;}
+    	}
+    	if($yearnow%4==0)
+    	{
+    		$monthdays="31,30,31,30,31,31,30,31,30,31,29,31";
+    	}else{
+    		$monthdays="31,30,31,30,31,31,30,31,30,31,28,31";
+    	}
+    	$month="12月,11月,10月,9月,8月,7月,6月,5月,4月,3月,2月,1月";
+    	$lastyear=$yearnow-1;
+    	$nextyear=$yearnow+1;
+    	//print_r($data);
+    	//print_r($days);
+		return $this->render('index', [
+			'cid' => $cid,
+            'monthdays' => $monthdays,
+            'month' => $month,
+			'days' => $days,
+			'lastyear' => $lastyear,
+			'nextyear' => $nextyear,
+			'year' => $yearnow,
+				
+        ]);
+    }
+}
+
+?>

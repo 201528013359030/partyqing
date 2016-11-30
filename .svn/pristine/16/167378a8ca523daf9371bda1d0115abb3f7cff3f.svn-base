@@ -1,0 +1,35 @@
+我看不出如何jQuery.when将有助于（它看起来并不像它会从日期选择器延迟事件），但我设法避免异步=FALSE禁用该选择器则当以Aja
+x回调数据刷新 
+<script>
+var available_days = [];
+var data = get_selected();
+var today = new Date();
+data['year'] = today.getFullYear();
+data['month'] = today.getMonth() + 1;
+$.get('{% url views.get_availability %}', data,
+ function(get_data) {
+  $("#datepicker").datepicker("destroy");
+  available_days = get_data['available_days'];
+  $("#datepicker").datepicker({
+   onChangeMonthYear: function(year, month, inst) {
+     $("#datepicker").datepicker("disable");
+     available_days = [];
+     data['year'] = year;
+     data['month'] = month;
+     $.get('{% url views.get_availability %}', data,
+      function(get_data) {
+       available_days = get_data["available_days"];
+       $("#datepicker").datepicker("refresh");
+       $("#datepicker").datepicker("enable");
+      }
+     );
+    },   
+    beforeShowDay: function(date) {
+    return [$.inArray(date.getDate(), available_days) >= 0, ''];
+    },
+    onSelect: function(dateText, inst) { showTimes(dateText, data); },
+    dateFormat: "dd-mm-yy",
+   });
+  }
+);
+</script>

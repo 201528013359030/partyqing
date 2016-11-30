@@ -1,0 +1,93 @@
+<?php
+/* @var $this yii\web\View */
+use yii\helpers\Html;
+use yii\bootstrap\Nav;
+use yii\bootstrap\NavBar;
+use yii\widgets\Breadcrumbs;
+use app\assets\AppAsset;
+use yii\web\View;
+?>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta id="viewport" name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0">
+<meta name="format-detection" content="telephone=no">
+<title>每日观察</title>
+
+<?=Html::jsFile('@web/js/jquery.min.js')?>
+<?=Html::jsFile('@web/js/bootstrap.js')?>
+<?=Html::cssFile('@web/css/bootstrap2.css')?>
+
+<?=Html::cssFile('@web/js/vendor/swiper.min.css')?>
+<?=Html::cssFile('@web/css/mydoc.css')?>
+</head>
+<body>
+<h2>创建模态框（Modal）</h2>
+<!-- 按钮触发模态框 -->
+<button class="btn btn-primary btn-lg" data-toggle="modal" 
+   data-target="#myModal">
+   开始演示模态框
+</button>
+
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" 
+   aria-labelledby="myModalLabel" aria-hidden="true">
+   <div class="modal-dialog">
+      <div class="modal-content">
+         <div class="modal-header">
+            <button type="button" class="close" 
+               data-dismiss="modal" aria-hidden="true">
+                  &times;
+            </button>
+            <h4 class="modal-title" id="myModalLabel">
+               模态框（Modal）标题
+            </h4>
+         </div>
+         <div class="modal-body">
+            在这里添加一些文本
+         </div>
+         <div class="modal-footer">
+            <button type="button" class="btn btn-default" 
+               data-dismiss="modal">关闭
+            </button>
+            <button type="button" class="btn btn-primary">
+               提交更改
+            </button>
+         </div>
+      </div><!-- /.modal-content -->
+</div><!-- /.modal -->
+</div>
+
+<div class="off-canvas-wrap" data-offcanvas>
+	<div class="inner-wrap">				
+		<p class="lead">弹出层 </p>		
+		<div class="row">			
+			<ul class="list text_list odd_even_show">
+  				<li>
+  					<a href="###" class="text_iteam" data-reveal-id="myModal">
+			  			1/点击弹出一个层	  			
+			  		</a>
+  				</li>				
+  			</ul>
+			<div id="myModal" class="reveal-modal" style="width:60%;height:60%" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+			  <h2 id="modalTitle">习近平</h2>
+			  <p class="lead">男，汉族，1953年6月生</p>
+			  <p>1969年1月参加工作，1974年1月加入中国共产党，清华大学人文社会学院马克思主义理论与思想政治教育专业毕业，在职研究生学历，法学博士学位。
+现任中国共产党中央委员会总书记，中共中央军事委员会主席，中华人民共和国主席，中华人民共和国中央军事委员会主席。</p>
+			  <a class="close-reveal-modal" aria-label="Close">&#215;</a>
+			</div>								
+		</div>						
+	</div>
+</div>
+<?=Html::jsFile('@web/js/vendor/swiper.min.js')?>
+<?=Html::jsFile('@web/js/jquery.js')?>
+<?=Html::jsFile('@web/js/foundation.min.js')?>
+<script>
+$(document).foundation();
+</script>
+
+</body>
+</html>

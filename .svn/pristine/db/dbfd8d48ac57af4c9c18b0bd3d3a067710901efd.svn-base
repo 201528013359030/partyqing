@@ -1,0 +1,47 @@
+<?php
+
+namespace app\modules\admin\controllers;
+
+use Yii;
+use app\modules\admin\models\IctWebService;
+use app\modules\admin\models\AuthToken;
+use app\models\Curl;
+
+class SalaryController extends \yii\web\Controller
+{
+	public $enableCsrfValidation = false;//yii默认表单csrf验证，如果post不带改参数会报错！
+//    public $layout  = 'main';
+    public $layout  = 'announce';
+//    public $layout  = 'layout';
+    public function actionIndex()
+    {    
+        $uid=\yii::$app->request->get('uid');  //教师
+        $auth = new AuthToken();
+        $auth->authTokenSession();
+        $connection = Yii::$app->db;
+        $connection->open();  //初始化数据库
+        header("Content-type:text/html;charset=utf-8");
+
+        $sq0="SELECT * FROM lcsalary where muid='".$uid."' ORDER BY salarytime desc";
+        $command = $connection->createCommand($sq0);
+        $salary= $command->queryAll();
+        $count=count($salary);
+        $aa=0;
+        for($i=0;$i<$count;$i++){
+           $salarytime=$salary[$i]['salarytime'];
+           $time=date('Y-m',time());
+            if($time==$salarytime){
+            	$salary[$i]['cc']=1;
+            	$aa=1;
+            }else{
+            	$salary[$i]['cc']=0;
+            }
+           $salary[$i]['salarytime']=date('Y年m月',strtotime($salarytime));
+        }
+        //print_r($salary);
+        return $this->render('index', [
+        		'list'=>$salary,
+        		'aa'=>$aa,
+        		]);              
+    }
+}

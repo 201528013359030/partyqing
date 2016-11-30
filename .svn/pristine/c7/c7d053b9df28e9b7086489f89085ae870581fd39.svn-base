@@ -1,0 +1,83 @@
+<?php
+namespace app\modules\admin\controllers;
+use yii;
+use yii\web\Controller;
+use Rest;
+use Client;
+use app\modules\admin\models\AuthToken;
+use app\modules\admin\models\IctWebService;
+
+class EvaluatexController extends Controller
+{
+	public $layout  = false;
+	public $enableCsrfValidation = false;//因为YII2的防止csrf攻击，你则不能多次提交相同的表单。如果你希望当前可以多次重复提交，可以在当前提交的表单controller中添加	
+    public function actionIndex()
+    {
+        $uid =\Yii::$app->session['user.uid'];
+    	//require_once(dirname(__FILE__)."/config.php");
+    	//$token=\yii::$app->request->get('auth_token');
+    	//print_r($token);
+    	//\Yii::$app->session['token']=$token;
+    	//header("Content-type:text/html;charset=utf-8");
+    	//$uid="333";
+    	$id=\yii::$app->request->get('id');
+    	//\Yii::$app->session['user.uid']=$uid;   	
+    	$auth = new AuthToken();
+    	$auth->authTokenSession();
+    	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+    	header("Content-type:text/html;charset=utf-8");
+    	$sq1="SELECT * FROM lcevaluate where id='".$id."'AND status=1 AND isdelete=0";    		 
+        $command = $connection->createCommand($sq1);
+    	$content = $command->queryAll();
+    	$classid=$content[0]['owneroid'];
+
+    	$sq2="SELECT gradeid,name FROM lcorganidata where oid='".$classid."'AND orgatype=1";
+    	$command = $connection->createCommand($sq2);
+    	$class = $command->queryAll();
+    	$gradeid=$class[0]['gradeid'];
+    	$classname=$class[0]['name'];
+    	//print_r($content[0]['owneroid']);
+    	
+    	$sq3="SELECT name FROM lcorganidata where oid='".$gradeid."'AND orgatype=2";
+    	$command = $connection->createCommand($sq3);
+    	$grade = $command->queryAll();
+    	$gradename=$grade[0]['name'];
+    	
+    	$sq5="SELECT id,optiname,teacheruid FROM lcevaoptions where evaid='".$id."'";
+    	$command = $connection->createCommand($sq5);
+    	$data = $command->queryAll();
+    	$count=count($data);
+    	for($i=0;$i<$count;$i++){
+    		$tuid=$data[$i]['teacheruid'];
+    		$opid=$data[$i]['id'];
+    		$sq6="SELECT mtype FROM lcmemdata where muid='".$tuid."'";
+    		$command = $connection->createCommand($sq6);
+    		$name = $command->queryAll(); 
+    		$mtype=$name[0]['mtype'];
+    		//echo $mtype;  
+    		if($mtype==2){$data[$i]['mtype']="教职工";}else if($mtype==3){$data[$i]['mtype']="教师";}
+    		else if($mtype=4){$data[$i]['mtype']="园长";}else{$data[$i]['mtype']="其他";}
+    		
+    		$sq7="SELECT optivalue FROM lcevafamilyop where evaid='".$id."' AND familymuid= '".$uid."' AND optionid= '".$opid."'";
+    		$command = $connection->createCommand($sq7);
+    		$op = $command->queryAll();
+    		//print_r($op);
+    		if(isset($op[0]['optivalue'])){
+    		$optivalue=$op[0]['optivalue'];
+    		if($optivalue==1){$data[$i]['op']="优";}elseif($optivalue==2){$data[$i]['op']="良";}elseif($optivalue==3){$data[$i]['op']="可";}
+    		}else{$data[$i]['op']="未选择";}
+    	}
+    	//print_r($data);
+        return $this->render('index',[
+        		'content'=>$content,  
+        		'list'=>$data,
+        		'id'=> $id,
+        		'classname'=> $classname,
+        		'gradename'=> $gradename,
+        		'count'=> $count,
+        ]);
+    }
+
+    
+}

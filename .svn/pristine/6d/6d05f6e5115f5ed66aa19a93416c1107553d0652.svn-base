@@ -1,0 +1,49 @@
+<?php
+namespace app\modules\admin\controllers;
+
+use Yii;
+use yii\web\Controller;
+use app\modules\admin\models\AuthToken;
+use app\modules\admin\models\IctWebService;
+/**
+ * StudentController implements the CRUD actions for Studentinfo model.
+ */
+class SignpicController extends Controller
+{
+	public $enableCsrfValidation = false;//yii默认表单csrf验证，如果post不带改参数会报错！
+	public $layout  = false;
+
+    public function actionIndex()
+    {
+    	$uid=\yii::$app->request->get('uid');
+    	$token=\yii::$app->request->get('token');
+    	if($token){
+    		\Yii::$app->session['token']=$token;
+    	}
+    	if($uid){
+    		\Yii::$app->session['user.uid']=$uid;
+    	}
+    	$token=\Yii::$app->session['token'];
+    	$sender=\Yii::$app->session['user.uid'];
+    	//print_r($token);
+    	//$auth = new AuthToken();
+    	//$auth->authTokenSession();
+    	header("Content-type:text/html;charset=utf-8");
+    	$connection = Yii::$app->db;
+    	$connection->open();
+    	$id=\yii::$app->request->get('id');
+
+    	$company0="12月,11月,10月,9月,8月,7月,6月,5月,4月,3月,2月,1月";
+    	//print_r($applynum);
+		return $this->render('index', [
+			//'companysmall' => $companysmall,
+            //'applynum' => $applynum,
+            'company' => $company0,
+			//'number' => $number,
+			//'coursename' => $coursename[0]['CourseName'],
+				
+        ]);
+    }
+}
+
+?>

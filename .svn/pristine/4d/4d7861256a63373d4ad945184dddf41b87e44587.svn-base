@@ -1,0 +1,152 @@
+<?php
+namespace app\modules\admin\controllers;
+use yii;
+use yii\web\Controller;
+use Rest;
+use Client;
+use app\modules\admin\models\AuthToken;
+use app\modules\admin\models\IctWebService;
+class LessonsearchsController extends Controller
+{
+	public $layout  = false;
+    public function actionIndex()
+    {
+        //$uid =\Yii::$app->session['user.uid'];
+    	//require_once(dirname(__FILE__)."/config.php");
+    	$classid=\yii::$app->request->get('classid');
+    	//print_r($token);
+    	//\Yii::$app->session['token']=$token;
+    	$uid=\yii::$app->request->get('uid');//uid
+    	\Yii::$app->session['user.uid']=$uid;
+    	$searchweek=\yii::$app->request->get('searchweek');
+    	$s=\yii::$app->request->get('s');
+    	if(isset($s)){}else{$s=0;}
+    	//$searchtitle="2";
+    	$auth = new AuthToken();
+    	$auth->authTokenSession();
+ 
+    	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+    	header("Content-type:text/html;charset=utf-8");
+        //if($searchtitle){}else{$searchtitle="输入搜索关键字";}
+    	
+    	$sql="SELECT eid,classid,mtype FROM lcmemdata WHERE muid='".$uid."'";
+    	$command = $connection->createCommand($sql);
+    	$school = $command->queryAll();
+    	$schoolid=$school[0]['eid'];
+    	if(isset($classid)){}else{
+    	if(isset($school[0]['classid'])){
+    	$classid=$school[0]['classid'];}
+        }
+    	if(isset($classid)){
+    	$sql="SELECT gradeid FROM lcorganidata WHERE oid='".$classid."' AND orgatype=1";
+    	$command = $connection->createCommand($sql);
+    	$grade = $command->queryAll();
+    	  if(isset($grade[0]['gradeid'])){
+    	  	//print_r($grade[0]['gradeid']);
+    	    $gradeid=$grade[0]['gradeid'];
+    	    $sql="SELECT id FROM lcorganidata WHERE oid='".$gradeid."' AND orgatype=2";
+    	    $command = $connection->createCommand($sql);
+    	    $grade0 = $command->queryAll();
+    	    $gradeid0=$grade0[0]['id'];
+    	    if($s==0){
+    		    $sql="SELECT * FROM lcteachingreference where eid='".$schoolid."' AND (grade='".$gradeid0."' or grade='') AND week ='".$searchweek."' ORDER BY createtime DESC LIMIT 5";
+    	    }else if($s==1){
+    		    $sql="SELECT * FROM lcteachingplan where eid='".$schoolid."' AND (grade='".$gradeid0."' or grade='') AND type=03 AND week ='".$searchweek."' ORDER BY createtime DESC LIMIT 5";
+    	    }
+    	 }else{
+    	//print_r($company);
+    	//\Yii::$app->session['personal']=$personal;
+    	/**************end********************/
+          if($s==0){
+   	       $sql="SELECT * FROM lcteachingreference where eid='".$schoolid."' AND week ='".$searchweek."' ORDER BY createtime DESC LIMIT 5";
+           }else if($s==1){
+           $sql="SELECT * FROM lcteachingplan where eid='".$schoolid."' AND type=03 AND week ='".$searchweek."' ORDER BY createtime DESC LIMIT 5";        	 
+           }
+    	}
+    	}else{
+    	//print_r($company);
+    	//\Yii::$app->session['personal']=$personal;
+    	/**************end********************/
+          if($s==0){
+   	       $sql="SELECT * FROM lcteachingreference where eid='".$schoolid."' AND week ='".$searchweek."' ORDER BY createtime DESC LIMIT 5";
+           }else if($s==1){
+           $sql="SELECT * FROM lcteachingplan where eid='".$schoolid."' AND type=03 AND week ='".$searchweek."' ORDER BY createtime DESC LIMIT 5";        	 
+           }
+    	}
+   	    $command = $connection->createCommand($sql);
+   	    $news = $command->queryAll();
+   	    //print_r($course);
+    	$count=count($news);
+    	//print_r($course);
+    	\Yii::$app->session['public_count']=$count;   	
+    	//$tt=strtotime($course['PublicTime']);    	
+    	//$course['PublicTime']=date('Y-m-d H:i',$tt);    
+        return $this->render('index',[
+        		's' => $s,
+        		'list'=>$news,  
+        		'uid'=>$uid,
+        		'count'=>$count,
+        		'classid' => $classid,
+        		'searchweek'=>$searchweek       		
+        ]);
+    }
+    public function actionGetdata(){
+    	
+    	//$uid =\Yii::$app->session['user.uid'];
+    	//\Yii::$app->session['public_count']="5";
+    	$classid=\yii::$app->request->get('classid');
+    	$s=\yii::$app->request->get('s');
+    	$uid=\Yii::$app->session['user.uid'];
+    	$searchweek=\yii::$app->request->get('searchweek');
+    	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+    	
+    	$sql="SELECT eid,classid,mtype FROM lcmemdata WHERE muid='".$uid."'";
+    	$command = $connection->createCommand($sql);
+    	$school = $command->queryAll();
+    	$schoolid=$school[0]['eid'];
+    	if(isset($classid)){}else{
+    	if(isset($school[0]['classid'])){
+    	$classid=$school[0]['classid'];}
+        }
+    	if(isset($classid)){
+    		$sql="SELECT gradeid FROM lcorganidata WHERE oid='".$classid."' AND orgatype=1";
+    		$command = $connection->createCommand($sql);
+    		$grade = $command->queryAll();
+    		if(isset($grade[0]['gradeid'])){
+    		$gradeid=$grade[0]['gradeid'];
+    		$sql="SELECT id FROM lcorganidata WHERE oid='".$gradeid."' AND orgatype=2";
+    		$command = $connection->createCommand($sql);
+    		$grade0 = $command->queryAll();
+    		$gradeid0=$grade0[0]['id'];
+    		if($s==0){
+    			$sql="SELECT * FROM lcteachingreference where eid='".$schoolid."' AND (grade='".$gradeid0."' or grade='') AND week ='".$searchweek."' ORDER BY createtime DESC LIMIT ".$public_count.",5";  
+    		}else if($s==1){
+    			$sql="SELECT * FROM lcteachingplan where eid='".$schoolid."' AND (grade='".$gradeid0."' or grade='') AND type=03 AND week ='".$searchweek."' ORDER BY createtime DESC LIMIT ".$public_count.",5";  
+    		}
+    		}else{    	
+            if($s==0){
+    	    	$sql="SELECT * FROM lcteachingreference where eid='".$schoolid."' AND week ='".$searchweek."' ORDER BY createtime DESC LIMIT ".$public_count.",5";   
+    	    }else if($s==1){
+    	    	$sql="SELECT * FROM lcteachingplan where eid='".$schoolid."' AND type=03 AND week ='".$searchweek."' ORDER BY createtime DESC LIMIT ".$public_count.",5";   
+    	    }
+    	}
+    	}else{    	
+            if($s==0){
+    	    	$sql="SELECT * FROM lcteachingreference where eid='".$schoolid."' AND week ='".$searchweek."' ORDER BY createtime DESC LIMIT ".$public_count.",5";   
+    	    }else if($s==1){
+    	    	$sql="SELECT * FROM lcteachingplan where eid='".$schoolid."' AND type=03 AND week ='".$searchweek."' ORDER BY createtime DESC LIMIT ".$public_count.",5";   
+    	    }
+    	}
+        $public_count=$public_count+5;
+    	\Yii::$app->session['public_count']=$public_count;    	
+    	$command = $connection->createCommand($sql);
+    	$news = $command->queryAll();  	
+    	//file_put_contents("D:\\wt1.txt","sum:".$sql."\n", FILE_APPEND);    	 	
+    	$count=count($news);
+  	
+    	echo json_encode($news);
+    	exit();    
+    }   
+}

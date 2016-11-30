@@ -1,0 +1,143 @@
+<?php
+/* @var $this yii\web\View */
+use yii\helpers\Html;
+use yii\bootstrap\Nav;
+use yii\bootstrap\NavBar;
+use yii\widgets\Breadcrumbs;
+use app\assets\AppAsset;
+use yii\web\View;
+?>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta id="viewport" name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0">
+<meta name="format-detection" content="telephone=no">
+<title>每周课表</title>
+<?//=Html::cssFile('@web/css0/tempshare.css')?>
+<?=Html::cssFile('@web/css0/font-awesome.css')?>
+<!-- <link href="//cdn.bootcss.com/font-awesome/3.0.2/css/font-awesome.css" rel="stylesheet"> -->
+<style>
+table{	
+margin:3px;
+width:99%;
+margin-top:6px;	
+border-collapse: collapse;
+text-align:center;
+border-radius: 10px; 
+-moz-border-radius: 10px; 
+-webkit-border-radius: 10px;			
+}
+th{
+background-color:#54c7db;	
+color:#fff;		
+}
+tr{
+background-color:#e9eef5;	
+}
+th,td{
+border:1px solid #addce4;
+padding:10px;	
+height:25px;
+width:15%;	
+}
+.radius1{
+-border-top-left-radius: 15px;
+-webkit-border-top-left-radius: 15px;
+-moz-border-top-left-radius: 15px;
+border:0;}
+.radius2{
+-border-top-right-radius: 15px;
+-webkit-border-top-right-radius: 15px;
+-moz-border-top-right-radius: 15px;		
+border:0;	
+}
+
+.head{
+height:70px;		
+}
+.row-bt-button a {
+display: block;
+height: 40px;
+line-height: 40px;
+margin: 0px auto;
+text-align: center;
+border: 1px #E6E6E6 solid;
+background: #F7F7F7;
+color: #000;
+-webkit-border-radius: 2px;	
+text-decoration: none;
+}
+.row-bt-button.left {position:fixed;bottom:0;left:0;width: 33.4%;}
+.row-bt-button.right {position:fixed;bottom:0;right:0;width: 33.4%;}
+.row-bt-button.middle {position:fixed;bottom:0;left:33.4%;width: 33.4%;}
+.under{text-decoration: none;}
+</style>
+<script>
+
+</script>
+</head>
+<body>
+<div style="padding-bottom: 50px">
+ <?php foreach ($list as $key2=>$value2): ?> 
+ <span style="margin-left:20px;color:#54c7db;"> <?=$value2[0][0]['classname']?></span>
+<table >
+  <tr class="head">  
+    <th class="radius1"><?=$month?></br><?=$time?></th>
+    <th >时间</th>
+    <th >课程</th> 
+    <th class="radius2">课件</th>   
+  </tr>  
+  <?php foreach ($value2 as $key0=>$value0): ?>
+  <?php foreach ($value0 as $key=>$value): ?>
+  <?php if($list[$key2][$key0][0]['today']=="1"):?>
+  <tr style="background-color:#c4e7ed;">
+  <?else:?>
+  <tr>
+  <?endif?>
+    <?php if($key=="0"):?> 
+    <td rowspan=<?=$list[$key2][$key0][0]['count']?> style="white-space:nowrap;">
+    <?php if($list[$key2][$key0][0]['today']=="1"):?>
+    <div style="padding-top:12px;-width:60px;height:48px;background-color:#54c7db;-webkit-border-radius:50%;color:#fff">
+          今天</br><?=$value['coursetime']?></div>
+    <?else:?>
+    <?=$list[$key2][$key0][0]['week']?></br><span style="color:grey">
+    <?=$value['coursetime']?></span>
+    </td>  
+    <?endif?>        
+    <?endif?>
+    <td style="white-space:nowrap;"><?//php 
+    $a=$value['coursehour'];
+    if($a){
+    $b=explode('-',$a);
+    $tt=strtotime($b[0]);
+    $b[0]=date('H:i',$tt);
+    $tt=strtotime($b[1]);
+    $b[1]=date('H:i',$tt);
+    $a=$b[0]."-".$b[1];
+    print_r($a);}?></td>
+    <td ><?=$value['name']?></td>
+    <td ><a class="under" href="#"><I class="icon-search"></I></a></td>        
+  </tr>
+  <? endforeach?>  
+  <? endforeach?>   
+</table>
+ <? endforeach?> 
+<div class="row-bt-button left" >
+  	<a href="index.php?r=admin/schedules/index&uid=222&day=<?=$lastday?>">上一周</a>
+</div>
+<div class="row-bt-button middle" >
+  	<a href="index.php?r=admin/schedules/index&uid=222">本周</a>
+</div> 
+<div class="row-bt-button right" >
+  	<a href="index.php?r=admin/schedules/index&uid=222&day=<?=$day?>" >下一周</a>
+</div> 
+</div>
+	<input type="hidden" id="count" value=<?//=$sex2?>>
+</body>
+</html>
+<script type="text/javascript">
+
+</script>

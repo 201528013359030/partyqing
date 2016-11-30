@@ -1,0 +1,15 @@
+eclipse.preferences.version=1
+encoding//config/params.php=UTF-8
+encoding//config/web.php=UTF-8
+encoding//models/Noticeinfo.php=UTF-8
+encoding//modules/admin/controllers=UTF-8
+encoding//modules/admin/models=UTF-8
+encoding//modules/admin/views/announce=UTF-8
+encoding//modules/admin/views/announce0/create.php=UTF-8
+encoding//modules/admin/views/announce0/finish.php=UTF-8
+encoding//modules/admin/views/announce0/index.php=UTF-8
+encoding//modules/admin/views/layouts=UTF-8
+encoding//modules/admin/views/schoollist=UTF-8
+encoding//modules/admin/views/signinstead=UTF-8
+encoding//modules/admin/views/signtable=UTF-8
+encoding//web/js/htmlset.js=UTF-8

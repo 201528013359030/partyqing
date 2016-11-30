@@ -1,0 +1,165 @@
+<?php
+namespace app\modules\admin\controllers;
+use yii;
+use yii\web\Controller;
+use Rest;
+use Client;
+use app\modules\admin\models\AuthToken;
+use app\modules\admin\models\IctWebService;
+
+class SchedulejController extends Controller
+{
+	public $layout  = false;
+	public $enableCsrfValidation = false;//因为YII2的防止csrf攻击，你则不能多次提交相同的表单。如果你希望当前可以多次重复提交，可以在当前提交的表单controller中添加	
+    public function actionIndex()
+    {
+        //$uid =\Yii::$app->session['user.uid'];
+    	//require_once(dirname(__FILE__)."/config.php");
+    	//$token=\yii::$app->request->get('auth_token');
+    	//print_r($token);
+    	//\Yii::$app->session['token']=$token;
+    	//header("Content-type:text/html;charset=utf-8");
+    	$uid=\yii::$app->request->get('uid');
+    	$cid=\yii::$app->request->get('cid');
+    	$day=\yii::$app->request->get('day');
+    	//\Yii::$app->session['user.uid']=$uid;   	
+    	$auth = new AuthToken();
+    	$auth->authTokenSession();
+    	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+    	header("Content-type:text/html;charset=utf-8");    	   	
+    	//print_r($week);
+    	if($day){
+    		$todayday=$day;
+    		$t=strtotime($todayday);
+    		$week0=date("N",$t);
+    	}else{
+    		$week0=date("N",time());
+    		$todayday=date("Y-m-d",time());
+    	};    
+    	//print_r($week0); 
+    	if($week0==1){
+            //$week[0]=date("Y-m-d",strtotime("Monday"));    
+            $week[0]=date("Y-m-d",strtotime('Mon',strtotime("$todayday")));
+    	}else{
+    		//$week[0]=date("Y-m-d",strtotime("-1 Monday"));
+    		$week[0]=date("Y-m-d",strtotime('-1 Mon',strtotime("$todayday")));
+    	}
+    	$monday=$week[0];
+    	$week[1]=date("Y-m-d",strtotime('+1 day',strtotime("$monday")));
+    	$week[2]=date("Y-m-d",strtotime('+2 day',strtotime("$monday")));
+    	$week[3]=date("Y-m-d",strtotime('+3 day',strtotime("$monday")));
+    	$week[4]=date("Y-m-d",strtotime('+4 day',strtotime("$monday")));
+    	$week[5]=date("Y-m-d",strtotime('+5 day',strtotime("$monday")));
+    	$week[6]=date("Y-m-d",strtotime('+6 day',strtotime("$monday")));
+    	$week[7]=date("Y-m-d",strtotime('+7 day',strtotime("$monday")));
+    	$week[8]=date("Y-m-d",strtotime('-1 day',strtotime("$monday")));
+    	//echo date("Y-m-d",strtotime('-1 Mon',strtotime("2016-03-14")));//返回日期所在时间的星期一
+    	//echo date("Y-m-d",strtotime('+1 day',strtotime("$monday")));
+    	//echo strtotime('Mon',strtotime("2010-01-01"));//返回日期所在时间的下一个星期一的时间   	
+    	//echo date("Y-m-d",strtotime("now")), "\n";    	
+    	//echo date("Y-m-d",strtotime("+1 Monday")), "\n";
+		//print_r($week); 
+    	$month=date("m",strtotime('+1 day',strtotime("$monday")));
+    	function str_num($str1)
+    	{
+    		switch($str1)
+    		{
+    			case 01:$str_n="一月";break;
+    			case 02:$str_n="二月";break;
+    			case 03:$str_n="三月";break;
+    			case 04:$str_n="四月";break;
+    			case 05:$str_n="五月";break;
+    			case 06:$str_n="六月";break;
+    			case 07:$str_n="七月";break;
+    			case 08:$str_n="八月";break;
+    			case 09:$str_n="九月";break;
+    			case 10:$str_n="十月";break;
+    			case 11:$str_n="十一月";break;
+    			case 12:$str_n="十二月";break;
+    		}
+    		return $str_n;
+    	}  	
+    	$month=str_num($month);
+    	//$sq5="SELECT classid FROM lcmemdata WHERE muid='".$uid."'";
+    	$sq5="SELECT classid FROM lcchildren WHERE id='".$cid."'";
+    	$command = $connection->createCommand($sq5);
+    	$class= $command->queryAll();
+    	$classid=$class[0]['classid'];
+        for($i=0;$i<7;$i++){
+        	$weektime=$week[$i];
+    	    $sq5="SELECT * FROM lccourse WHERE classoid='".$classid."' AND coursetime='".$weektime."'";
+    	    $command = $connection->createCommand($sq5);
+    	    $data[$i]= $command->queryAll();
+    	    $data[$i][0]['count']=count($data[$i]);
+    	    $tt=strtotime($weektime);
+    	    $data[$i][0]['coursetime']=date('m-d',$tt);
+    	    $todayy=date("Y-m-d",time());
+    	    if($week[$i]==$todayy){
+    	    	$data[$i][0]['today']=1;
+    	    	$month="本周";    	    	
+    	    }else{
+    	    	$data[$i][0]['today']=0;   	    	   	    	
+    	    }
+    	    if(isset($data[$i][0]['coursehour'])){}else{$data[$i][0]['coursehour']="";}  
+    	    if(isset($data[$i][0]['demo'])){}else{$data[$i][0]['demo']="";}	    	    	    
+    	    if(isset($data[$i][0]['name'])){    	    	
+    	    }else{ 
+    	    	if($i==5||$i==6){$data[$i][0]['name']="休息";
+    	    	}else{
+    	    		$data[$i][0]['name']="";
+    	    	}
+    	    }
+    	    //file_put_contents("D://wt1.txt","sql:".$sq5."\n", FILE_APPEND);
+        }   	
+        $data[0][0]['week']="星期一";
+        $data[1][0]['week']="星期二";
+        $data[2][0]['week']="星期三";
+        $data[3][0]['week']="星期四";
+        $data[4][0]['week']="星期五";
+        $data[5][0]['week']="星期六";
+        $data[6][0]['week']="星期日";
+   	    $day=$week[7];
+   	    $lastday=$week[8];
+    	    //$time=date('Y-m-d',time());
+    	//print_r($data[6]);
+   	    $tt=strtotime($week[0]);
+   	    $first=date('d',$tt);
+   	    $tt=strtotime($week[6]);
+   	    $last=date('d',$tt);
+    	$time=$first."~".$last;   	
+    	   	  
+    	
+        return $this->render('index',[
+        		'list'=>$data,        		        	
+        		'time'=> $time,
+        		'day'=> $day,
+        		'lastday'=> $lastday,
+        		'month'=> $month,
+        		'cid'=> $cid,
+        ]);
+    }
+    public function actionSave(){  
+    	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+    	header("Content-type:text/html;charset=utf-8");
+ 
+    	$childuid=\yii::$app->request->post('uid');
+    	//$uid=\Yii::$app->session['user.uid'];
+    	$uid="223";
+    	$sq2="SELECT classid FROM lcchildren WHERE id=".$childuid;
+    	$command = $connection->createCommand($sq2);
+    	$class = $command->queryAll();
+    	$classid=$class[0]['classid'];
+   	 
+    	$sq1="SELECT id FROM lcchildren WHERE classid='".$classid."' and id>'".$childuid."' LIMIT 1";
+    	$command = $connection->createCommand($sq1);
+    	$childnext = $command->queryAll();
+   
+    		  return $this->redirect(['dayrecord/index',"uid"=>$uid]);      //最后一个
+     	      	
+    	//return $this->redirect(['dayrecord/index',"uid"=>$uid]);
+           //return $this->redirect(['announce/index',"send"=>"succeed","gid"=>Yii::$app->request->post('AnnounceForm')['group']]);                   
+    }
+    
+}

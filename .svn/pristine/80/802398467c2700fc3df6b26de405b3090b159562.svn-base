@@ -1,0 +1,168 @@
+<?php
+/* @var $this yii\web\View */
+use yii\helpers\Html;
+use yii\web\View;
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<title>签到详情</title>
+<?=Html::jsFile('@web/js0/jquery-1.11.2.js')?>
+<?=Html::cssFile('@web/css0/mydoc.css')?>
+<!--时间控件部分-->
+<?=Html::cssFile('@web/js0/vendor/mobiscroll.mo.min.css')?>
+<style>
+table{	
+margin:10px 10px 10px 17px;
+width:92%;
+margin-top:5px;	
+border-collapse: collapse;
+text-align:center;
+border: 1px solid #d3d3d3; 				
+}
+table tr th, table tr td {
+color: #4D4D4D;
+font-size: 0.95rem;
+padding:0.5625rem 0.625rem;
+text-align: left;
+border: 1px solid #d3d3d3; 	
+}
+.dw{
+font-size:14pt;
+}
+</style>
+</head>
+<body>
+	<div class="container">		
+	</div>
+	<div style="margin-top:15px;margin-left:25px">
+	    <span style="display:inline-block;width:40%;"><?=$name?></span>
+	    <span style="display:inline-block;width:50%;text-align:right">班级人数：   <?=$count?> </span>
+	</div>
+<table>      
+	   <tr>  
+            <th style="white-space:nowrap;">日期</th> 
+            <th style="white-space:nowrap;">星期</th> 
+            <th style="white-space:nowrap;">出勤人数</th>  
+       </tr>
+        <tr>  
+            <td style="white-space:nowrap;">
+            <input id="starTime" class="datesel" style="background:#F9F9F9;font-size:1.1em;color:#1196E4;width:120px" name="starTime"  type="text" placeholder="请选择" value="<?=$date?>" required />									  								  							  										
+			</td> 
+            <td style="white-space:nowrap;" id="week"><?=$week?></td> 
+            <td style="white-space:nowrap;" id="signcount"><?=$signcount?></td>  
+       </tr>
+</table>
+<div class="off-canvas-wrap" data-offcanvas>
+	<div class="inner-wrap">
+	       <ul class="list" id="listBox">					
+				<?php foreach ($list as $key=>$value): ?>
+				<li>
+					<a href="###" class="pic_text_iteam" style="min-height: 70px;">	  						  			
+			  				<p class="pic_text_name">
+			  					<span class="fr viewnum">
+			  					签到时间：<?php $tt=strtotime($value['timein']);
+                                         $value['timein']=date('H:i',$tt);
+                                         echo $value['timein'];?></br>                                         			  					
+			  					签退时间：<?php if($value['istimeout']=="1"){
+			  					        $tt=strtotime($value['timeout']);
+                                        $value['timeout']=date('H:i',$tt);
+                                         echo $value['timeout'];}
+                                        ?>        
+			  					</span>
+			  					<span style="display:inline-block;margin-left:10px;margin-top:10px;"><?=$value['childname']?></span>
+			  				</p>			  					  						  			
+			  		</a>
+				</li>
+				<? endforeach?>	
+			</ul>
+		</div>	
+	</div>
+</div>
+<input type="hidden" id="uid" value="<?=$uid?>">
+<?=Html::jsFile('@web/js0/vendor/mobiscroll.custom.min.js')?>
+<?=Html::jsFile('@web/js0/foundation.min.js')?>
+<script type="text/javascript">
+$(document).foundation();
+$(function(){
+	//初始化时间控件 使用的是 mobiscroll
+	$(".datesel").mobiscroll().date();
+	//选择显示样式 安卓显示点击，其他显示滚动轮形式
+	var _mode = '';	
+	if (/(Android)/i.test(navigator.userAgent)){
+		_mode = 'clickpick';
+	}else{
+		_mode = 'scroller';
+	}
+	var currYear = (new Date()).getFullYear();  	
+//初始化日期控件
+//http://www.myexception.cn/web/1915230.html
+var opt = {
+			preset: 'date', //日期，可选：date\datetime\time\tree_list\image_text\select
+			theme: 'android', //皮肤样式，可选：default\android\androids\android-ics light\android-ics\ios\jqm\sense-ui\wp light\wp有些样式不可用，可自行修复
+			display: 'modal', //显示方式 ，可选：modal\inline\bubble\top\bottom
+			mode: _mode, //日期选择模式，可选：scroller\clickpick\mixed
+			lang:'zh',
+			dateFormat: 'yy-mm-dd', // 日期格式
+			setText: '确定', //确认按钮名称
+			cancelText: '取消',//取消按钮名籍我
+			dateOrder: 'yyyymmdd', //面板中日期排列格式
+			dayText: '日', monthText: '月', yearText: '年', //面板中年月日文字
+			showNow: true,  
+		    nowText: "今",  
+	
+	        startYear:currYear-10, //开始年份  
+	        endYear:currYear + 10, //结束年份  
+	        //endYear:2099 //结束年份
+	        timeFormat: 'HH:ii:ss',
+			timeWheels: 'HHiiss',    //可以删除试试显示内容		
+			//当时间选择的内容发生变化触发的事件
+	        //onChange:mobiscroll_change,	
+			//点击确定按钮，触发事件。
+            onSelect:mobiscroll_select,
+};
+$(".datesel").mobiscroll(opt); 
+function mobiscroll_select(valueText,inst){
+    //valueText是选中的值
+    //console.log("valueText : " + valueText);
+    //mobiscroll对象
+    //console.log("inst : " + inst);
+    var birthday=valueText;
+	var el,iteam, i;
+	el = document.getElementById('listBox');
+	//var uid = document.getElementById('uid');
+	var uid="<?=$uid?>";
+	$("#listBox").empty();
+    $.get("index.php?r=admin/signdatet/data",{date:valueText,uid:uid
+	},function(data){
+ 		//alert(data);
+		//alert(JSON.stringify(data));
+		var list=eval(data);
+		if(list.length){			
+			document.getElementById("week").innerHTML=list[0].week0;
+   			document.getElementById("signcount").innerHTML=list[0].signcount;	
+   			if(list[0].id){		   			    		       
+	   		    for (i=0; list.length; i++) {	    		       									
+	   			iteam = document.createElement('li');
+	   			//list[i].childname="ee";
+	   		    //iteam.className = 'listIteam'; 	   		
+		   		 if(list[i].istimeout=="0"){                                        
+	                 timeout="";                    	                 	                          
+	             }else{
+	            	 timeout=list[i].timeout;
+	             } iteam.innerHTML = "<a href='###' class='pic_text_iteam' style='min-height: 70px;'><p class='pic_text_name'><span class='fr viewnum'>签到时间："+list[i].timein+"</br>签退时间："+timeout+"</span><span style='display:inline-block;margin-left:10px;margin-top:10px;'>"+list[i].childname+"</span></p></a>";
+	   	    	el.appendChild(iteam, el.childNodes[0]);	 
+	   		    }
+   			}		  			    		   
+		}else{
+ 			//alert("fail");
+		}
+	},'json');
+}
+});
+</script>	
+</body>
+</html>

@@ -1,0 +1,142 @@
+<?php
+
+namespace app\modules\admin\controllers;
+
+use Yii;
+use app\modules\admin\models\AnnounceForm;
+use app\models\Enterpris;
+use app\modules\admin\models\IctWebService;
+use app\modules\admin\models\AuthToken;
+use app\models\Curl;
+
+class AnnounceController extends \yii\web\Controller
+{
+	public $enableCsrfValidation = false;//yii默认表单csrf验证，如果post不带改参数会报错！
+//    public $layout  = 'main';
+    public $layout  = 'announce';
+//    public $layout  = 'layout';
+
+    public function actionCreate()
+    {	 
+    
+        if(isset($_FILES["upload_file"])){                                        
+            if($_FILES["upload_file"]["name"]){
+                if(((int)$_FILES["upload_file"]["size"]/1024)>200*1024){
+                    echo "<script language='javascript'>";                                     
+                    echo 'upload_file_end(0,"上传失败","错误！文件不可大于200MB。");';
+                    echo "</script>";                                                          
+                    exit;
+                }
+                $path = "upload/".time();
+
+                $return = move_uploaded_file($_FILES["upload_file"]["tmp_name"],$path);
+                $fileclient =  new Curl();
+                $file = $fileclient->post("http://127.0.0.1/offline_media/offline_upload.php?group=0", array("upload"=>"@".$_FILES["upload_file"]["tmp_name"].time()));
+                $filePath = json_decode($file,true);
+                $fileinfo[0]['name'] = $_FILES["upload_file"]["name"];
+                $fileinfo[0]['path'] = $filePath["result"]["url"];
+                $fileinfo[0]['size'] = $_FILES["upload_file"]["size"];
+                echo "<script language='javascript'>";                                  
+              //  echo " alert('"."文件上传成功!"."');";            
+                echo 'parent.upload_file_end(1,"上传","",'.json_encode($fileinfo).');';
+                echo "</script>";                                                          
+            }
+            exit;
+        }  
+    	$model = new AnnounceForm();
+    	$model->receiver='公司全体员工';
+        return $this->render('create', [
+                'model' => $model,
+            ]);
+    }
+
+    public function actionSaveB()
+    {   
+        $announceForm =new AnnounceForm();
+        //print_r(Yii::$app->request->post('AnnounceForm'));
+        if(!$announceForm->save(Yii::$app->request->post('AnnounceForm'))){
+            print_r('error');
+            exit;
+        }
+        return $this->render('create', [
+                'model' => $announceForm,
+            ]);
+    }
+
+    public function actionIndex()
+    {    
+       // Yii::app()->user->setFlash('success','操作成功');
+       if(isset($_FILES["upload_file"])){                                        
+            if($_FILES["upload_file"]["name"]){
+                if(((int)$_FILES["upload_file"]["size"]/1024)>200*1024){
+                    echo "<script language='javascript'>";                                     
+                    echo 'upload_file_end(0,"上传失败","错误！文件不可大于200MB。");';
+                    echo "</script>";                                                          
+                    exit;
+                }
+                $path = "upload/".time();
+
+         //       $return = move_uploaded_file($_FILES["upload_file"]["tmp_name"],$path);
+                $fileclient =  new Curl();
+
+                $file = $fileclient->post("http://127.0.0.1/offline_media/offline_upload.php?group=0", array("upload"=>"@".$_FILES["upload_file"]["tmp_name"]));
+                $filePath = json_decode($file,true);
+                $fileinfo['name'] = $_FILES["upload_file"]["name"];
+                $fileinfo['path'] = $filePath["result"]["url"];
+                $fileinfo['size'] = $_FILES["upload_file"]["size"];
+                $taskID = Yii::$app->request->post('taskID');
+                echo "<script language='javascript'>";                                  
+          //      echo " alert('"."$fileclient"."');";            
+                echo 'parent.upload_file_end(1,"上传","",'.json_encode($fileinfo).",$taskID".');';
+                echo "</script>";                                                          
+            }
+            exit;
+        }  
+        //$auth = new AuthToken();
+       // $auth->authTokenSession();
+        $model = new AnnounceForm();
+        $groupId = Yii::$app->request->get('gid');
+        $sendSucceed = 0;
+        if(Yii::$app->request->get('send') == "succeed"){
+            $sendSucceed = 1;
+            //echo "<script language='javascript'>";                                  
+            //echo "alert('"."发送成功!"."');";            
+            //echo 'document.getElementById("sendSucceed").click();';            
+            //echo "</script>";                                                          
+        }
+      //  $offline_ip = $ictWS->getAdminToken(); 
+        
+       // print_r($offline_ip);
+        return $this->render('index', [
+                'model' => $model,'sendSucceed'=>$sendSucceed,"main"=>Yii::$app->request->get('main')
+            ]);
+    }
+    public function actionSave()
+    {   
+    	$title=\yii::$app->request->post('title');
+    	$content=\yii::$app->request->post('content');
+    	$contentImg0=\yii::$app->request->post('contentImg0');    
+    	// equivalent to: $name = isset($_POST['name']) ? $_POST['name'] : null;
+    	//$name = $request->post('name', '');
+    	// equivalent to: $name = isset($_POST['name']) ? $_POST['name'] : '';
+    	//添加了默认值
+    	$img= json_decode($contentImg0,true);
+    	$imgname=$img["name"];
+    	$imgsize=$img["size"];
+    	$path=$img["path"];
+       // file_put_contents("D://wt.txt", json_decode($contentImg0) ."\n", FILE_APPEND);
+        //file_put_contents("D://wt.txt", $c ."\n", FILE_APPEND);
+        return $this->render('finish',[
+        		'content' => $content,
+        		'title' => $title,
+        		'contentImg0' => $contentImg0,  
+        		'c' => $img,
+        ]);
+        return $this->redirect(['announce/index',"send"=>"succeed","gid"=>Yii::$app->request->post('AnnounceForm')['group']]);
+        $model = new AnnounceForm();
+        $model->receiver='公司全体员工';
+        return $this->render('index', [
+                'model' => $model,
+            ]);
+    }
+}

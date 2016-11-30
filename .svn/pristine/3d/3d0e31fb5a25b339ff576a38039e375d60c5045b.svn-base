@@ -1,0 +1,276 @@
+<?php
+/* @var $this yii\web\View */
+use yii\helpers\Html;
+use yii\bootstrap\Nav;
+use yii\bootstrap\NavBar;
+use yii\widgets\Breadcrumbs;
+use app\assets\AppAsset;
+use yii\web\View;
+
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>通知列表</title>
+<?=Html::cssFile('@web/css/announce.css')?>
+<?=Html::cssFile('@web/css/bootstrap.css')?>
+<?=Html::jsFile('@web/js/iscroll.js')?>
+<?=Html::jsFile('@web/js/jquery.js')?>
+<?=Html::jsFile('@web/js/bootstrap.js')?>
+<script type="text/javascript">
+
+var myScroll,
+	pullDownEl, pullDownOffset,
+	pullUpEl, pullUpOffset,
+	generatedCount = 0;
+
+//下拉加载数据  模拟加载了几个死数据
+function pullDownAction () {
+	location.reload(); 
+/* 	setTimeout(function () {	
+		
+		myScroll.refresh();		// 当内容完事儿，记得刷新 (ie: on ajax completion)
+	}, 1000); */	 
+}
+function getLocalTime(nS) {   
+// 	alert(nS);
+	
+	var date = new Date(nS*1000);
+	Y = date.getFullYear() + '-';
+	M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
+	D = (date.getDate()+1 < 10 ? '0'+(date.getDate()+1) : date.getDate()+1)  + ' ';
+	h =  (date.getHours()+1 < 10 ? '0'+(date.getHours()+1) : date.getHours()+1) + ':';
+	m = (date.getMinutes()+1 < 10 ? '0'+(date.getMinutes()+1) : date.getMinutes()+1)  + ':';
+	s =  (date.getSeconds()+1 < 10 ? '0'+(date.getSeconds()+1) : date.getSeconds()+1); 
+// 	alert(Y+M+D+h+m+s);
+	return Y+M+D+h+m+s;  
+     
+ }     
+
+function pullUpAction () {
+
+/* 	var el, iteam, i;
+	el = document.getElementById('listBox'); */
+	
+ 	setTimeout(function () {	
+		var el, iteam, i,pageSize;
+		el = document.getElementById('listBox');
+
+		$.get("index.php?r=admin/signlist/getdata",{cid:<?=$cid?>
+		},function(data){
+// 			alert(data);
+// 	 		alert(JSON.stringify(data));	
+			var list=eval(data);
+			if(list.length){
+				
+				for (i=0; i<list.length; i++) {
+// 					alert(list[i].title); 
+					
+					iteam = document.createElement('div');
+					iteam.className = 'listIteam';
+				
+// 					var time=getLocalTime(list[i].time); 
+					relation=list[i].relation;	 
+
+                    	checked = "<a href='index.php?r=admin/signlist/del&id="+list[i].id+"' class='info_del' onClick='return confirm('确定删除?');'>删除</a>";
+                 
+                       //if(relation=="unread"){
+                        //iteam.innerHTML = "<a href='index.php?r=admin/checkcontent/index&f=1&id="+list[i].announce_id+"'class='listInner'><p class='listInfo'><span class='box'><i class='ficon ic_new'>NEW</i>"+comment+list[i].title+"</span> <span class='boxright'>提交人:"+list[i].sender_name+"</span></p><span class='tip ficon ic_arrow_right'></span><p class='listInfo'><span class='date' style='width:30%'>"+list[i].noticetime+"</span>"+checked+"</p></a>";	
+						//}else{
+						iteam.innerHTML = "<a href='index.php?r=admin/signinfo/index&f=1&id="+list[i].id+"'class='listInner'><p class='listInfo'><span class='box'>"+list[i].title+"</span></p><span class='tip ficon ic_arrow_right'></span><p class='listInfo'><span class='date' style='width:30%'>"+list[i].time+"</span></p>"+checked+"</a>";   
+						//}
+					
+					el.appendChild(iteam, el.childNodes[0]);
+				}
+				myScroll.refresh();	 
+// 				start=start+Number(3);
+// 				alert('success');
+			}else{                                 //没有更多数据
+				/* pullUpEl = document.getElementById('pullUp');
+				pullUpEl.querySelector('.pullUpLabel').innerHTML = '已没有更多数据...'; */
+// 				alert("fail");
+				document.getElementById("sendSucceed").click();
+// 				alert("已经没有更多数据");
+			}
+		},'json');			
+		myScroll.refresh();		// 当内容完事儿，记得刷新(ie: on ajax completion)
+	}, 1000);	
+}
+
+function loaded() {
+	pullDownEl = document.getElementById('pullDown');
+	pullDownOffset = pullDownEl.offsetHeight;
+	pullUpEl = document.getElementById('pullUp');	
+	pullUpOffset = pullUpEl.offsetHeight;
+	
+	myScroll = new iScroll('wrap', {
+			useTransition: true,
+		topOffset: pullDownOffset,
+		onRefresh: function () {
+			if (pullDownEl.className.match('loading')) {
+				pullDownEl.className = '';
+				pullDownEl.querySelector('.pullDownLabel').innerHTML = '下拉刷新页面...';
+			} else if (pullUpEl.className.match('loading')) {
+				pullUpEl.className = '';
+				pullUpEl.querySelector('.pullUpLabel').innerHTML = '上拉加载更多...';
+			}
+		},
+		onScrollMove: function () {
+			if (this.y > 5 && !pullDownEl.className.match('flip')) {
+				pullDownEl.className = 'flip';
+				pullDownEl.querySelector('.pullDownLabel').innerHTML = '释放即可加载...';
+				this.minScrollY = 0;
+			} else if (this.y < 5 && pullDownEl.className.match('flip')) {
+				pullDownEl.className = '';
+				pullDownEl.querySelector('.pullDownLabel').innerHTML = '下拉刷新页面...';
+				this.minScrollY = -pullDownOffset;
+			} else if (this.y < (this.maxScrollY - 5) && !pullUpEl.className.match('flip')) {
+				pullUpEl.className = 'flip';
+				pullUpEl.querySelector('.pullUpLabel').innerHTML = '释放即可加载...';
+				this.maxScrollY = this.maxScrollY;
+			} else if (this.y > (this.maxScrollY + 5) && pullUpEl.className.match('flip')) {
+				pullUpEl.className = '';
+				pullUpEl.querySelector('.pullUpLabel').innerHTML = '上拉即可加载...';
+				this.maxScrollY = pullUpOffset;
+			}
+		},
+		onScrollEnd: function () {
+			if (pullDownEl.className.match('flip')) {
+				pullDownEl.className = 'loading';
+				pullDownEl.querySelector('.pullDownLabel').innerHTML = '加载中...';				
+				pullDownAction();	// 执行自定义函数（Ajax调用等）
+			} else if (pullUpEl.className.match('flip')) {
+				pullUpEl.className = 'loading';
+				pullUpEl.querySelector('.pullUpLabel').innerHTML = '加载中...';				
+				pullUpAction();	// 执行自定义函数（Ajax调用等）
+			}
+		}
+	});
+	
+setTimeout(function () { document.getElementById('wrap').style.left = '0'; }, 800);
+}
+
+document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
+
+document.addEventListener('DOMContentLoaded', function () { setTimeout(loaded, 200); }, false);
+
+function allowFormsInIscroll(){
+ [].slice.call(document.querySelectorAll('input, select, button')).forEach(function(el){
+ el.addEventListener(('ontouchstart' in window)?'touchstart':'mousedown', function(e){
+ e.stopPropagation();
+ 
+ })
+ })
+ }
+ document.addEventListener('DOMContentLoaded', allowFormsInIscroll, false);
+</script>
+<style>
+.listInfo .box{display: inline-block;vertical-align: bottom; font-size: 1.0em; line-height:2.2em ; max-height:2.2em; overflow: hidden; color:#444; width:50%;}
+.listInfo .boxright{position:absolute;right:3em;vertical-align: bottom; font-size: 1.0em; line-height:2.2em ; max-height:2.2em; overflow: hidden; color:#444; }
+.listIteam .info_del {	
+width:50px;
+bottom: 3px;
+padding: 10px;
+font-size: .875em;
+color: #3399FF;
+}
+</style>
+</head>
+<body>
+	
+<div id="wrap" class="wrap">
+<div id="scroller">
+	<div id="pullDown">
+		<span class="pullDownIcon"></span><span class="pullDownLabel">下拉即可加载...</span>
+	</div>
+	<div class="moBox"  id="searchBox">
+				
+	</div>
+	<div class="moBox">
+		<div id="listBox" class="listBox">
+			<div class="listIteam" id="empty">
+				<div class="empty">暂无通知</div>
+			</div>
+			<?php foreach ($NoticeList as $key=>$value): ?>
+			<div class="listIteam"  id="contentlist_<?=$value['id']?>">
+				<a href="index.php?r=admin/signinfo/index&id=<?=$value['id']?>" class="listInner">
+					<p class="listInfo">						
+                    <span class="box"><?=$value['title']?></span>	                         												
+					</p>
+					<span class="tip ficon ic_arrow_right"></span>				
+               	<p class="listInfo">
+               	<span class="date" style="width:30%"><?=$value['time']?></span>
+											
+                    <?//php if($value['checked']=="1"):?> 
+                    <!--  <span class="date0" style="color:red;">删除</span>-->
+                   <?//endif?>                
+			   </p>	
+			   <a href="index.php?r=admin/signlist/del&id=<?=$value['id']?>" class="info_del" onClick="return confirm('确定删除?');">删除</a>                   							            															  
+			 </a>				
+			</div>
+			<? endforeach?>
+		</div>
+	</div>
+	<div id="pullUp">
+		<span class="pullUpIcon"></span><span class="pullUpLabel">上拉加载更多...</span>
+	</div>
+	<input type="hidden" id="count" value=<?=$count?>/>
+</div>
+</div>
+<a id="sendSucceed" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#sendModal" style="display:none">
+</a>
+
+<div class="modal fade" id="sendModal" tabindex="-1" role="dialog" aria-labelledby="uploadModalLabel" aria-hidden="true">
+	<div class="modal-dialog" style='z-index:1060'>
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title" id="uploadModalLabel">
+				</h4>
+			</div>
+			<div class="modal-body">
+				<div style="text-align: center;">
+                   已经没有更多数据！
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal" onclick="">确定
+				</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
+</body>
+</html>
+<script type="text/javascript">
+
+$(function(){
+
+    var count=$("#count").val();
+    if(count){
+        $("#empty").hide();
+    }else{
+    	$("#empty").show();
+    }
+	var count=$("#count").val();
+	if(count*1>10){
+		$("#pullUp").show();
+	}else{
+		$("#pullUp").hide();
+	}
+	
+});
+	$("div[id^='contentlist']").each(function(){
+	    $(this).click(function(){    
+	      	var imgid = $(this).attr("id");
+	        var  imgidlist=imgid.split("_");
+	        $(this).find("i[id^=icon_new]").hide();
+	    })
+	 });
+
+
+
+
+</script>

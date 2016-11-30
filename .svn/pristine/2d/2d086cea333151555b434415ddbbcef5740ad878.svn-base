@@ -1,0 +1,83 @@
+﻿<?php
+/* @var $this yii\web\View */
+use yii\helpers\Html;
+use yii\web\View;
+?>
+<!DOCTYPE HTML>
+<!-- saved from url=(0065)http://sycyh.yqting.com/template/admin.php -->
+<!DOCTYPE html PUBLIC "" ""><HTML><HEAD>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta http-equiv="X-UA-Compatible" content="IE=9" />
+<META charset="utf-8"> 
+<META name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
+<META name="format-detection" content="telephone=no"> 
+<TITLE>完成</TITLE> 
+<LINK href="css/tempshareli.css" rel="stylesheet" type="text/css"> 
+<link href="//cdn.bootcss.com/font-awesome/3.0.2/css/font-awesome.css" rel="stylesheet">
+<?=Html::jsFile('@web/js0/jquery-1.11.2.js')?>
+<?=Html::jsFile('@web/js0/htmlset.js')?>
+<?//=Html::jsFile('@web/js/jquery.js')?>
+<META name="GENERATOR" content="MSHTML 11.00.9600.18098"></HEAD> 
+<BODY>
+<style>
+.btnBox_green a {
+background: rgb(66, 217, 120);
+border-radius: 6px;
+height: 2.50em;
+color: rgb(255, 255, 255);
+line-height: 2.50;
+display: block;
+-webkit-border-radius: 6px;
+-moz-border-radius: 6px;
+-ms-border-radius: 6px;
+-o-border-radius: 6px;
+width: 70%;
+font-size: 1.8em;
+}
+</style>
+<DIV class="wrap_gray">
+ <div class="moGrid">
+   <P style="padding-top:20%;padding-bottom:10%"><IMG src="img/success.png"></p>
+   <p style="color:#333333;font-size:2em; padding-bottom:10%"><?=$content?></p>
+   <div class="btnBox_green" style="width:100%;height:30%">
+    <a id="J-check" style="display: inline-block;" href="#" onclick="close9();return false">完成</a>
+   </div>
+   <input  type="button" onclick="getlocation()" value="地址">
+  </div>
+
+</div>
+<script type="text/javascript">
+API.init();
+function close9(){
+	//alert(333);	
+  var op = {
+	        "name": "CloseWebView",	        	     
+	    };
+   // alert(JSON.stringify(op));
+    API.send_tonative(op);    
+}
+function getlocation(){
+	
+	var op_photo = {
+		"name": "GetLocationInfo", 
+        "callback": "OnGetLocationInfoCb", 
+	};
+	 alert(JSON.stringify(op_photo));
+	API.send_tonative(op_photo);
+}	
+function OnGetLocationInfoCb(datas){
+	//alert(666);
+	var status = datas.result.status,
+		params = datas.result.params;
+    if(status==0){
+        var longitude=params.longitude;
+        var latitude=params.latitude;
+        }else{
+            alert("fail");
+        }
+	//这里做一个演示，把数据转成字符串在页面弹出
+	alert(JSON.stringify(params));
+
+}
+</script>
+</body></html>

@@ -1,0 +1,137 @@
+<?php
+namespace app\modules\admin\controllers;
+use yii;
+use yii\web\Controller;
+use Rest;
+use Client;
+use app\modules\admin\models\AuthToken;
+use app\modules\admin\models\IctWebService;
+class DevelopplanController extends Controller
+{
+	public $layout  = false;
+    public function actionIndex()
+    {
+    	$uid=\yii::$app->request->get('uid');//uid
+    	\Yii::$app->session['user.uid']=$uid;
+    	$s=\yii::$app->request->get('s');
+    	//$CodeNum=empty(\yii::$app->request->get('CodeNum'))?'01':\yii::$app->request->get('CodeNum');
+    	$CodeNum=\yii::$app->request->get('CodeNum');
+    	if($CodeNum){}else{$CodeNum="01";}
+    	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+    	header("Content-type:text/html;charset=utf-8");
+    	$sql="SELECT eid FROM lcmemdata WHERE muid='".$uid."'";
+    	$command = $connection->createCommand($sql);
+    	$school = $command->queryAll();
+    	if(!empty($school))
+    	   $schoolid=$school[0]['eid'];
+    	else 
+    	{
+    	    echo "用户未绑定！！！";
+    	    exit();
+    	}
+    	
+    	
+    	$typecode="developplan";
+    	
+    	/**************end********************/
+    	if($s){//echo "政策法规";
+    	}else{
+    		//echo "本园制度";
+    	}
+    	//echo $uid;
+    	$gradeid=\yii::$app->request->get('SubType');
+    	//     	获取信息列表------------start------------------
+    	$sql="SELECT classid,mtype FROM lcmemdata where muid='".$uid."'";
+    	$command = $connection->createCommand($sql);
+    	$classid0 = $command->queryAll();
+    	$mtype=$classid0[0]['mtype'];
+    	//echo $mtype;
+    	if($mtype==4){
+    		$sql="SELECT oid,name FROM lcorganidata where eid='". $schoolid."' AND orgatype=2";
+    		$command = $connection->createCommand($sql);
+    		$grade = $command->queryAll();
+    		$gradeid=empty($gradeid)?$grade[0]['oid']:$gradeid;
+    	}else{
+    		$grade="";
+    		if(isset($classid0[0]['classid'])){
+    			$classid=$classid0[0]['classid'];
+    			$sql="SELECT gradeid FROM lcorganidata where oid='". $classid."' AND orgatype=1";
+    			$command = $connection->createCommand($sql);
+    			$gradeid0 = $command->queryAll();
+    			if(isset($gradeid0[0]['gradeid'])){
+    				$gradeid=$gradeid0[0]['gradeid'];
+    			}else{$gradeid="";}
+    		}else{
+    			$gradeid="";
+    		}
+    	}
+    	$sql="SELECT id FROM lcorganidata where oid='".$gradeid."' AND orgatype=2";
+    	$command = $connection->createCommand($sql);
+    	$gradeid0 = $command->queryAll();
+    	$gradeid0=$gradeid0[0]['id'];
+//     	获取信息列表------------start------------------
+    	$sql="SELECT * FROM lcdevelopplan where (grade='".$gradeid0."' or grade='') and (Eid='".$schoolid."' or Eid='') ORDER BY UpdateTime DESC LIMIT 0,5";
+    	$command = $connection->createCommand($sql);
+    	$list = $command->queryAll();
+    	$count=count($list);
+//     	获取信息列表------------end------------------
+    	  	
+    	\Yii::$app->session['public_count']=$count;   	
+        return $this->render('index',[
+        		'mtype'=>$mtype,
+        		'tabs'=>$grade,
+        		'list'=>$list,  
+        		's'=>$s,
+        		'count'=>$count,
+                'uid'=>$uid,
+        		'SubType'=>$gradeid,
+        ]); 
+    }
+    public function actionGetdata(){
+    	
+    	//$uid =\Yii::$app->session['user.uid'];
+    	//\Yii::$app->session['public_count']="5";
+    	$searchcontent=\yii::$app->request->get('searchcontent');
+    	$uid=\Yii::$app->session['user.uid'];
+    	//$CodeNum=empty(\yii::$app->request->get('CodeNum'))?'01':\yii::$app->request->get('CodeNum');
+    	$CodeNum=\yii::$app->request->get('CodeNum');
+    	if($CodeNum){}else{$CodeNum="01";}
+    	$typecode="developplan";
+    	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+    	$sql="SELECT eid FROM lcmemdata WHERE muid='".$uid."'";
+    	$command = $connection->createCommand($sql);
+    	$school = $command->queryAll();
+    	$schoolid=$school[0]['eid'];
+    	if(!empty($school))
+    	    $schoolid=$school[0]['eid'];
+    	else
+    	{
+    	    echo "用户未绑定！！！";
+    	    exit();
+    	}
+    	$public_count=\Yii::$app->session['public_count'];
+    	
+    	if(strlen($searchcontent)>0){
+    	$search_count=\Yii::$app->session['search_count'];
+    	$sql="SELECT * FROM lcdevelopplan where   Eid='$schoolid'   Title like '%".$searchcontent."%' ORDER BY UpdateTime DESC LIMIT ".$search_count.",5";    	 
+    	$search_count=$search_count+5;
+    	    \Yii::$app->session['search_count']=$search_count;
+    	}else{
+    		$public_count=\Yii::$app->session['public_count'];
+    	    $sql="SELECT * FROM lcdevelopplan where   Eid='$schoolid'  ORDER BY UpdateTime DESC LIMIT ".$public_count.",5"; 
+    	    $public_count=$public_count+5;
+    	    \Yii::$app->session['public_count']=$public_count;
+    	} 
+
+    	$command = $connection->createCommand($sql);
+    	$list = $command->queryAll();
+    	
+    	
+    	\Yii::$app->session['searchcontent']=$searchcontent;    	
+    	$count=count($list);
+    	echo json_encode($list);
+    	exit();    
+    }   
+}

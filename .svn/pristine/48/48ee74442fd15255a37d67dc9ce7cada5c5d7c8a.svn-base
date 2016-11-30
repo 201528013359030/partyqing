@@ -1,0 +1,277 @@
+<?php
+use yii\helpers\Html;
+//use app\assets\AppAsset;
+//use yii\widgets\ActiveForm;
+//use yii\grid\GridView;
+//use yii\widgets\LinkPager;
+?>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta content="email=no" name="format-detection" /> 
+<meta name="format-detection" content="telphone=no" /> 
+<?=Html::jsFile('@web/js/jquery.min.js')?>
+<?=Html::jsFile('@web/js/iscroll.js')?>
+<!--bootmomo 为bootstrap.css去掉基础设置版本，所以不需要引用bootstrap.css了-->
+<!--<?=Html::cssFile('@web/css/bootmomo.css')?>-->
+<?=Html::cssFile('@web/css/cattalk.css')?>
+<?=Html::cssFile('@web/css/mydoc.css')?>
+<title>课程列表</title>
+<script type="text/javascript">
+
+var myScroll,
+	pullDownEl, pullDownOffset,
+	pullUpEl, pullUpOffset,
+	generatedCount = 0;
+
+/**
+ * 下拉刷新 （自定义实现此方法）
+ * myScroll.refresh();		// 数据加载完成后，调用界面更新方法
+ */
+function pullDownAction () {
+	location.reload(); 	// <-- Simulate network congestion, remove setTimeout from production!
+}
+
+/**
+ * 滚动翻页 （自定义实现此方法）
+ * myScroll.refresh();		// 数据加载完成后，调用界面更新方法
+ */
+var num0=1;	
+function pullUpAction () {
+	
+	setTimeout(function () {	// <-- Simulate network congestion, remove setTimeout from production!
+		var el, li, i;
+		el = document.getElementById('listScroll');
+	
+		$.get("index.php?r=admin/courselist/getdata",{num:num0++
+		},function(data){
+			//num0=num0+1;
+			//alert(JSON.stringify(data));
+	    var list=eval(data);//将字符串转换为代码执行，并返回一个或多个值
+	    //alert(JSON.stringify(list[1].id));
+			//if(list.length){
+				
+				//for (i=0; i<list.length; i++) {
+		for (i=0; i<6; i++) {
+					
+			li = document.createElement('li');
+			//li.innerHTML = 
+			//	"<a href='index.php?r=admin/coursedetail/index&id="+list[i].id+"'class='setIteam'><div class='setpic'><img src="+list[i].picurl+"></div><div class='setInfo'><h3><span>何伟</span><span>"+list[i].createtime+"</span></h3><p class='setop'><span><i class='ficon ic_thumup'></i>"+list[i].zan+"</span><span><i class='ficon ic_eye'></i>"+list[i].read+"</span></p></div></a>";  //这里新增
+			li.innerHTML =
+				"<a href='index.php?r=admin/coursedetail/index&id="+list[i].id+"'class='setIteam'><div class='setInfo'><i class='ficonn ic_new'>new</i><span style='font-size:12pt'>"+list[i].CourseName+"</span><div><span>"+list[i].CreateTime+"</span><span class='fr num_iteam'>已报名</span></div></div></a>";
+			el.appendChild(li, el.childNodes[0]);
+		
+				myScroll.refresh();	 
+// 				start=start+Number(3);
+// 				alert('success');
+			}
+		},'json');	
+		myScroll.refresh();		// 数据加载完成后，调用界面更新方法 Remember to refresh when contents are loaded (ie: on ajax completion)
+	}, 1000);	// <-- Simulate network congestion, remove setTimeout from production!
+}
+
+/**
+ * 初始化iScroll控件
+ */
+function loaded() {
+	pullDownEl = document.getElementById('pullDown');
+	pullDownOffset = pullDownEl.offsetHeight;
+	pullUpEl = document.getElementById('pullUp');	
+	pullUpOffset = pullUpEl.offsetHeight;
+	
+	myScroll = new iScroll('wrap', {
+		scrollbarClass: 'myScrollbar', /* 重要样式 */
+		useTransition: false, /* 此属性不知用意，本人从true改为false */
+		topOffset: pullDownOffset,
+		onRefresh: function () {
+			if (pullDownEl.className.match('loading')) {
+				pullDownEl.className = '';
+				pullDownEl.querySelector('.pullDownLabel').innerHTML = '下拉刷新...';
+			} else if (pullUpEl.className.match('loading')) {
+				pullUpEl.className = '';
+				pullUpEl.querySelector('.pullUpLabel').innerHTML = '上拉加载更多...';
+			}
+		},
+		onScrollMove: function () {
+			if (this.y > 5 && !pullDownEl.className.match('flip')) {
+				pullDownEl.className = 'flip';
+				pullDownEl.querySelector('.pullDownLabel').innerHTML = '松手开始更新...';
+				this.minScrollY = 0;
+			} else if (this.y < 5 && pullDownEl.className.match('flip')) {
+				pullDownEl.className = '';
+				pullDownEl.querySelector('.pullDownLabel').innerHTML = '下拉刷新...';
+				this.minScrollY = -pullDownOffset;
+			} else if (this.y < (this.maxScrollY - 5) && !pullUpEl.className.match('flip')) {
+				pullUpEl.className = 'flip';
+				pullUpEl.querySelector('.pullUpLabel').innerHTML = '松手开始更新...';
+				this.maxScrollY = this.maxScrollY;
+			} else if (this.y > (this.maxScrollY + 5) && pullUpEl.className.match('flip')) {
+				pullUpEl.className = '';
+				pullUpEl.querySelector('.pullUpLabel').innerHTML = '上拉加载更多...';
+				this.maxScrollY = pullUpOffset;
+			}
+		},
+		onScrollEnd: function () {
+			if (pullDownEl.className.match('flip')) {
+				pullDownEl.className = 'loading';
+				pullDownEl.querySelector('.pullDownLabel').innerHTML = '加载中...';				
+				pullDownAction();	// Execute custom function (ajax call?)
+			} else if (pullUpEl.className.match('flip')) {
+				pullUpEl.className = 'loading';
+				pullUpEl.querySelector('.pullUpLabel').innerHTML = '加载中...';				
+				pullUpAction();	// Execute custom function (ajax call?)
+			}
+		}
+	});
+	
+	setTimeout(function () { document.getElementById('wrap').style.left = '0'; }, 800);
+}
+
+//初始化绑定iScroll控件 
+document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
+document.addEventListener('DOMContentLoaded', loaded, false); 
+
+</script>
+
+</head>
+<body>
+<style>
+ .ficonn{ vertical-align:top;padding:0 4px; 
+height:1.125em; line-height: 1.125; font-size:.75em;
+background:#D62F2F; color:#fff; text-align: center; margin-top:2px; margin-right:2px;
+-webkit-border-radius: 5px;
+border-radius: 5px;
+}
+.tip {
+position: absolute;
+width: 30px;
+height: 40px;
+top: 50%;
+right: 0;
+color: #dedede;
+/* font-size: 40px; */
+overflow: hidden;
+margin-top: -20px;
+font-size: 20px;
+line-height: 40px;
+}
+.ic_arrow_right:before {
+content: '\f105';
+}
+</style>
+<div id="wrap" class="wrap">
+<div id="scroller">
+
+    <div id="pullDown">
+		<span class="pullDownIcon"></span><span class="pullDownLabel">下拉即可加载...</span>
+	</div>
+
+	<div class="moBox">
+			<div class="searchBox">
+				<div class="searchInner">
+				<input id="searchtitle" class="inpSearch" name="searchtitle" value="" type="text" placeholder="输入搜索关键字">			
+			    <a href="javascript:void(0);" class="ficon ic_search" id="search"></a>
+				</div>
+			</div>	
+	</div>
+			
+	<div class="moBox">
+		<ul class="listset"  id="listScroll">	
+		    <div class="listIteam" id="empty">
+				<div class="empty">暂无公告</div>
+			</div>			
+			 <?php foreach ($list as $key=>$value): ?>			 
+			<li>
+				<a href="index.php?r=admin/coursedetail/index&id=<?=$value['id']?>" class="setIteam">						
+					<div class="setInfo">					    
+						<i class="ficonn ic_new">new</i><span style="font-size:12pt"><?=$value['CourseName']?></span>
+						<div style="padding-top:10px"><span style="color:grey"><?=$value['CreateTime']?></span>
+						<span class="fr num_iteam" style="margin-right:30px;color:#0096d3">已报名</span>
+						<span class="tip ficon ic_arrow_right"></span>
+						</div>
+					</div>					
+				</a>	         			
+			</li>			
+             <? endforeach?>     
+		</ul>		
+	</div>
+
+	
+	<div id="pullUp" style="#display: none;">
+		<span class="pullUpIcon"></span><span class="pullUpLabel">上拉加载更多...</span>
+	</div>
+	<input type="hidden" id="count" value=<?=$count?>/>
+</div>	
+</div>
+<script>
+document.getElementById('searchtitle').addEventListener('input', function(e){
+//  var value = e.target.value;
+	$.get("index.php?r=admin/courselist/search",{searchtitle:$("#searchtitle").val()
+	},function(data){
+//	 		alert(JSON.stringify(data));
+		var list=eval(data);
+		var relation;
+		$("#listBox").empty();	//$("#listset").empty();
+		if(list.length){           //如果获得了数据			
+			for (i=0; i<list.length; i++) {
+//					alert(i);
+				iteam = document.createElement('div');
+				iteam.className = 'listIteam';		
+				relation=list[i].relation;	
+				var time=getLocalTime(list[i].time); 
+//					alert(relation);	
+				if(relation=="unread"){
+					iteam.innerHTML = "<a href='index.php?r=admin/noticecontent/index&f=1&id="+list[i].announce_id+"' class='listInner'><p class='listInfo'><span class='title'><i class='ficon ic_new'>NEW</i>"+list[i].title+"</span></p><p class='listInfo'><span class='date'>"+time+"</span></p><span class='tip ficon ic_arrow_right'></span></a>";
+
+					}else{
+					iteam.innerHTML = "<a href='index.php?r=admin/noticecontent/index&f=1&id="+list[i].announce_id+"'  class='listInner'><p class='listInfo'><span class='title'>"+list[i].title+"</span></p><p class='listInfo'><span class='date'>"+time+"</span></p><span class='tip ficon ic_arrow_right'></span></a>";
+					}
+			
+				$("#listBox").append(iteam);					
+				}
+		}else{              //如果没有数据，提示空
+			iteam = document.createElement('div');
+			iteam.className = 'listIteam';			
+			iteam.innerHTML = '<div class="empty">暂无公告</div>';				
+			$("#listBox").append(iteam);
+		}
+	},'json');
+});
+$(function(){
+	$("#searchtitle").val("");
+    var count=$("#count").val();
+    if(count){
+        $("#empty").hide();
+    }else{
+    	$("#empty").show();
+    }
+	var count=$("#count").val();
+	if(count*1>10){
+		$("#pullUp").show();
+	}else{
+		$("#pullUp").hide();
+	}
+	
+});
+$("#searchtitle").keyup(function(){
+	
+});
+$("div[id^='contentlist']").each(function(){
+    $(this).click(function(){    
+      	var imgid = $(this).attr("id");
+        var  imgidlist=imgid.split("_");
+//	        var icon="icon_new_"+imgidlist[1];
+//	        alert("#icon_new_"+imgidlist[1]);
+//	        $("#icon_new_"+imgidlist[1]).attr("display",true);
+        $(this).find("i[id^=icon_new]").hide();
+//	        $("#icon_new_"+imgidlist[1]).hide();
+//	       alert(icon); 
+    })
+ });
+</script>
+</body>
+</html>

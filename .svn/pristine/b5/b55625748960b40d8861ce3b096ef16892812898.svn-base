@@ -1,0 +1,132 @@
+<?php
+namespace app\modules\admin\controllers;
+use yii;
+use yii\web\Controller;
+use Rest;
+use Client;
+use app\modules\admin\models\AuthToken;
+use app\modules\admin\models\IctWebService;
+
+class DayrecorddetailController extends Controller
+{
+	public $layout  = false;
+	public $enableCsrfValidation = false;//因为YII2的防止csrf攻击，你则不能多次提交相同的表单。如果你希望当前可以多次重复提交，可以在当前提交的表单controller中添加	
+    public function actionIndex()
+    {
+        //$uid =\Yii::$app->session['user.uid'];
+    	//require_once(dirname(__FILE__)."/config.php");
+    	//$token=\yii::$app->request->get('auth_token');
+    	//print_r($token);
+    	//\Yii::$app->session['token']=$token;
+    	//header("Content-type:text/html;charset=utf-8");
+    	$uid=\yii::$app->request->get('uid');//教师uid
+    	//\Yii::$app->session['user.uid']=$uid;
+    	\Yii::$app->session['user.uid']=$uid;
+    	//$auth = new AuthToken();
+    	//$auth->authTokenSession();
+   
+   	    $data=array();
+   	    $data[0]['no']="0";
+   	    $data[0]['default']="正常";
+   	    $data[0]['name']="晨间入园";
+   	    $data[0]['state']=array("持续哭闹","间歇性哭闹","正常","高兴");
+   	    $data[1]['no']="1";
+   	    $data[1]['default']="正常";
+   	    $data[1]['name']="早餐";
+   	    $data[1]['state']=array("量多","正常","量少","自己进餐","教师辅助进餐");
+   	    $data[2]['no']="2";
+   	    $data[2]['default']="正常";
+   	    $data[2]['name']="间点";
+   	    $data[2]['state']=array("量多","正常","量少");
+   	    $data[3]['no']="3";
+   	    $data[3]['default']="正常";
+   	    $data[3]['name']="午餐";
+   	    $data[3]['state']=array("量多","正常","量少","自己进餐","教师辅助进餐");
+   	    $data[4]['no']="4";
+   	    $data[4]['default']="请选择";
+   	    $data[4]['name']="午睡";
+   	    $data[4]['state']=array("时间充足","深沉","睡眠姿态良好","时间短","入睡困难","睡不实");
+   	    $data[5]['no']="5";
+   	    $data[5]['default']="正常";
+   	    $data[5]['name']="水果";
+   	    $data[5]['state']=array("量多","正常","量少");
+   	    $data[6]['no']="6";
+   	    $data[6]['default']="正常";
+   	    $data[6]['name']="晚餐";
+   	    $data[6]['state']=array("量多","正常","量少");
+   	    $data[7]['no']="7";
+   	    $data[7]['default']="请选择";
+   	    $data[7]['name']="喝水";
+   	    $data[7]['state']=array("主动喝水","提醒喝水");
+   	    $data[8]['no']="8";
+   	    $data[8]['default']="颜色正常";
+   	    $data[8]['name']="小便";
+   	    $data[8]['state']=array("颜色正常","偏黄","尿裤子","清洗裤子");
+   	    $data[9]['no']="9";
+   	    $data[9]['default']="状态正常";
+   	    $data[9]['name']="大便";
+   	    $data[9]['state']=array("状态正常","状态干燥","状态稀","便裤子");
+   	    $data[10]['no']="10";
+   	    $data[10]['default']="请选择";
+   	    $data[10]['name']="当天情绪";
+   	    $data[10]['state']=array("愉快","稳定","兴奋","烦躁","紧张、焦虑","长时间哭闹");
+   	    $data[11]['no']="11";
+   	    $data[11]['default']="请选择";
+   	    $data[11]['name']="活动情况";
+   	    $data[11]['state']=array("主动参与","教师引导参与","胆小","需要鼓励","注意力集中","四周张望","乐于表现","沉默不语","接受新内容");
+   	    $data[12]['no']="12";
+   	    $data[12]['default']="请选择";
+   	    $data[12]['name']="语言表达";
+   	    $data[12]['state']=array("不愿表达","只听不说","主动表达意愿","用单词句回答","用短语回答","表达清晰连贯");
+   	    $data[13]['no']="13";
+   	    $data[13]['default']="请选择";
+   	    $data[13]['name']="同伴相处";
+   	    $data[13]['state']=array("活泼开朗","内向腼腆","懂得分享","乐于交往","合作游戏","单独游戏","帮助他人","对他人表示出关心","有攻击性行为","教师劝导后攻击性行为减少或无");
+   	    	
+   	    $connection = Yii::$app->db;
+   	    $connection->open();  //初始化数据库
+   	    header("Content-type:text/html;charset=utf-8");
+   	    
+    	    
+    	//print_r($data);
+        return $this->render('index',[
+        		'list'=>$data,        		
+        		//'count'=>$count,
+        		//'sign'=>$sign       		
+        ]);
+    }
+    public function actionSave(){  
+    	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+    	header("Content-type:text/html;charset=utf-8");
+    	$childuid="223";
+    	   
+   	        $a0=\yii::$app->request->post('mm0');
+   	        $a1=\yii::$app->request->post('mm1');
+   	        $a2=\yii::$app->request->post('mm2');
+   	        $a3=\yii::$app->request->post('mm3');
+   	        $a4=\yii::$app->request->post('mm4');if($a4=="请选择"){$a4='';}
+   	        $a5=\yii::$app->request->post('mm5');
+   	        $a6=\yii::$app->request->post('mm6');
+   	        $a7=\yii::$app->request->post('mm7');if($a7=="请选择"){$a7='';}
+   	        $a8=\yii::$app->request->post('mm8');
+   	        $a9=\yii::$app->request->post('mm9');
+   	        $a10=\yii::$app->request->post('mm10');if($a10=="请选择"){$a10='';}
+   	        $a11=\yii::$app->request->post('mm11');if($a11=="请选择"){$a11='';}
+   	        $a12=\yii::$app->request->post('mm12');if($a12=="请选择"){$a12='';}
+   	        $a13=\yii::$app->request->post('mm13');if($a13=="请选择"){$a13='';}
+   	        $a14=\yii::$app->request->post('mm14');
+   	    	$sql="INSERT INTO childdayrecord(childuid,initial,breakfast,snack,lunch,middlenap,fruit,supper,drink,pee,stool,mood,activity,expression,peer,remark) VALUES('$childuid','$a0','$a1','$a2','$a3','$a4','$a5','$a6','$a7','$a8','$a9','$a10','$a11','$a12','$a13','$a14')"; //SET course=".$id." AND uid=".$uid;
+   	        //file_put_contents("D://wt1.txt","sql:".$a13."\n", FILE_APPEND);
+   	    	$command = $connection->createCommand($sql);
+   	    	$command->execute(); 
+    	//return $this->render('index',[
+    			//'list'=>$data,
+    			//'count'=>$count,
+    			//'sign'=>$sign
+    	//]);
+           return $this->redirect(['dayrecorddetail/index',"uid"=>223]);
+           //return $this->redirect(['announce/index',"send"=>"succeed","gid"=>Yii::$app->request->post('AnnounceForm')['group']]);                   
+    }
+    
+}

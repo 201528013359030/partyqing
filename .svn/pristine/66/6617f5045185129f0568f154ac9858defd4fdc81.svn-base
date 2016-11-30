@@ -1,0 +1,146 @@
+<?php
+namespace app\modules\admin\controllers;
+use yii;
+use yii\web\Controller;
+use Rest;
+use Client;
+use app\modules\admin\models\AuthToken;
+use app\modules\admin\models\IctWebService;
+class SchoolnewslistController extends Controller
+{
+	public $layout  = false;
+    public function actionIndex()
+    {
+        //$uid =\Yii::$app->session['user.uid'];
+    	//require_once(dirname(__FILE__)."/config.php");
+    	//$token=\yii::$app->request->get('auth_token');
+    	//print_r($token);
+    	//\Yii::$app->session['token']=$token;
+    	$uid=\yii::$app->request->get('uid');//uid
+    	\Yii::$app->session['user.uid']=$uid;    	
+    	//$auth = new AuthToken();
+    	//$auth->authTokenSession();
+ 
+    	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+    	header("Content-type:text/html;charset=utf-8");
+ 
+    	$sql="SELECT eid FROM lcmemdata WHERE muid='".$uid."'";
+    	$command = $connection->createCommand($sql);
+    	$school = $command->queryAll();
+    	$schoolid=$school[0]['eid'];
+    	//print_r($company);
+    	//\Yii::$app->session['personal']=$personal;
+    	/**************end********************/
+    	   	
+   	    $sql="SELECT * FROM lckgnews where eid='".$schoolid."' ORDER BY createtime DESC LIMIT 5";
+        $command = $connection->createCommand($sql);
+   	    $news = $command->queryAll();
+   	    //print_r($course);
+    	$count=count($news);
+     	for($i=0;$i<=$count-1;$i++){
+    		$newsid=$news[$i]['id'];
+    		$sq2="SELECT * FROM schoolnewsread where uid='".$uid."' AND newsid ='".$newsid."'";    		
+    		$command = $connection->createCommand($sq2);
+    		$readd= $command->queryAll();
+    		//print_r($newsid);
+    		if(isset($readd[0]['id'])){$news[$i]['readd']=1;}else{$news[$i]['readd']=0;}  		
+    		//$tt=strtotime($course[$i]['PublicTime']);
+    		//$course[$i]['PublicTime']=date('Y-m-d H:i',$tt);
+    	}
+    	//print_r($course);
+    	\Yii::$app->session['public_count']=$count;   	
+    	//$tt=strtotime($course['PublicTime']);    	
+    	//$course['PublicTime']=date('Y-m-d H:i',$tt);    
+        return $this->render('index',[
+        		//'model' => $model,
+        		'list'=>$news,  
+        		//'statis'=>$statis,
+        		'count'=>$count,
+        		//'personal'=>$personal       		
+        ]);
+    }
+    public function actionSearch(){
+    
+    	$searchtitle=\yii::$app->request->get('searchtitle');
+    	$uid=\Yii::$app->session['user.uid'];
+    	\Yii::$app->session['public_count']=8;
+
+      	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+
+    	$sql="SELECT eid FROM lcmemdata WHERE muid='".$uid."'";
+    	$command = $connection->createCommand($sql);
+    	$school = $command->queryAll();
+    	$schoolid=$school[0]['eid'];
+    	
+        $sql="SELECT * FROM lckgnews where eid='".$schoolid."' AND title like '%".$searchtitle."%' ORDER BY createtime DESC LIMIT 8";         
+        //file_put_contents("D://wt1.txt","num:".$sql."\n", FILE_APPEND);
+    	$command = $connection->createCommand($sql);
+    	
+        //查询并显示数据
+    	$news = $command->queryAll();
+    	$count=count($news);
+    	\Yii::$app->session['search_count']=$count;
+        for($i=0;$i<=$count-1;$i++){
+    		$newsid=$news[$i]['id'];
+    		$sq2="SELECT * FROM schoolnewsread where uid='".$uid."' AND newsid ='".$newsid."'";
+    		$command = $connection->createCommand($sq2);
+    		$readd= $command->queryAll();
+    		//print_r($newsid);
+    		if(isset($readd[0]['id'])){$news[$i]['readd']=1;}else{$news[$i]['readd']=0;}
+    		//$tt=strtotime($course[$i]['PublicTime']);
+    		//$course[$i]['PublicTime']=date('Y-m-d H:i',$tt);
+    	} 
+    	echo json_encode($news);
+
+    	//echo 22;
+    	exit();    
+    }
+    public function actionGetdata(){
+    	
+    	//$uid =\Yii::$app->session['user.uid'];
+    	//\Yii::$app->session['public_count']="5";
+    	$searchcontent=\yii::$app->request->get('searchcontent');
+    	$uid=\Yii::$app->session['user.uid'];
+    	
+    	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+    	$sql="SELECT eid FROM lcmemdata WHERE muid='".$uid."'";
+    	$command = $connection->createCommand($sql);
+    	$school = $command->queryAll();
+    	$schoolid=$school[0]['eid'];
+    	$public_count=\Yii::$app->session['public_count'];
+    	
+    	if(strlen($searchcontent)>0){
+    	$search_count=\Yii::$app->session['search_count'];
+    	$sql="SELECT * FROM lckgnews where eid='".$schoolid."' AND title like '%".$searchcontent."%' ORDER BY createtime DESC LIMIT ".$search_count.",5";    	 
+    	$search_count=$search_count+5;
+    	    \Yii::$app->session['search_count']=$search_count;
+    	}else{
+    		$public_count=\Yii::$app->session['public_count'];
+    	    $sql="SELECT * FROM lckgnews where eid='".$schoolid."' ORDER BY createtime DESC LIMIT ".$public_count.",5";   
+    	    $public_count=$public_count+5;
+    	    \Yii::$app->session['public_count']=$public_count;
+    	} 
+
+    	$command = $connection->createCommand($sql);
+    	$news = $command->queryAll();
+    	//print_r($course);   	
+    	//file_put_contents("D:\\wt1.txt","sum:".$sql."\n", FILE_APPEND);    	
+    	\Yii::$app->session['searchcontent']=$searchcontent;    	
+    	$count=count($news);
+    	for($i=0;$i<=$count-1;$i++){
+    		$newsid=$news[$i]['id'];
+    		$sq2="SELECT * FROM schoolnewsread where uid=".$uid." AND newsid ='".$newsid."'";
+    		$command = $connection->createCommand($sq2);
+    		$readd= $command->queryAll();
+    		//print_r($newsid);
+    		if(isset($readd[0]['id'])){$news[$i]['readd']=1;}else{$news[$i]['readd']=0;}
+    		//$tt=strtotime($course[$i]['PublicTime']);
+    		//$course[$i]['PublicTime']=date('Y-m-d H:i',$tt);
+    	}    	
+    	echo json_encode($news);
+    	exit();    
+    }   
+}

@@ -1,0 +1,60 @@
+.moPadTop{ padding-top: 60px;}
+.icon_yizhipai{ position: absolute; top: 0; right:0; background:url(../img/icon_yizhipai.png) no-repeat; background-size:cover; width:42px; height: 42px; }
+
+/**
+ * @ radio3项选择
+ * checkbox 多选的样式
+ */
+
+.customRadio{position: relative; height:40px;}
+.customRadio > input,
+.customRadio > a {position: absolute;bottom: 0px;width: 32%;cursor: pointer;font-size: 16px;height: 34px;line-height: 34px; white-space: nowrap;}
+.customRadio > input,
+.form-sheet-iteam > input,
+.list_checkbox li >input {opacity: 0;z-index: 50;}
+.customRadio > a,
+.form-sheet-iteam > a,
+.list_checkbox li >a {z-index: 0; color:#333;}
+.customRadio > input:checked + a .icons{ display: none;}
+.customRadio > input:checked + a .ficon{ display: inline-block;}
+.customRadio > input + a .icons{ display: inline-block;}
+.customRadio > input + a .ficon{ display: none;}
+.customRadio .ficon,
+.customRadio .icons{ margin-top:5px; vertical-align: top; margin-right:0;}
+.customRadio .icon-ok{ display: inline-block; width:24px; height:24px; background:url(../img/radioUp.png) no-repeat; background-size:100%;}
+.customRadio .icons-circal{display: inline-block; width:24px; height:24px; background:url(../img/radioUndo.png) no-repeat; background-size:100%;}
+.customRadio .icon-check-ok{ display: inline-block; width:24px; height:24px; background:url(../img/checkboxUp.png) no-repeat; background-size:100%;}
+.customRadio .icons-check-circal{display: inline-block; width:24px; height:24px; background:url(../img/checkboxUndo.png) no-repeat; background-size:100%;}
+
+#radio-man, #radio-man + a {left: 0;}
+#radio-woman, #radio-woman + a {left: 30%;}
+#radio-unknow, #radio-unknow + a {left: 60%;}
+
+.customRadio > input.inp_check,
+.customRadio > a.link_check{ width:100%;}
+
+.molistIteam .moMytaskRadio{ display: none;}
+.moMytaskRadio.customRadio > input, .moMytaskRadio.customRadio > a{ width:34px;}
+
+.moListCur .listInner{ padding-right:50px;}
+/*.moListCur .listInfo{ min-height:34px ;}*/
+.moListCur .listInfo .title{ line-height: 18px;}
+.moListCur .moMytaskRadio{ display: block; position: absolute; top: 20px; width:34px; height: 34px; right:10px;}
+.moBtnBox{ width:90%; margin:0 auto; margin-top:30px;}
+.btn_sendOther{ width:100px; margin:0 auto; background-color:#ffacad; border-radius: 4px; -webkit-border-radius: 4px; padding:10px 14px; color:#fff;}
+.resultBox{ padding:15px; background-color:#fff;}
+.resultBox p{ height:34px;}
+.resultBox p em{ font-style: normal;}
+.resultBox .btn_sendOther{ padding:6px 14px; background-color:#090; color:#fff;}
+
+
+
+
+
+
+
+
+
+
+
+

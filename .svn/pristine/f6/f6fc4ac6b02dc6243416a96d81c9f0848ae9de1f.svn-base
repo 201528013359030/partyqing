@@ -1,0 +1,69 @@
+<?php
+namespace app\modules\admin\controllers;
+use yii;
+use yii\web\Controller;
+use Rest;
+use Client;
+use app\modules\admin\models\AuthToken;
+use app\modules\admin\models\IctWebService;
+
+class EvaluatexsController extends Controller
+{
+	public $layout  = false;
+	public $enableCsrfValidation = false;//因为YII2的防止csrf攻击，你则不能多次提交相同的表单。如果你希望当前可以多次重复提交，可以在当前提交的表单controller中添加	
+    public function actionIndex()
+    {
+        //$uid =\Yii::$app->session['user.uid'];
+    	//require_once(dirname(__FILE__)."/config.php");
+    	//$token=\yii::$app->request->get('auth_token');
+    	//print_r($token);
+    	//\Yii::$app->session['token']=$token;
+    	//header("Content-type:text/html;charset=utf-8");
+    	$id=\yii::$app->request->get('id');
+    	$uid=\Yii::$app->session['user.uid'];   	
+    	//$auth = new AuthToken();
+    	//$auth->authTokenSession();
+    	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+    	header("Content-type:text/html;charset=utf-8");
+    	$sq1="SELECT * FROM lcevaluate where id='".$id."' AND type=1 AND status=1 AND isdelete=0";    		 
+        $command = $connection->createCommand($sq1);
+    	$content = $command->queryAll();
+    	$classid=$content[0]['owneroid'];
+    	
+    	$sq5="SELECT id,optiname,teacheruid FROM lcevaoptions where evaid='".$id."'";
+    	$command = $connection->createCommand($sq5);
+    	$data = $command->queryAll();
+    	$count=count($data);
+    	for($i=0;$i<$count;$i++){
+    		$tuid=$data[$i]['teacheruid'];
+    		$opid=$data[$i]['id'];
+    		//echo $mtype;     		
+    		$sq7="SELECT optivalue FROM lcevafamilyop where evaid='".$id."' AND familymuid= '".$uid."' AND optionid= '".$opid."'";
+    		$command = $connection->createCommand($sq7);
+    		$op = $command->queryAll();
+    		//print_r($op);
+    		if(isset($op[0]['optivalue'])){
+    		$optivalue=$op[0]['optivalue'];
+    		if($optivalue==1){$data[$i]['op']="优";}elseif($optivalue==2){$data[$i]['op']="良";}elseif($optivalue==3){$data[$i]['op']="可";}
+    		}else{$data[$i]['op']="未选择";}
+    	}
+    	$eidd=explode('@',$uid);
+    	$eid=$eidd[1];
+    	//echo $eid;
+    	$sq0="SELECT ename FROM enterprise where uid='".$eid."'";
+    	$command = $connection->createCommand($sq0);
+    	$school = $command->queryAll();
+    	$schoolname=$school[0]['ename'];
+    	//print_r($data);
+        return $this->render('index',[
+        		'content'=>$content,  
+        		'list'=>$data,
+        		'id'=> $id,
+        		'schoolname'=> $schoolname,
+        		'count'=> $count,
+        ]);
+    }
+
+    
+}

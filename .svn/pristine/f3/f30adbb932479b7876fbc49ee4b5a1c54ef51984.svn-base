@@ -1,0 +1,48 @@
+<?php
+/* @var $this yii\web\View */
+use yii\helpers\Html;
+use yii\bootstrap\Nav;
+use yii\bootstrap\NavBar;
+use yii\widgets\Breadcrumbs;
+use app\assets\AppAsset;
+use yii\web\View;
+?>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta id="viewport" name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0">
+<meta name="format-detection" content="telephone=no">
+<title>宝宝信息</title>
+<?=Html::cssFile('@web/css0/mydoc.css')?>
+<style>
+
+</style>
+
+<?=Html::jsFile('@web/js0/jquery.js')?>
+<?=Html::jsFile('@web/js0/foundation.min.js')?>
+
+<script type="text/javascript">
+
+
+</script>
+</head>
+<body>
+<div class="off-canvas-wrap" data-offcanvas>
+	<div class="inner-wrap">
+	       <div>
+			<form action="index.php?r=admin/childdetail/sex" style="margin-top:20px;margin-left:20px">
+              <input type="radio" name="sex" value="male" />男
+              <input type="radio" style="margin-left:20px" name="sex" value="female" />女
+            </form>			  						
+		  </div>	
+	</div>
+</div>
+	<input type="hidden" id="count" value=<?//=$count?>/>
+</body>
+</html>
+<script type="text/javascript">
+
+</script>

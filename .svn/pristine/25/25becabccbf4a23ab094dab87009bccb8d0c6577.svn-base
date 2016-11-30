@@ -1,0 +1,74 @@
+<?php
+
+namespace app\modules\admin\models;
+
+use Yii;
+use yii\base\Model;
+use yii\data\ActiveDataProvider;
+use app\modules\admin\models\speek;
+
+/**
+ * speekSearch represents the model behind the search form about `app\modules\admin\models\speek`.
+ */
+class speekSearch extends speek
+{
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['id', 'zan', 'readd'], 'integer'],
+            [['talkurl', 'createtime', 'picurl', 'fileName'], 'safe'],
+            [['size', 'timesize'], 'number'],
+        ];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function scenarios()
+    {
+        // bypass scenarios() implementation in the parent class
+        return Model::scenarios();
+    }
+
+    /**
+     * Creates data provider instance with search query applied
+     *
+     * @param array $params
+     *
+     * @return ActiveDataProvider
+     */
+    public function search($params)
+    {
+        $query = speek::find();
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
+
+        $this->load($params);
+
+        if (!$this->validate()) {
+            // uncomment the following line if you do not want to any records when validation fails
+            // $query->where('0=1');
+            return $dataProvider;
+        }
+
+        $query->andFilterWhere([
+            'id' => $this->id,
+            'zan' => $this->zan,
+            'createtime' => $this->createtime,
+            'readd' => $this->readd,
+            'size' => $this->size,
+            'timesize' => $this->timesize,
+        ]);
+
+        $query->andFilterWhere(['like', 'talkurl', $this->talkurl])
+            ->andFilterWhere(['like', 'picurl', $this->picurl])
+            ->andFilterWhere(['like', 'fileName', $this->fileName]);
+
+        return $dataProvider;
+    }
+}

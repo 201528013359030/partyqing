@@ -1,0 +1,1 @@
+<iframe name="right" id="rightMain" src="index.php?r=admin/announce/index&gid=0&main=1" frameborder="false" scrolling="auto" style="border:none;" width="100%" height="1000px" allowtransparency="true"></iframe>

@@ -1,0 +1,39 @@
+<?php
+namespace app\modules\admin\controllers;
+use Yii;
+use app\modules\admin\models\IctWebService;
+use app\modules\admin\models\AuthToken;
+use app\models\Curl;
+
+class MainparentController extends \yii\web\Controller
+{
+	public $enableCsrfValidation = false;//yii默认表单csrf验证，如果post不带改参数会报错！
+//    public $layout  = 'main';
+    public $layout  = 'announce';
+//    public $layout  = 'layout';
+    public function actionIndex()
+    {    
+        $uid=\yii::$app->request->get('uid');  
+        $cid=\yii::$app->request->get('cid');
+        $auth_token=\yii::$app->request->get('auth_token');
+        $eguid=\yii::$app->request->get('eguid');
+        $nid=\yii::$app->request->get('nid');
+        $gid=\yii::$app->request->get('gid');
+        \Yii::$app->session['user.cid']=$cid;
+        \Yii::$app->session['user.uid']=$uid;
+        
+        \Yii::$app->session['token']= $auth_token;
+        $auth = new AuthToken();
+        $auth->authTokenSession();
+             //$cid=2;
+        return $this->render('index', [
+        		'uid'=>$uid,
+        		'cid'=>$cid,
+        		'auth_token'=>$auth_token,
+        		'eguid'=>$eguid,
+        		'nid'=>$nid,
+        		'gid'=>$gid,
+        		]);              
+    }
+
+}

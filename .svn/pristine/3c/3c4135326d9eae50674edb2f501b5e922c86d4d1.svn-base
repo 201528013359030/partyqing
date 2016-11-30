@@ -1,0 +1,342 @@
+<?php
+/* @var $this yii\web\View */
+use yii\helpers\Html;
+use yii\bootstrap\Nav;
+use yii\bootstrap\NavBar;
+use yii\widgets\Breadcrumbs;
+use app\assets\AppAsset;
+use yii\web\View;
+?>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta id="viewport" name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0">
+<meta name="format-detection" content="telephone=no">
+<title>宝宝信息</title>
+<?=Html::cssFile('@web/js0/vendor/swiper.min.css')?>
+<?=Html::cssFile('@web/css0/mydoc.css')?>
+<!--时间控件部分-->
+<?=Html::cssFile('@web/js0/vendor/mobiscroll.mo.min.css')?>
+
+<style>
+  @media only screen and (max-width: 640px) {
+    .reveal-modal.aa {    	
+      left: 0;
+      margin: 0 auto;
+      max-width: 16.5rem;
+      right: 0;
+      top: 150px;
+      margin-bottom: 10;
+      min-height: 20vh;
+       
+     } }
+.pic_text_iteam {
+display: block;
+padding: 10px 8px;
+border-bottom: 1px #ddd solid;
+min-height: 70px;
+margin-left:10px;
+}
+.reveal-modal .close-reveal-modal {
+color: #AAAAAA;
+cursor: pointer;
+font-size: 1.1rem;
+font-weight: bold;
+line-height: 1;
+position: absolute;
+top: 1.35rem;
+right: 1.6rem;
+}
+.dw{
+font-size:14pt;
+}
+</style>
+<?=Html::jsFile('@web/js0/vendor/jquery.js')?>
+<?=Html::jsFile('@web/js/htmlset.js')?>
+<script>
+var isiOS = false;
+var isAndroid = false;
+var u = navigator.userAgent, app = navigator.appVersion;
+isAndroid = u.indexOf('Android') > -1 || u.indexOf('Linux') > -1; //android终端或者uc浏览器
+isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+//    alert('是否是Android：'+isAndroid);
+//    alert('是否是iOS：'+isiOS);
+API.init();
+var pic_flag = 0;  //给预上传图片做id标记
+var checkdb = 0;   //处理ios成功返回2遍的bug标记
+
+function chooseSheetPhoto(){
+	pic_flag= pic_flag+1;
+	var op_photo = {
+		"name": "ChoosePhoto", 
+        "callback": "OnChoosePhotoCb", 
+        "params": {
+            "webAppTransferID": "baoxiao"+pic_flag, 
+			"chooseType": "ChooseFromActionSheet",
+			"editType":"1",
+        }
+	};
+	API.send_tonative(op_photo);
+}
+
+function OnChoosePhotoCb(datas){
+	var status = datas.result.status,
+		params = datas.result.params;
+	
+	//这里做一个演示，把数据转成字符串在页面弹出
+	var str_para = JSON.stringify(params);
+	
+	//alert(str_para);
+	uploadGivenFile(params);
+}
+function uploadGivenFile(datas){
+	pic_flag= pic_flag+1;
+	var op = {
+        "name": "UploadGivenFile", 
+        "callback": "OnUploadCb", 
+        "params": {
+            "uploadUrl": "/media_file/", 
+            "fileID": datas.fileID, 
+            "taskID": "taskbaoxiao"+pic_flag, 
+            "nativePath": datas.nativePath
+        }
+	}
+	API.send_tonative(op);
+}
+function uploadPic(){
+	//alert("66");
+	chooseSheetPhoto();
+	return;	
+}
+function OnUploadCb(datas){
+	var status = datas.result.status,
+		params = datas.result.params;
+	
+	//这里做一个演示，把数据转成字符串在页面弹出
+	//var str_para = JSON.stringify(params);
+	if( params.transferStatus=='Success'){
+		checkdb = checkdb+1;
+		if(checkdb == 1){
+			//alert(params.fileID);
+			alert(params.uploadPath);
+			$("#headpic").attr('src',params.uploadPath);
+			$.get("index.php?r=admin/childdetail/sex",{headpic:params.uploadPath,id:<?=$child[0]['id']?>
+			},function(data){
+		 		//alert(data);
+				if(data){
+		 			alert('success');
+				}else{
+		 			alert("fail");
+				}
+			},'json');		
+			checkdb=0;
+		}else{
+			checkdb=0;
+			return;
+		}
+	}	
+	//alert(str_para);
+}
+</script>
+</head>
+<body>
+<div class="off-canvas-wrap" data-offcanvas>
+	<div class="inner-wrap">
+	       <ul class="list">
+				<li style="min-height: 70px;">
+				<div class="pic_cover" style="float:left;width:30%;min-height: 70px;"onclick="uploadPic()">
+			  		<img class="pic" id="headpic" style="width:60px;margin-left:10px;margin-top:10px" src="<?=$child[0]['UAvator']?>" >
+			  	</div>
+					<a href="#" class="pic_text_iteam" style="float:right;width:76%">		  				
+			  				<p class="pic_text_name">
+			  					<span class="fr viewnum">			  				
+			  					</span><?=$child[0]['name']?>
+			  				</p>
+			  				<p class="pic_text_msg"><?=$b[0]?>年&nbsp;<?=$b[1]?>个月&nbsp;<?=$b[2]?>天</p>
+			  				  			
+			  		</a>
+				</li>
+				<li>
+					<a href="###" class="pic_text_iteam" style="min-height: 50px;">	  						  			
+			  				<p class="pic_text_name">
+			  					<span class="fr viewnum">
+			  					<?=$child[0]['name']?>
+			  					</span>姓名
+			  				</p>			  					  						  			
+			  		</a>
+				</li>
+				<li>
+	          <li>
+					<a href="#" class="pic_text_iteam" style="min-height: 50px;">	  						  			
+			  				<p class="pic_text_name">
+			  					<span class="fr viewnum">			  		
+			  					<i class="arrow ficon icon-angle-right" style="width:10px;height:10px"></i>
+			  					</span>性别
+			  				<span style="font-size:1em;float:right;margin-right:1em;color:#008CBA;" data-reveal-id="myModal" id="sex"><?=$child[0]['sex']?></span>
+			  				</p>			  						  					  						  			
+			  		</a>
+				</li>
+				   <li>
+					<a href="###" class="pic_text_iteam" style="min-height: 50px;">	  						  			
+			  				<p class="pic_text_name">
+			  					<span class="fr viewnum">
+			  					<i class="arrow ficon icon-angle-right" ></i>
+			  					</span>生日
+			  					<input id="starTime" class="datesel" style="display:inline-block;font-size:1em;width:30%;float:right;margin-right:8px;padding-bottom:18px;color:#008CBA;" name="starTime"  type="text" placeholder="请选择" value="<?=$child[0]['birthday']?>	" required />									  								  				
+			  				</p>			  						  					  						  			
+			  		</a>
+				</li>
+				<li>
+					<a href="###" class="pic_text_iteam" style="min-height: 50px;">	  						  			
+			  				<p class="pic_text_name">
+			  					<span class="fr viewnum">
+			  					<?=$child[0]['schoolname']?>
+			  					</span>学校
+			  				</p>			  					  						  			
+			  		</a>
+				</li>
+					<li>
+					<a href="###" class="pic_text_iteam" style="min-height: 50px;">	  						  			
+			  				<p class="pic_text_name">
+			  					<span class="fr viewnum">
+			  					<?=$child[0]['gradename']?>
+			  					</span>年级
+			  				</p>			  					  						  			
+			  		</a>
+				</li>
+					<li>
+					<a href="###" class="pic_text_iteam" style="min-height: 50px;">	  						  			
+			  				<p class="pic_text_name">
+			  					<span class="fr viewnum">
+			  					<?=$child[0]['classname']?>
+			  					</span>班级
+			  				</p>			  					  						  			
+			  		</a>
+				</li>
+					<li>
+					<a href="###" class="pic_text_iteam" style="min-height: 50px;">	  						  			
+			  				<p class="pic_text_name">
+			  					<span class="fr viewnum">
+			  					<?=$child[0]['cometime']?>
+			  					</span>入园时间
+			  				</p>			  					  						  			
+			  		</a>
+				</li>	  						
+			</ul>
+		</div>	
+	</div>
+</div>
+
+<div id="myModal" class="reveal-modal aa" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+  <h5 id="modalTitle" style="margin-top:-12px">性别</h5>
+  
+       </br><div style="height:30px;border-bottom: 1px #ddd solid;"> <span>男</span> <input style="margin-left:80%" type="radio" id="s1" name="sex" value="男" /></div>
+       <div style="height:30px;margin-top:10px"><span >女</span> <input style="margin-left:80%"type="radio" id="s2" name="sex" value="女" /></div>
+
+  <a class="close-reveal-modal" aria-label="Close" >保存</a>
+</div>
+	<input type="hidden" id="count" value=<?=$sex2?>>
+</body>
+</html>
+<?=Html::jsFile('@web/js0/vendor/swiper.min.js')?>
+<?=Html::jsFile('@web/js0/vendor/mobiscroll.custom.min.js')?>
+<?=Html::jsFile('@web/js0/foundation.min.js')?>
+<script type="text/javascript">
+$(document).foundation();
+$(document).on('closed.fndtn.reveal', '[data-reveal]', function () {
+	  var modal = $(this);
+	  var sex= $('input[name="sex"]:checked').val(); 
+	  if(sex=="男"){var sex0=0;}else if(sex=="女"){var sex0=1;}
+		$.get("index.php?r=admin/childdetail/sex",{sex:sex0,id:<?=$child[0]['id']?>
+		},function(data){
+	 		//alert(data);
+			if(data){
+	 			//alert('success');
+			}else{
+	 			//alert("fail");
+			}
+		},'json');
+	  document.getElementById('sex').innerHTML=sex;	  
+	});
+$(function(){
+	var sex2=<?=$sex2?>;
+if(sex2=="0"){	
+	document.getElementById('s1').checked=true;
+}else{
+	document.getElementById('s2').checked=true;
+}	
+//初始化时间控件 使用的是 mobiscroll
+$(".datesel").mobiscroll().date();
+//选择显示样式 安卓显示点击，其他显示滚动轮形式
+var _mode = '';	
+if (/(Android)/i.test(navigator.userAgent)){
+	_mode = 'clickpick';
+}else{
+	_mode = 'scroller';
+}
+var currYear = (new Date()).getFullYear();  
+//初始化日期控件
+//http://www.myexception.cn/web/1915230.html
+var opt = {
+			preset: 'date', //日期，可选：date\datetime\time\tree_list\image_text\select
+			theme: 'android', //皮肤样式，可选：default\android\androids\android-ics light\android-ics\ios\jqm\sense-ui\wp light\wp有些样式不可用，可自行修复
+			display: 'modal', //显示方式 ，可选：modal\inline\bubble\top\bottom
+			mode: _mode, //日期选择模式，可选：scroller\clickpick\mixed
+			lang:'zh',
+			dateFormat: 'yyyy-mm-dd', // 日期格式
+			setText: '确定', //确认按钮名称
+			cancelText: '取消',//取消按钮名籍我
+			dateOrder: 'yyyymmdd', //面板中日期排列格式
+			dayText: '日', monthText: '月', yearText: '年', //面板中年月日文字
+			showNow: false,  
+   		    nowText: "今",  
+    	    startYear:currYear-10, //开始年份  
+    	    endYear:currYear + 10, //结束年份  
+    	    //endYear:2099 //结束年份
+    	    timeFormat: 'HH:ii:ss',
+			timeWheels: 'HHiiss',    //可以删除试试显示内容
+		
+			//当时间选择的内容发生变化触发的事件
+	        //onChange:mobiscroll_change,	
+			//点击确定按钮，触发事件。
+            onSelect:mobiscroll_select,
+};
+    
+$(".datesel").mobiscroll(opt); 
+function mobiscroll_select(valueText,inst){
+    //valueText是选中的值
+    //console.log("valueText : " + valueText);
+    //mobiscroll对象
+   // console.log("inst : " + inst);
+    var birthday=valueText;
+    $.get("index.php?r=admin/childdetail/sex",{birthday:birthday,id:<?=$child[0]['id']?>
+	},function(data){
+ 		//alert(data);
+		if(data){
+ 			//alert('success');
+		}else{
+ 			//alert("fail");
+		}
+	},'json');
+}
+function mobiscroll_change(valueText,inst){
+    //valueText是选中的值
+	var birthday=valueText;
+    //console.log("valueText : " + valueText);
+    //mobiscroll对象
+    //console.log("inst : " + inst);
+    $.get("index.php?r=admin/childdetail/sex",{birthday:birthday,id:<?=$child[0]['id']?>
+	},function(data){
+ 		//alert(data);
+		if(data){
+ 			//alert('success');
+		}else{
+ 			//alert("fail");
+		}
+	},'json');
+}
+});
+</script>

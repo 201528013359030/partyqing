@@ -1,0 +1,57 @@
+<?php
+namespace app\modules\admin\controllers;
+use yii;
+use yii\web\Controller;
+class TestController extends Controller
+{
+	public $layout  = false;
+	public function actionIndex()
+	{
+		//require_once(dirname(__FILE__)."/config.php");
+		$connection = Yii::$app->db;
+		$connection->open();  //初始化数据库
+
+		/**
+		 * @desc 根据两点间的经纬度计算距离
+		 * @param float $lat 纬度值
+		 * @param float $lng 经度值
+		 * http://www.cocoachina.com/ios/20141118/10238.html
+		 * http://www.nhc.noaa.gov/gccalc.shtml
+		*/
+		function getDistance($lat1, $lng1, $lat2, $lng2)
+		{
+			$earthRadius = 6367000; //approximate radius of earth in meters
+			/*
+			 Convert these degrees to radians
+			to work with the formula
+			*/
+			$lat1 = ($lat1 * pi() ) / 180;
+			$lng1 = ($lng1 * pi() ) / 180;
+			 
+			$lat2 = ($lat2 * pi() ) / 180;
+			$lng2 = ($lng2 * pi() ) / 180;
+			/*
+			 Using the
+			Haversine formula
+			http://en.wikipedia.org/wiki/Haversine_formula
+			calculate the distance
+			*/
+			$calcLongitude = $lng2 - $lng1;
+			$calcLatitude = $lat2 - $lat1;
+			$stepOne = pow(sin($calcLatitude / 2), 2) + cos($lat1) * cos($lat2) * pow(sin($calcLongitude / 2), 2);
+			$stepTwo = 2 * asin(min(1, sqrt($stepOne)));
+			$calculatedDistance = $earthRadius * $stepTwo;
+			return round($calculatedDistance);//单位：m
+		}
+		$slongitude="123.546078";
+		$slatitude="41.743775";
+
+		$rlongitude="123.540203";
+		$rlatitude="41.741680";
+		//$rlongitude="123.545822";
+		//$rlatitude="41.744416";
+
+		$distance=getDistance($slatitude,$slongitude,$rlatitude,$rlongitude);
+        echo $distance;
+	}
+}

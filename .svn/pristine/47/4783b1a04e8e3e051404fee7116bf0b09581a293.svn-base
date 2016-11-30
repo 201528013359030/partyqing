@@ -1,0 +1,56 @@
+<?php
+namespace app\modules\admin\controllers;
+use yii;
+use yii\web\Controller;
+use Rest;
+use Client;
+use app\modules\admin\models\AuthToken;
+use app\modules\admin\models\IctWebService;
+class TeachingplandetailController extends Controller
+{
+	public $layout  = false;
+    public function actionIndex()
+    {
+    	$No=\yii::$app->request->get('No');
+    	
+ 
+    	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+    	header("Content-type:text/html;charset=utf-8");
+
+    	/**************end********************/
+    	   	
+   	    $sql="SELECT * FROM lcteachingplan where No='".$No."'";
+        $command = $connection->createCommand($sql);
+   	    $info = $command->queryOne();
+   	    
+//    	    更新阅读数
+    	$sq2="update lcteachingplan set ReadCount=ReadCount+1  where   No ='".$No."'";    		
+    	$command = $connection->createCommand($sq2);
+    	$readd= $command->execute(); 
+    	if(file_exists("/var/lib/mosquitto/tls")){
+    		$tls = "https://";
+    	}else{
+    		$tls = "http://";
+    	}
+    	if($info['AttachmentLocation']){
+    		$offline_ip="192.168.139.202";
+    		$tmpUrl = explode("html/",$info['AttachmentLocation']);
+    		$attachList['path'] = $tls.$offline_ip.'/'.$tmpUrl[1];
+    		$attachList['url'] = $attachList['path'];
+    		//$attachList['url'] = "http://192.168.139.202/basesys/download.php?file_name=/usr/local/www/nginx/html/basesys/upload/uu.txt";
+    		$attachList['path'] = base64_encode($attachList['path']);
+    		$tmp = explode("upload/",$info['AttachmentLocation']);
+    		$attachList['name']=$tmp[1];
+    		$attachList['size']=filesize($info['AttachmentLocation']);
+    		//$attachList['size']="239.0";
+    	}else{
+    		$attachList="";
+    	}
+    	//print_r($attachList);
+    	return $this->render('index',[
+    			'info'=>$info,
+    			'attachList'=>$attachList,
+    			]);   }
+  
+}

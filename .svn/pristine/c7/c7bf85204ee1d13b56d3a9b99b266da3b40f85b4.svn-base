@@ -1,0 +1,68 @@
+我有一个问题beforeShowDay。 当我的页面加载，我已经告诉亮点的日子并不突出，直到我点击日历中的一天。另外，如果我点
+击下月按钮，并回到原来的一个月，那么'选定'天将突出显示预期。 因此，只有在日历的初始平局做的日期并不突出 CodeGo.net
+，因为我让他们做。任何点击日历中的修复本身。 我失去了一个init选项？请看我下面的代码示例。我的测试网址是受保护的目录
+与测试/测试。看看小卡尔在右列底部。切换到下个月回来看我的问题。注意突出显示的天五月IM。另外，请注意，“一年”下拉还缺
+少直到咔嗒发生。验证码： 
+http://codego.net/299051/
+ <script>
+$(document).ready(function(){
+ // get the current date
+ var today = new Date();
+ var m = today.getMonth(), d = today.getDate(), y = today.getFullYear();
+ // Need list of event dates for THIS month only from database.
+ // Declare 'dates' var before adding "beforeShowDay" option to the datepicker,
+ // otherwise, highlightDays() does not have the 'dates' array.
+ dates = [];
+ fetchEventDays(y, m+1);
+ $('#datepicker').datepicker({
+  dateFormat: 'yy-mm-dd',
+  changeMonth: true,
+  changeYear: true,
+  setDate: today,
+  inline: false
+ });
+
+ $('#datepicker').datepicker('option', 'onChangeMonthYear', fetchEventDays);
+ $('#datepicker').datepicker('option', 'beforeShowDay', highlightDays);
+ $('#datepicker').datepicker('option', 'onSelect', getday);
+
+ // ------------------------------------------------------------------
+ // getday
+ // ------------------------------------------------------------------
+ function getday(dateText, inst) { 
+  $('#content').load(' CodeGo.net  #eventMgr_content', function() {
+ alert('Load was performed. '+dateText);
+  });
+ }
+ // ------------------------------------------------------------------
+ // fetchEventDays
+ // ------------------------------------------------------------------
+ function fetchEventDays(year, month) {
+  var paramStr ='?do=get_event_dates&yr=' + year + '&mo=' + month;
+  $.get('<%config.db_cgi_url%>/eventmgr-ajax.cgi'+ paramStr, function(data) {
+   var recur_dates = data.split(',');
+   for(var i = 0; i < recur_dates.length; i++) {
+    var date_parts = recur_dates[i].split('-');
+    dates.push(new Date(date_parts[0], date_parts[1]-1, date_parts[2]));
+   }      
+// This causes dates with events to highlight on initial draw, but
+// when clicking to the next month, it switches back to orig month.
+//  $('#datepicker').datepicker('option', {}); // Refresh
+  });
+ }
+ // ------------------------------------------------------------------
+ // highlightDays
+ // ------------------------------------------------------------------
+ function highlightDays(date) {
+  for (var i = 0; i < dates.length; i++) {
+   if ((dates[i].getTime() == date.getTime())) {
+    return [true, 'highlight'];
+   }
+  }
+  return [true, ''];
+ }
+
+});
+ </script>
+
+本文地址 ：CodeGo.net/299051/ 

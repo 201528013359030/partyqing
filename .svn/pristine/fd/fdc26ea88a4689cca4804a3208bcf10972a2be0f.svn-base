@@ -1,0 +1,48 @@
+<?php
+/* @var $this yii\web\View */
+use yii\helpers\Html;
+use yii\web\View;
+?>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<?//=Html::cssFile('@web/css/sign.css')?>
+
+<?=Html::cssFile('@web/css/jquery.datetimepicker.css')?>
+<?//=Html::jsFile('@web/js/calendar.js')?>
+<title>日历</title>
+<script>
+$(function(){
+	  //ajax获取日历json数据
+	  var signList=[{"signDay":"10"},{"signDay":"11"},{"signDay":"12"},{"signDay":"13"}];
+	   calUtil.init(signList);
+	   calUtil.setMonthAndDay();
+	});
+</script>
+</head>
+<body>
+	<h3>Inline DateTimePicker</h3>
+	<input style="dispaly:block;width:600px;" type="text" id="datetimepicker3"/><input type="hidden" onclick="$('#datetimepicker3').datetimepicker({value:'2011/12/11 12:00'})" value="set inline value 2011/12/11 12:00"/><br><br>
+	
+<div style="width:300px;height:300px;" id="calendar"></div>	
+
+<?=Html::jsFile('@web/js/jquery.js')?>		
+<?=Html::jsFile('@web/js/jquery.datetimepicker.js')?>
+<script>
+$('#datetimepicker3').datetimepicker({
+	
+	lang:'ch',
+	timepicker:false,
+	
+	format:'d/m/Y',
+	formatDate:'Y/m/d',
+	inline:true,
+});
+$(function(){
+$('.form-control.userName').val();
+}
+</script>
+</body>
+</html>

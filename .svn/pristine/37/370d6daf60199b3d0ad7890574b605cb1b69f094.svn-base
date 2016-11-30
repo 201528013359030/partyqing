@@ -1,0 +1,61 @@
+<?php
+namespace app\modules\admin\controllers;
+use yii;
+use yii\web\Controller;
+use Rest;
+use Client;
+use app\modules\admin\models\AuthToken;
+use app\modules\admin\models\IctWebService;
+class SchoolrulesdetailController extends Controller
+{
+	public $layout  = false;
+    public function actionIndex()
+    {
+        //$uid =\Yii::$app->session['user.uid'];
+    	//require_once(dirname(__FILE__)."/config.php");
+    	//$token=\yii::$app->request->get('auth_token');
+    	//print_r($token);
+    	//\Yii::$app->session['token']=$token;
+    	$uid="224";
+    	$newsid=\yii::$app->request->get('newsid');
+    	\Yii::$app->session['user.uid']=$uid;
+    	
+    	//$auth = new AuthToken();
+    	//$auth->authTokenSession();
+ 
+    	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+    	header("Content-type:text/html;charset=utf-8");
+
+    	//print_r($company);
+    	//\Yii::$app->session['personal']=$personal;
+    	/**************end********************/
+    	   	
+   	    $sql="SELECT * FROM lckgnews where id='".$newsid."'";
+        $command = $connection->createCommand($sql);
+   	    $news = $command->queryAll();
+
+    		$sq2="SELECT * FROM schoolnewsread where uid=".$uid." AND newsid ='".$newsid."'";    		
+    		$command = $connection->createCommand($sq2);
+    		$readd= $command->queryAll();
+    		//print_r($news);
+    		if(isset($readd[0]['id'])){}else{
+    		$sq3="INSERT INTO schoolnewsread(uid,newsid) VALUES('$uid','$newsid')";
+    		$command = $connection->createCommand($sq3);
+    		$readd= $command->execute(); 
+    		}  		
+    		//$tt=strtotime($course[$i]['PublicTime']);
+    		//$course[$i]['PublicTime']=date('Y-m-d H:i',$tt);
+    		$sq5="SELECT * FROM schoolnewsread where newsid ='".$newsid."'";
+    		$command = $connection->createCommand($sq5);
+    		$readcount= $command->queryAll();
+    		$count=count($readcount);
+        return $this->render('index',[
+        		//'model' => $model,
+        		'news'=>$news[0],  
+        		//'statis'=>$statis,
+        		'count'=>$count,    		
+        ]);
+    }
+  
+}

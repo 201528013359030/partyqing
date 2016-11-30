@@ -1,0 +1,278 @@
+<?php
+namespace app\modules\admin\controllers;
+use yii;
+use yii\web\Controller;
+use Rest;
+use Client;
+use app\modules\admin\models\AuthToken;
+use app\modules\admin\models\IctWebService;
+class GrowuplistController extends Controller
+{
+	public $layout  = false;
+    public function actionIndex()
+    {
+        //$uid =\Yii::$app->session['user.uid'];
+    	//require_once(dirname(__FILE__)."/config.php");
+    	//$token=\yii::$app->request->get('auth_token');
+    	//print_r($token);
+    	//\Yii::$app->session['token']=$token;
+    	$uid=\yii::$app->request->get('uid');//家长uid   必须家长或教师
+    	$childuid=\yii::$app->request->get('cid');//孩子uid
+    	$s=\yii::$app->request->get('s');//选择
+    	if($uid){
+    		\Yii::$app->session['user.uid']=$uid;
+    	}else{
+    		$uid=\Yii::$app->session['user.uid'];
+    	}
+    	//$auth = new AuthToken();
+    	//$auth->authTokenSession();
+    	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+    	header("Content-type:text/html;charset=utf-8");
+         if($childuid){}else{echo "用户未绑定孩子!";exit;}
+         /**获取孩子所对应班级 园所**/
+         $sq6='SELECT name,birthday,classid,eid,UAvator FROM lcchildren WHERE id='.$childuid;
+         $command = $connection->createCommand($sq6);
+         $child = $command->queryAll();
+         $name=$child[0]['name'];
+         $cname=$child[0]['name'];
+         $UAvator=$child[0]['UAvator'];
+         if($UAvator){}else{
+         	 $UAvator="img2/sdydychild.png";
+         
+         }
+         $birthday0=$child[0]['birthday'];
+         $classuid=$child[0]['classid'];
+         $schooluid=$child[0]['eid']; 
+         if($s=="0"){         //孩子
+         	$sq0='SELECT * FROM childrecord WHERE childuid='.$childuid.' ORDER BY createtime DESC LIMIT 2';
+         	$command = $connection->createCommand($sq0);
+         	$childrecord = $command->queryAll();         	         	
+         }else if($s=="1"){   //班级
+         	$sq0='SELECT * FROM childrecord WHERE classuid='.$classuid.' ORDER BY createtime DESC LIMIT 1';
+         	$command = $connection->createCommand($sq0);
+         	$childrecord = $command->queryAll();  
+         	$name="班级";
+         }else if($s=="2"){   //园所
+         	$sq0='SELECT * FROM childrecord WHERE schooluid='.$schooluid.' ORDER BY createtime DESC LIMIT 1';
+         	$command = $connection->createCommand($sq0);
+         	$childrecord = $command->queryAll(); 
+         	$name="园所";
+         }else if($s==3){   //收藏
+    		$sq0="SELECT * FROM childrecord c,recordstore r WHERE c.id=r.recordid AND r.uid='".$uid."' ORDER BY createtime DESC LIMIT 1";
+    		$command = $connection->createCommand($sq0);
+    		$childrecord = $command->queryAll();
+    		$name="收藏";
+    		//print_r($uid);
+    		//print_r($childrecord);
+    	}else{             //孩子 
+         	$sq0='SELECT * FROM childrecord WHERE childuid='.$childuid.' ORDER BY createtime DESC LIMIT 2';
+         	$command = $connection->createCommand($sq0);
+         	$childrecord = $command->queryAll();
+         	$s=0;
+         }       
+         /*********end**************/
+    	
+        //print_r($childrecord);
+    	$count=count($childrecord);
+    	\Yii::$app->session['public_count']=$count;
+    	for($i=0;$i<$count;$i++){  
+    		$pic =array();		
+    		$pic= json_decode($childrecord[$i]['picurl'],true); 
+    		$childrecord[$i]['picurl']=$pic;
+
+    		if($pic){
+    		   for($j=0;$j<count($pic);$j++){
+    			  $picc=explode("media_file/",$pic[$j]);
+    			  $photoip="http://192.168.139.202";
+    			  $pic[$j]=$photoip."/media_file/".$picc[1];
+    		   }
+    		
+    		   $childrecord[$i]['picurl']=$pic;
+    		}
+    		/**********图片***********/
+    		$rid=$childrecord[$i]['id'];
+    		$sq0="SELECT rid FROM recordstore WHERE uid='".$uid."' AND recordid='".$rid."'";
+    		$command = $connection->createCommand($sq0);
+    		$c = $command->queryAll();
+    		if(isset($c[0]['rid'])){
+    			$childrecord[$i]['store']=1;
+    		}else{
+    			$childrecord[$i]['store']=0;
+    		}
+    		//print_r($uid);
+    		$tt=$childrecord[$i]['createtime'];
+    		//$date=date("Y",$tt);
+    		//$y=substr($date,2,4);
+    		$tt=strtotime($tt);
+    		$childrecord[$i]['createtime']=date('Y-m-d H:i',$tt);
+    	}
+    	//print_r(\Yii::$app->session['public_count']);    	 
+    	//$birthday0=strtotime($birthday0);
+    	// $birthday0="2012-10-09";
+    	$now=date('Y-m-d',time());
+    	function DiffDate($date1, $date2) {
+    	
+    		list($y1, $m1, $d1) = explode('-', $date1);//出生日期2013-6-20
+    		list($y2, $m2, $d2) = explode('-', $date2);//现在 2016-3-4
+    		$y = $m = $d = $_m = 0;
+    		if($d1>$d2){
+    			$d2=$d2+30;
+    			$m2=$m2-1;
+    		}
+    		if($m1>$m2){
+    			$m2=$m2+12;
+    			$y2=$y2-1;
+    		}
+    		$y=$y2-$y1;
+    		$m=$m2-$m1;
+    		$d=$d2-$d1;
+    		return array($y, $m, $d);
+    	}
+    	$b=DiffDate($birthday0,$now);
+    	//print_r($childrecord);
+    	//$count=1;//是否有数据   	
+        return $this->render('index',[
+        		'list'=>$childrecord,        		
+        		'count'=>$count,
+        		'cname' => $cname,
+        		'name' => $name,
+        		'b' => $b,  
+        		's' => $s,
+        		'childuid' => $childuid,
+        		'uid' => $uid,
+        		'UAvator' => $UAvator,
+        ]);
+    }
+    public function actionGetdata(){
+      
+    	$uid=\Yii::$app->session['user.uid'];
+    	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+    	$childuid=\yii::$app->request->get('uid');
+      	$public_count=\Yii::$app->session['public_count'];    
+    	$sq6='SELECT name,birthday,classid,eid FROM lcchildren WHERE id='.$childuid;
+    	$command = $connection->createCommand($sq6);
+    	$child = $command->queryAll();
+    	$name=$child[0]['name'];
+    	$birthday0=$child[0]['birthday'];
+    	$classuid=$child[0]['classid'];
+    	$schooluid=$child[0]['eid'];
+    	$s=\yii::$app->request->get('s');//选择
+    	if($s==0){         //孩子
+    		$sq0="SELECT * FROM childrecord WHERE childuid=".$childuid." ORDER BY createtime DESC LIMIT ".$public_count.",5";
+    		$command = $connection->createCommand($sq0);
+    		$childrecord = $command->queryAll();
+    	}else if($s==1){   //班级
+    		$sq0="SELECT * FROM childrecord WHERE classuid=".$classuid." ORDER BY createtime DESC LIMIT ".$public_count.",5";
+    		$command = $connection->createCommand($sq0);
+    		$childrecord = $command->queryAll();
+    	}else if($s==2){   //园所
+    		$sq0="SELECT * FROM childrecord WHERE schooluid=".$schooluid." ORDER BY createtime DESC LIMIT ".$public_count.",5";
+    		$command = $connection->createCommand($sq0);
+    		$childrecord = $command->queryAll();
+    	}else if($s==3){   //收藏	
+    		$sq0="SELECT * FROM childrecord c,recordstore r WHERE c.id=r.recordid AND r.uid='".$uid."' ORDER BY createtime DESC LIMIT ".$public_count.",5";
+    		$command = $connection->createCommand($sq0);
+    		$childrecord = $command->queryAll();
+    	}else{             //孩子  		
+    		$sq0="SELECT * FROM childrecord WHERE childuid=".$childuid." ORDER BY createtime DESC LIMIT ".$public_count.",5";
+    		$command = $connection->createCommand($sq0);
+    		$childrecord = $command->queryAll();
+    		$s=0;
+    	}
+    	//print_r($childrecord);
+    	$count=count($childrecord);
+    	$public_count=$public_count+5;
+    	\Yii::$app->session['public_count']=$public_count;
+    	for($i=0;$i<$count;$i++){
+    		$pic =array();
+    		$pic= json_decode($childrecord[$i]['picurl'],true);
+    		$childrecord[$i]['picurl']=$pic;
+    	
+    		if($pic){
+    			for($j=0;$j<count($pic);$j++){
+    				$picc=explode("media_file/",$pic[$j]);
+    				$photoip="http://192.168.139.202";
+    				$pic[$j]=$photoip."/media_file/".$picc[1];
+    			}
+    	
+    			$childrecord[$i]['picurl']=$pic;
+    		}
+    		$rid=$childrecord[$i]['id'];
+    		$sq0="SELECT rid FROM recordstore WHERE uid='".$uid."' AND recordid='".$rid."'";
+    		$command = $connection->createCommand($sq0);
+    		$c = $command->queryAll();
+    		if(isset($c[0]['rid'])){
+    			$childrecord[$i]['store']=1;
+    		}else{
+    			$childrecord[$i]['store']=0;
+    		}
+    		$tt=$childrecord[$i]['createtime'];
+    		//$date=date("Y",$tt);
+    		//$y=substr($date,2,4);
+    		$tt=strtotime($tt);
+    		$childrecord[$i]['createtime']=date('Y-m-d H:i',$tt);
+    	}  
+    	echo json_encode($childrecord);
+    	//echo json_encode($childuid);
+    	exit();
+    }
+    public function actionDel(){
+    	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+    	$id=\yii::$app->request->get('id');
+    	
+    	$sq0="SELECT id FROM childrecord WHERE id='".$id."'";
+    	$command = $connection->createCommand($sq0);
+    	$c = $command->queryAll();
+    	if(isset($c[0]['id'])){
+    		$sql="DELETE FROM childrecord WHERE id='".$id."'";
+    		//file_put_contents("D://wj.txt","sql:".$sql."\n", FILE_APPEND);
+    		$command = $connection->createCommand($sql);
+    		$command->execute();
+    	}else{    
+    	}
+    	 echo 1;
+    	 exit(); 
+    	
+    }
+    public function actionStore(){
+    	$uid=\Yii::$app->session['user.uid'];
+    	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+    	$id=\yii::$app->request->get('id');
+    	
+    	$sq0="SELECT rid FROM recordstore WHERE uid='".$uid."' AND recordid='".$id."'";
+    	$command = $connection->createCommand($sq0);
+    	$c = $command->queryAll();
+    	if(isset($c[0]['rid'])){}else{    	
+    	$sql="INSERT INTO recordstore(uid,recordid) VALUES('$uid','$id')";
+        //file_put_contents("D://wj.txt","sql:".$sql."\n", FILE_APPEND);
+        $command = $connection->createCommand($sql);
+        $command->execute();
+    	}
+        echo 1;
+    	exit(); 	 
+    }
+    public function actionDestore(){
+    	$uid=\Yii::$app->session['user.uid'];
+    	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+    	$id=\yii::$app->request->get('id');
+    	 
+    	$sq0="SELECT rid FROM recordstore WHERE uid='".$uid."' AND recordid='".$id."'";
+    	$command = $connection->createCommand($sq0);
+    	$c = $command->queryAll();
+    	if(isset($c[0]['rid'])){
+    		$sql="DELETE FROM recordstore WHERE uid='".$uid."' AND recordid='".$id."'";
+    		//file_put_contents("D://wj.txt","sql:".$sql."\n", FILE_APPEND);
+    		$command = $connection->createCommand($sql);
+    		$command->execute();
+    	}else{
+    	}
+    	echo 1;
+    	exit();
+    }
+    
+}

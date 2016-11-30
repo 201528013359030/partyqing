@@ -1,0 +1,88 @@
+<?php
+namespace app\modules\admin\controllers;
+use yii;
+use yii\web\Controller;
+use Rest;
+use Client;
+use app\modules\admin\models\AuthToken;
+use app\modules\admin\models\IctWebService;
+class LessondetailController extends Controller
+{
+	public $layout  = false;
+    public function actionIndex()
+    {
+        //$uid =\Yii::$app->session['user.uid'];
+    	//require_once(dirname(__FILE__)."/config.php");
+    	//$token=\yii::$app->request->get('auth_token');
+    	//print_r($token);
+    	//\Yii::$app->session['token']=$token;
+    	
+    	//$auth = new AuthToken();
+    	//$auth->authTokenSession();
+ 
+        $No=\yii::$app->request->get('No');    	
+    	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+    	header("Content-type:text/html;charset=utf-8");
+
+    	/**************end********************/
+    	   	
+   	    $sql="SELECT * FROM lcteachingreference where No='".$No."'";
+        $command = $connection->createCommand($sql);
+   	    $info = $command->queryOne();
+   	    
+//    	    更新阅读数
+    	$sq2="update lcteachingreference set ReadCount=ReadCount+1 where No ='".$No."'";    		
+    	$command = $connection->createCommand($sq2);
+    	$readd= $command->execute(); 
+    	//echo $info['AttachmentLocation'];
+    	
+    	if(file_exists("/var/lib/mosquitto/tls")){
+    		$tls = "https://";
+    	}else{
+    		$tls = "http://";
+    	}
+    	//$info['AttachmentLocation']="E:/Apache2/webapps/basesys/upload/uu.txt";
+    	//$info['AttachmentLocation']="http://192.168.139.202/basesys/download.php?file_name=/usr/local/www/nginx/html/basesys/upload/uu.txt";
+    	if($info['AttachmentLocation']){
+    	$offline_ip="192.168.139.202";
+    	$tmpUrl = explode("html/",$info['AttachmentLocation']);
+    	$attachList['path'] = $tls.$offline_ip.'/'.$tmpUrl[1];
+    	$attachList['url'] = $attachList['path'];
+    	//$attachList['url'] = "http://192.168.139.202/basesys/download.php?file_name=/usr/local/www/nginx/html/basesys/upload/uu.txt";
+    	$attachList['path'] = base64_encode($attachList['path']);
+    	$tmp = explode("upload/",$info['AttachmentLocation']);
+    	$attachList['name']=$tmp[1];
+    	$attachList['size']=filesize($info['AttachmentLocation']);
+    	//$attachList['size']="239.0";
+    	}else{
+    		$attachList="";
+    	}   	
+        //print_r($attachList);	
+        return $this->render('index',[
+        		'info'=>$info,  
+        		'attachList'=>$attachList,
+        ]);
+    }
+    public function actionDownload(){
+    	$fileurl=\yii::$app->request->get('file');
+    	$filename=\yii::$app->request->get('name');
+    	//   $fileinfo = get_headers($fileurl, 1);
+    	//$fileurl = "http://127.0.0.1".base64_decode($fileurl);
+    	$fileurl = base64_decode($fileurl);
+    	$tmpUrl = explode("webapps/",$fileurl);
+    	$fileurl = "http://"."127.0.0.1"."/media_file/".$tmpUrl[1];
+    	$fileinfo = get_headers($fileurl, 1);
+    	ob_end_clean(); //函数ob_end_clean 会清除缓冲区的内容，并将缓冲区关闭，但不会输出内容。
+    	header("Content-Type: application/force-download;"); //告诉浏览器强制下载
+    	header("Content-Transfer-Encoding: chunked");
+    	header("Content-Disposition: attachment; filename=$filename");   //attachment表明不在页面输出打开，直接下载
+    	header("Content-Length: ". $fileinfo['Content-Length']);
+    	header("Expires: 0");
+    	header("Cache-control: private");
+    	header("Pragma: no-cache"); //不缓存页面
+    	$filesize = readfile($fileurl);
+    
+    }
+  
+}

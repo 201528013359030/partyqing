@@ -1,0 +1,109 @@
+<?php
+/* @var $this yii\web\View */
+use yii\helpers\Html;
+use yii\bootstrap\Nav;
+use yii\bootstrap\NavBar;
+use yii\widgets\Breadcrumbs;
+use app\assets\AppAsset;
+use yii\web\View;
+?>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>每周课表</title>
+<?=Html::cssFile('@web/css/announce2.css')?>
+<?=Html::cssFile('@web/css/bootstrap2.css')?>
+
+<style>
+.listInfo .box{display: inline-block;vertical-align: bottom; font-size: 1.125em; line-height:2.2em ; max-height:2.2em; overflow: hidden; color:#444; width:30%;}
+.listInfo .box2{display: inline-block;vertical-align: bottom; margin-left:4em;color:#30BF78;font-size: 1.125em; line-height:2.2em ; max-height:2.2em; overflow: hidden; width:20%;}
+.btn-primary {
+position:absolute;right:2em;
+color: #fff;
+background-color: #30BF78;
+border-color: #30BF78;
+}
+.btn:hover {
+background-color: #30CF78;
+border-color: #30BF78;
+}
+.btn-primary.active, .open > .dropdown-toggle.btn-primary {
+color: #fff;
+background-color: #30CF78;
+border-color: #30CF78;
+}
+</style>
+
+<?=Html::jsFile('@web/js/iscroll.js')?>
+<?=Html::jsFile('@web/js/jquery.js')?>
+<?=Html::jsFile('@web/js/bootstrap.js')?>
+<script type="text/javascript">
+</script>
+</head>
+<body>	
+<div id="wrap" class="wrap">
+<div id="scroller">
+	<div class="moBox">
+		<div id="listBox" class="listBox">
+			<div class="listIteam" id="empty">
+				<div class="empty">暂无</div>
+			</div>
+			<?php foreach ($list as $key=>$value): ?>
+			<div class="listIteam" id="contentlist_">
+              <a href="index.php?r=admin/schedules/index&classid=<?=$value['oid']?>" class="listInner">  	                	
+					<p class="listInfo" >					     				
+					<span class="box" ><?=$value['gradename']?>&nbsp;&nbsp;&nbsp;<?=$value['name']?></span>                                   																																													
+					</p>
+					<span class="tip ficon ic_arrow_right"></span>									
+				</a>
+			</div>				
+			<? endforeach?>
+		</div> 
+	</div>
+	<input type="hidden" id="count" value=<?=$count?>>
+</div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+$(function(){		
+    var count=$("#count").val();
+    //alert(count);
+    if(count==0){
+        $("#empty").show();
+    }else{
+    	$("#empty").hide();
+    }
+});
+
+function g( selector ){
+	var method = selector.substr(0,1) == '.'?'getElementsByClassName':'getElementById';
+	return document[method]( selector.substr(1) );
+}
+	
+function getLocalTime(nS) {   
+// 	alert(nS);	
+	var date = new Date(nS*1000);
+	Y = date.getFullYear() + '-';
+	M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
+	D = (date.getDate()+1 < 10 ? '0'+(date.getDate()+1) : date.getDate()+1)  + ' ';
+	h =  (date.getHours()+1 < 10 ? '0'+(date.getHours()+1) : date.getHours()+1) + ':';
+	m = (date.getMinutes()+1 < 10 ? '0'+(date.getMinutes()+1) : date.getMinutes()+1)  + ':';
+	s =  (date.getSeconds()+1 < 10 ? '0'+(date.getSeconds()+1) : date.getSeconds()+1); 
+// 	alert(Y+M+D+h+m+s);
+	return Y+M+D+h+m+s;      
+ }
+
+
+	$("div[id^='contentlist']").each(function(){
+	    $(this).click(function(){    
+	      	var imgid = $(this).attr("id");
+	        var  imgidlist=imgid.split("_");
+	        $(this).find("i[id^=icon_new]").hide();
+
+	    })
+	 });
+</script>

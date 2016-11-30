@@ -1,0 +1,35 @@
+<?php
+
+namespace app\modules\admin\controllers;
+
+use Yii;
+use app\modules\admin\models\AnnounceForm;
+use app\models\Enterpris;
+use app\modules\admin\models\IctWebService;
+use app\modules\admin\models\AuthToken;
+use app\models\Curl;
+
+class MainController extends \yii\web\Controller
+{
+	public $enableCsrfValidation = false;//yii默认表单csrf验证，如果post不带改参数会报错！
+    //public $layout  = 'main';
+ //   public $layout  = 'announce';
+
+    public function actionIndex()
+    {	 
+    	   	
+        $connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+    	header("Content-type:text/html;charset=utf-8");
+    	
+    	//$sql="INSERT INTO childsign(childname) VALUES('ff')";
+        $sql="UPDATE childsign SET childname='rRR' WHERE id='4'";
+    	//file_put_contents("D://wj.txt","sql:".$sql."\n", FILE_APPEND);
+    	$command = $connection->createCommand($sql);
+    	$command->execute();
+    	
+    	
+        return $this->render('index');
+    }
+
+}

@@ -1,0 +1,107 @@
+<?php
+namespace app\modules\admin\controllers;
+use yii;
+use yii\web\Controller;
+use Rest;
+use Client;
+use app\modules\admin\models\AuthToken;
+use app\modules\admin\models\IctWebService;
+class ClassdetailController extends Controller
+{
+	public $layout  = false;
+    public function actionIndex()
+    {
+        //$uid =\Yii::$app->session['user.uid'];
+    	//require_once(dirname(__FILE__)."/config.php");
+    	//$token=\yii::$app->request->get('auth_token');
+    	//print_r($token);
+    	//\Yii::$app->session['token']=$token;
+    	$auth = new AuthToken();
+    	$auth->authTokenSession();
+    	$uid=\yii::$app->request->get('uid');//教师uid
+    	$classid=\yii::$app->request->get('classid');//教师uid
+    	\Yii::$app->session['user.classid']=$classid;
+    	\Yii::$app->session['user.uid']=$uid;    
+    	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+    	header("Content-type:text/html;charset=utf-8");
+
+    	if(isset($classid)) {}else{  	
+    	$sql="SELECT classid FROM lcmemdata WHERE muid='".$uid."'";
+        $command = $connection->createCommand($sql);
+   	    $classidall = $command->queryAll();
+   	    $classid=$classidall[0]['classid'];
+
+    	}
+    	$sq2="SELECT name FROM lcorganidata WHERE oid='".$classid."' AND orgatype=1";
+    	$command = $connection->createCommand($sq2);
+    	$class = $command->queryAll();
+    	if(isset($class[0]['name'])){
+    		$classname=$class[0]['name'];
+    	}else{$classname="";};
+    
+    	
+   	    $sq2="SELECT id,name,UAvator,sex FROM lcchildren WHERE classid='".$classid."' ORDER BY id LIMIT 15";
+   	    $command = $connection->createCommand($sq2);
+   	    $childlist = $command->queryAll();
+   	    $count=count($childlist);   	      	    
+   	    
+    	\Yii::$app->session['public_count']=$count;   	
+    	$time=date('Y-m-d',time());
+    	for($i=0;$i<$count;$i++){   	
+    		$UAvator=$childlist[$i]['UAvator'];
+    		if($UAvator){}else{ 
+    			$childlist[$i]['UAvator']="img2/sdydychild.png"; 
+    		}
+    	
+    	}
+    	//$tt=strtotime($course['PublicTime']);    	
+    	//$course['PublicTime']=date('Y-m-d H:i',$tt);
+    	//print_r($childlist);
+        return $this->render('index',[
+        		'list'=>$childlist,        		
+        		'count'=>$count,
+        		'classid'=> $classid,
+        		'classname'=> $classname,
+        		'time'=> $time,     		
+        ]);
+    }
+
+
+    public function actionGetdata(){
+
+    	//\Yii::$app->session['public_count']="5";
+  
+    	$uid=\Yii::$app->session['user.uid'];
+    	$classid=\Yii::$app->session['user.classid'];
+    	
+    	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+    	if(isset($classid)) {}else{
+    	$sql="SELECT classid FROM lcmemdata WHERE muid='".$uid."'";
+    	$command = $connection->createCommand($sql);
+    	$classidall = $command->queryAll();
+    	$classid=$classidall[0]['classid'];
+    	}
+    
+        $public_count=\Yii::$app->session['public_count'];
+        $sq2="SELECT id,name,UAvator,sex FROM lcchildren WHERE classid='".$classid."' ORDER BY id LIMIT ".$public_count.",5";       		         	
+    	$command = $connection->createCommand($sq2);
+    	$childlist = $command->queryAll();
+    	$count=count($childlist);
+    	for($i=0;$i<$count;$i++){
+    		$UAvator=$childlist[$i]['UAvator'];
+    		if($UAvator){}else{
+    			$childlist[$i]['UAvator']="img2/sdydychild.png";
+    		}
+    		 
+    	}
+    	$public_count=$public_count+5;
+    	\Yii::$app->session['public_count']=$public_count;
+    	
+    	echo json_encode($childlist);
+    	exit();
+    
+    }
+    
+}

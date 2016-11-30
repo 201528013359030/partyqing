@@ -1,0 +1,48 @@
+<?php
+/* @var $this yii\web\View */
+use yii\helpers\Html;
+use yii\web\View;
+?>
+<!DOCTYpE HTML pUBLiC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0083)https://192.168.139.246/notice/web/index.php -->
+<html><head><meta content="iE=11.0000" http-equiv="X-Ua-Compatible"><meta content="iE=5.0000" http-equiv="X-Ua-Compatible">
+
+<meta http-equiv="X-Ua-Compatible" content="iE=edge,chrome=1">
+<meta http-equiv="X-Ua-Compatible" content="iE=9" />
+<meta charset="utf-8"> 
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
+<meta name="format-detection" content="telephone=no"> 
+<html >
+<head>	
+	<title>what</title>
+<style>
+body{
+    background-color:rgb(200,220,200);	
+	/*background-image:url(./assets/img/b.jpg);*/
+	filter:alpha(opacity=30);
+	background-position:0px 0px;
+	background-attachment:fixed;
+	background-repeat:no-repeat;
+	line-height:1.7em;
+	letter-spacing:2px;
+	font-size:16px;
+	font-weight:700;
+	font-family:Arial,Helvetica,sans-serif;
+	padding:20px;
+	
+}
+h2{
+	color:rgb(10,190,250);
+	font-weight:lighter;
+	text-decoration:underline blink;	
+}
+</style>	
+
+</head>
+<body>
+
+<h1>渲染页面</h1>
+<?php echo $content; ?>
+
+</body>
+</html>

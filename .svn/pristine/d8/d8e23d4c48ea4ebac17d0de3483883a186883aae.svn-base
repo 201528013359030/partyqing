@@ -1,0 +1,124 @@
+<?php
+/* @var $this yii\web\View */
+use yii\helpers\Html;
+use yii\bootstrap\Nav;
+use yii\bootstrap\NavBar;
+use yii\widgets\Breadcrumbs;
+use app\assets\AppAsset;
+use yii\web\View;
+?>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta id="viewport" name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0">
+<meta name="format-detection" content="telephone=no">
+<title>收入查询</title>
+<?=Html::cssFile('@web/css0/mydoc.css')?>
+<style>
+ul li ul li{
+	height:45px;
+	border-bottom:1px #c2c2c2 solid;	
+	margin-left:-15px;
+	width:98%;
+}
+.li{
+	height:180px;
+	margin-left:20px;
+	border:0;
+	width:87%;	
+}
+.lii{
+	border-top:1px #c2c2c2 solid;
+}
+.inner-wrap{
+	margin:10px;
+}
+.title{
+	background-color:#ffe600;
+	border-top:1px #D1B900 solid;
+	border-bottom:1px #D1B900 solid;
+	height:45px;
+	width:94%;
+}
+.contentl{
+	margin-top:10px;
+	margin-left:5px;
+	display:inline-block;
+	width:40%;
+}
+.contentr{
+	margin-top:10px;
+	margin-left:10px;
+	display:inline-block;
+	width:50%;
+	text-align:right;
+}
+</style>
+<?=Html::jsFile('@web/js0/vendor/jquery.js')?>
+<?=Html::jsFile('@web/js0/jquery-1.11.2.js')?>
+</head>
+<body>
+<div class="off-canvas-wrap" data-offcanvas>
+	<div class="inner-wrap">	 
+	  <ul> 
+	  <?php if($aa==0):?>
+       <li><div class="title" onclick="cc('aa')"><div class="contentl" >本月</div></div>
+        <ul id="ccaa" style="display:block"> 
+          <li><span class="contentl" >-暂无-</span></li>  
+        </ul> 
+      </li> 
+      <?endif?> 
+      <?php foreach ($list as $key=>$value): ?>    
+      <li ><div class="title" onclick="cc('<?=$key?>')">
+           <span class="contentl" ><?php if($value['cc']==1):?>
+                                                                                            本月
+                                   <?else:?> 
+                                   <?=$value['salarytime']?>                                   
+                                   <?endif?></span>
+           <span class="contentr">姓名：<?=$value['name']?></span>
+           </div>
+           <?php if($value['cc']==1):?>  
+          <ul id="cc<?=$key?>" style="display:block"> 
+          <?else:?> 
+          <ul id="cc<?=$key?>" style="display:none"> 
+          <?endif?>
+           <li><span class="contentl" >基本薪酬 </span><span class="contentr">￥<?=$value['basepay']?></span></li> 
+           <li><span class="contentl" >出勤奖罚</span><span class="contentr">￥<?=$value['attenreward']?></span></li> 
+           <li><span class="contentl" >加班补贴</span><span class="contentr">￥<?=$value['overallowa']?></span></li> 
+           <li><span class="contentl" >工龄补贴</span><span class="contentr">￥<?=$value['seniorallow']?></span></li> 
+           <li><span class="contentl" >其他补贴</span><span class="contentr">￥<?=$value['otherallow']?></span></li> 
+           <li><span class="contentl" >奖金</span><span class="contentr">￥<?=$value['award']?></span></li> 
+           <li><span class="contentl" >扣款</span><span class="contentr">￥<?=$value['Fine']?></span></li> 
+           <li><span class="contentl" >补发</span><span class="contentr">￥<?=$value['reissue']?></span></li> 
+           <li><span class="contentl" >应发</span><span class="contentr">￥<?=$value['showsalary']?></span></li> 
+          
+           <li><span class="contentl" >代缴代扣</span></li>          
+           <li class="li"><span class="contentl">保险</span><span class="contentr">￥<?=$value['risk']?></span> 
+           <span class="contentl" >公积金</span><span class="contentr">￥<?=$value['publicfund']?></span> 
+           <span class="contentl" >个税</span><span class="contentr">￥<?=$value['personaltax']?></span> 
+           <span class="contentl" >大额</span><span class="contentr">￥<?=$value['largeamount']?></span>
+           <span class="contentl" >合计</span><span class="contentr">￥<?=$value['total']?></span></li>          
+           <li class="lii"><span class="contentl">实发</span><span class="contentr">￥<?=$value['realsalary']?></span></li>         
+         </ul>
+      </li> 
+      <? endforeach?>               
+    </ul>		
+	</div>
+</div>
+</body>
+</html>
+<?//=Html::jsFile('@web/js0/foundation.min.js')?>
+<script type="text/javascript">
+//$(document).foundation();
+//document.getELementById("a").style.display="block"; 
+function cc(x){
+	var a=x;
+	//alert(a);
+	//document.getElementById(a).style.display="block";	
+	var obj=document.getElementById('cc'+a); 
+	obj.style.display=(obj.style.display=='none')?'block':'none'; 
+}
+</script>

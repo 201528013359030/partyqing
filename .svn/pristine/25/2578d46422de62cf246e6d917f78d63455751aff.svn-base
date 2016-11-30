@@ -1,0 +1,35 @@
+<?php
+namespace app\modules\admin\controllers;
+use Yii;
+use app\modules\admin\models\IctWebService;
+use app\modules\admin\models\AuthToken;
+use app\models\Curl;
+
+class SigninfoController extends \yii\web\Controller
+{
+	public $enableCsrfValidation = false;//yii默认表单csrf验证，如果post不带改参数会报错！
+//    public $layout  = 'main';
+    public $layout  = 'announce';
+//    public $layout  = 'layout';
+    public function actionIndex()
+    {    
+        $id=\yii::$app->request->get('id');
+        $connection = Yii::$app->db;
+        $connection->open();  //初始化数据库
+        header("Content-type:text/html;charset=utf-8");
+               
+        $sql="SELECT * FROM signinfo WHERE id='".$id."'";
+        $command = $connection->createCommand($sql);
+        $detail = $command->queryAll();
+        //print_r($detail[0]);
+        if(isset($detail[0])){
+        	$detail0=$detail[0];
+        }else{
+        	$detail0="";
+        }
+        return $this->render('index', [ 
+        		'info'=> $detail0,       		
+        		]);              
+    }
+
+}

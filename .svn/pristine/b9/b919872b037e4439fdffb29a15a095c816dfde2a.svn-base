@@ -1,0 +1,279 @@
+<?php
+/* @var $this yii\web\View */
+use yii\helpers\Html;
+use yii\web\View;
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>签到详情</title>
+<?=Html::cssFile('@web/css0/jquery-ui.css')?>
+<?=Html::cssFile('@web/css0/jquery-ui-timepicker-addon.css')?>
+<?=Html::jsFile('@web/js0/jquery-1.11.2.js')?>
+<?=Html::jsFile('@web/js0/jquery-ui.js')?>
+<?=Html::jsFile('@web/js0/jquery-ui-timepicker-addon.js')?>
+<style>
+.ui-widget-header {
+border: 1px solid #d4d1bf;
+background: #ffffff url("../web/css0/images/bg2.png") 50% 50% repeat;
+color: #453821;
+font-weight: bold;
+}
+.ui-datepicker select.ui-datepicker-month, .ui-datepicker select.ui-datepicker-year {
+width: 45%;
+background: #30BF78;
+height:35px;
+}
+.today span.ui-state-default{
+	background:#30BF78;
+}
+.today a.ui-state-default{
+	background:url("../web/css0/images/taozi1.png") bottom center no-repeat;
+	background-color:#30BF78;
+	border:0;		
+	-webkit-box-shadow:    1px 0 1px #317C50, /*右边阴影*/     
+   0 1px 1px #317C50; /*底边阴影*/  
+	-moz-box-shadow:1px 0 1px #317C50, /*右边阴影*/     
+   0 1px 1px #317C50; /*底边阴影*/
+	box-shadow:1px 0 1px #317C50, /*右边阴影*/     
+   0 1px 1px #317C50; /*底边阴影*/
+}
+.ui-datepicker {
+width: 100%;
+padding: 0em 0em 0;
+margin:0;	
+display: none;
+height:auto;	
+font-size:1.5em;
+font-family: 幼圆;
+}
+.ui-widget-content {
+border: 1px solid #d9d6c4;
+background: #eceadf url("../web/css0/images/bg2.png") 50% 50% repeat;	
+background-color:;	
+color: #1f1f1f;
+}
+thead {
+display: table-header-group;
+vertical-align: middle;
+border-color: inherit;
+font-size:12pt;
+}
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
+border: 1px solid #cbc7bd;
+font-weight: bold;
+background-color: #FFA8AA;
+height:37px;
+color:grey;	
+font-size:12pt;
+text-align:center;
+}
+.ui-state-disabled, .ui-widget-content .ui-state-disabled, .ui-widget-header .ui-state-disabled {
+opacity: .95;
+filter: Alpha(Opacity=35);
+/* support: IE8; */
+background-image: none;
+height:37px;
+}
+.ui-widget-header .ui-icon {
+background-image: url("../web/css0/images/sanjiao1.png");
+}
+.ui-icon-circle-triangle-e {
+background-position: -22px 0px;
+}
+.ui-icon-circle-triangle-w {
+background-position: 0px 0px;
+}
+.ui-icon {
+width: 22px;
+height: 32px;
+}
+.ui-datepicker .ui-datepicker-prev span, .ui-datepicker .ui-datepicker-next span {
+display: block;
+position: absolute;
+margin-left: -5px;
+margin-top: -5px;
+}
+/* Dates with events on them. Text color - red, background - pastel yellow. */
+td.highlight, table.ui-datepicker-calendar tbody td.highlight a { 
+ background:url("../web/css0/images/taozi1.png") bottom center no-repeat;
+ background-color:#FF6669; 
+ color: #000;	
+	border:0;
+	
+	-webkit-box-shadow:    1px 0 1px #db7093, /*右边阴影*/     
+   0 1px 1px #db7093; /*底边阴影*/  
+	-moz-box-shadow:1px 0 1px #db7093, /*右边阴影*/     
+   0 1px 1px #db7093; /*底边阴影*/
+	box-shadow:1px 0 1px #db7093, /*右边阴影*/     
+   0 1px 1px #db7093; /*底边阴影*/
+ 		
+}
+/* This is Today's day in rightsidebar mini calendar (datepicker). */
+/* Restore style to that of a default day, then just bold it. */
+.ui-state-highlight, .ui-widget-content .ui-state-highlight {
+ border: 1px solid #d3d3d3; 
+ background: #e6e6e6; 
+ font-weight: bold;
+ color: #000000;
+}
+/* This is the selected day in the inline datepicker. */
+.ui-state-active, .ui-widget-content .ui-state-active {
+ color: #000000;
+ opacity: 1.0;
+ filter:Alpha(Opacity=100);
+ border: 1px solid #000000;
+}
+/* Add a little separation between month and year select menus */
+.ui-datepicker select.ui-datepicker-month {
+ width: 42%;
+ margin-right: 6px;
+}
+table{	
+margin:10px 20px 10px 20px;
+width:90%;
+margin-top:50px;	
+border-collapse: collapse;
+text-align:center;
+border-radius: 20px; 
+-moz-border-radius: 20px; 
+-webkit-border-radius: 20px;
+ border: 1px solid #d3d3d3; 				
+}
+table tr th, table tr td {
+color: #4D4D4D;
+font-size: 0.9rem;
+padding:0.5625rem 0.625rem;
+text-align: left;
+border: 1px solid #d3d3d3; 	
+}
+
+</style>
+</head>
+<body>
+	<div class="container">
+		<div class="box">                 
+			<div id="start" ></div>
+		</div>
+	</div>
+	<div style="float:right;margin-top:10px;">
+	<img src="../web/css0/images/pink.png" style="margin-right:5px;width:13px">无记录
+	<img src="../web/css0/images/taozi1.png" style="margin-left:2px;margin-right:5px;width:16px">有记录
+	</div>
+	<table>
+	   <tr>  
+            <th ></th>
+            <th >时间</th> 
+            <th >签到人</th> 
+            <th >代签</th>  
+       </tr>   
+       <tr>  
+             <td >签到</td>
+             <td >yy</td>
+             <td >yy</td>
+             <td >yy</td>      
+       </tr>
+	</table>
+<input type="hidden" id="uid" value="<?=$cid?>">	
+<script type="text/javascript">
+$(document).ready(function(){	
+    var today = new Date();
+    var m = today.getMonth(), 
+    d = today.getDate(), 
+    y = today.getFullYear();
+    var eventDates = [];
+    $.ajaxSetup({  
+    async : false  
+    	});        	    
+   // setTimeout(function () {
+    $("#start").datepicker({			
+	    	prevText: '&#x3c;上月',
+			nextText: '下月&#x3e;',
+			//defaultDate:"2016-12-22",
+			//duration:"10s",//日期选择器呈现的速度，可以为毫秒数
+	    	changeMonth: true,
+	        changeYear: true,
+	        firstDay: 0,
+            dateFormat: "yy-mm-dd",
+            showTime: false,
+            showHour: false,
+            showMinute: false,
+            showMonthAfterYear: true,
+            dayNames: ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'],
+      		dayNamesShort: ['周日','周一','周二','周三','周四','周五','周六'],
+      		dayNamesMin: ['日','一','二','三','四','五','六'],
+      		monthNames: ['1月','2月','3月','4月','5月','6月',
+           		   		 '7月','8月','9月','10月','11月','12月'],
+            monthNamesShort: ['1','2','3','4','5','6',
+           		   		 '7','8','9','10','11','12'],
+            //onChangeMonthYear:fetchEventDays,	
+            beforeShowDay:highlightDays,                		 
+			//onSelect:getday,			      
+		});
+   // }, 100);
+	    // ------------------------------------------------------------------
+	    // highlightDays - Add a custom css class to dates that exist in the
+	    // eventDates array. Must also add the css for td.highlight (above).
+	    // ------------------------------------------------------------------
+	    var yearkeep=0;
+	    var monthkeep=0;
+	    function highlightDays(date) {
+	    	//console.log(date.getFullYear());
+	    	//console.log(date.getMonth());
+	    	//console.log(date.getDate());
+	    	var year=date.getFullYear();
+	    	var month=date.getMonth()+1;
+	    	//console.log(month);
+	    	//console.log(monthkeep);
+	    	if(month==monthkeep&&year==yearkeep){
+		    }else{
+		    	    eventDates = [];
+			    	monthkeep=month;
+			    	yearkeep=year;
+			      	var uid=document.getElementById('uid').value;
+			       	$.get("index.php?r=admin/signdate/data",{year:year,month:month,cid:uid
+			    	    	},function(result){	    		
+			    	    		//console.log(result);
+			    	    		if(result){	  
+			    	    			 var event_dates = result;
+			    	    			 //alert(event_dates);  
+			    	    		       for(var i = 0; i < event_dates.length; i++) {
+			    	    		        var date_parts = event_dates[i].split('-');
+			    	    		        eventDates.push(new Date(date_parts[0], date_parts[1]-1, date_parts[2]));
+				    		    		   }
+			    	    		}else{
+			    	     			//alert("fail");
+			    	    		}
+			    	     
+			    	    	},'json');	
+			       	//console.log(date.getTime());	
+			    	//console.log(today.toLocaleDateString());	    	    	
+			}	
+	    	// console.log(eventDates);
+	    	 	  	        
+	        //if ((today.getYear() == date.getYear())&&(today.getMonth() == date.getMonth())&&(today.getDate() == date.getDate())) 
+	        	//console.log(date.toLocaleDateString());		        	
+	           for (var i = 0; i < eventDates.length; i++) {
+		    	       //console.log(eventDates.length);
+	        	   //console.log(55);
+	        	    if (eventDates[i].getTime() == date.getTime()) {
+		    	          //alert(eventDates); 
+	        	    	if ((today.toLocaleDateString()==date.toLocaleDateString())){   
+		 		               return [true, 'today'];    
+		 		        }else{   
+		                       return [true, 'highlight'];
+		                }
+		           }
+		       }
+	           if ((today.toLocaleDateString()==date.toLocaleDateString())){ 
+	        	   //console.log(66);  
+		               return [false, 'today'];    
+		       }else{		 			    	 
+		    	       return [false, '']; 
+	           }
+	    }	    
+});		   		
+</script>	
+</body>
+</html>

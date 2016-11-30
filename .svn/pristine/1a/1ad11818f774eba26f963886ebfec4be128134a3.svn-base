@@ -1,0 +1,170 @@
+<?php
+/* @var $this yii\web\View */
+use yii\helpers\Html;
+use yii\web\View;
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>每日观察</title>
+<?=Html::cssFile('@web/css0/jquery-ui.css')?>
+<?=Html::cssFile('@web/css0/jquery-ui-timepicker-addon.css')?>
+<?=Html::jsFile('@web/js0/jquery-1.11.2.js')?>
+<?=Html::jsFile('@web/js0/jquery-ui.js')?>
+<?=Html::jsFile('@web/js0/jquery-ui-timepicker-addon.js')?>
+<style>
+.ss{
+	background-color:#000;
+	color:#000;
+	background:#000;
+}
+.ui-widget-header .ui-icon {
+background-image: url("../web/css0/images/ui-icons_b83400_256x240.png");
+}
+.ui-datepicker {
+width: 100%;
+padding: .2em .2em 0;
+display: none;
+height:auto;	
+font-size:1.5em;
+}
+.ui-datepicker-next span {
+display: block;
+position: absolute;
+left: 10%;
+margin-left: 0px;
+top: 10%;
+margin-top: 0px;
+}
+/* Dates with events on them. Text color - red, background - pastel yellow. */
+td.highlight, table.ui-datepicker-calendar tbody td.highlight a { 
+ background: none !important;
+ background-color: #fffac2 !important; 
+ color: #FF0000;
+}
+/* This is Today's day in rightsidebar mini calendar (datepicker). */
+/* Restore style to that of a default day, then just bold it. */
+.ui-state-highlight, .ui-widget-content .ui-state-highlight {
+ border: 1px solid #d3d3d3; 
+ background: #e6e6e6 url( CodeGo.net  50% 50% repeat-x; 
+ font-weight: bold;
+ color: #555555;
+}
+/* This is the selected day in the inline datepicker. */
+.ui-state-active, .ui-widget-content .ui-state-active {
+ color: #000000;
+ opacity: 1.0;
+ filter:Alpha(Opacity=100);
+ border: 1px solid #000000;
+}
+/* Add a little separation between month and year select menus */
+.ui-datepicker select.ui-datepicker-month {
+ width: 42%;
+ margin-right: 6px;
+}
+</style>
+</head>
+<body>
+	<div class="container">
+		<div class="box">                 
+			<div id="start"></div>
+		</div>
+	</div>
+<input type="hidden" id="uid" value="<?=$uid?>">	
+<script type="text/javascript">
+$(document).ready(function(){	
+    var today = new Date();
+    var m = today.getMonth(), 
+    d = today.getDate(), 
+    y = today.getFullYear();
+    var eventDates = [];
+    $.ajaxSetup({  
+    async : false  
+    	});        	    
+   // setTimeout(function () {
+    $("#start").datepicker({			
+	    	prevText: '&#x3c;上月',
+			nextText: '下月&#x3e;',
+			//defaultDate:"2016-12-22",
+			//duration:"10s",//日期选择器呈现的速度，可以为毫秒数
+	    	changeMonth: true,
+	        changeYear: true,
+	        firstDay: 0,
+            dateFormat: "yy-mm-dd",
+            showTime: false,
+            showHour: false,
+            showMinute: false,
+            showMonthAfterYear: true,
+            dayNames: ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'],
+      		dayNamesShort: ['周日','周一','周二','周三','周四','周五','周六'],
+      		dayNamesMin: ['日','一','二','三','四','五','六'],
+      		monthNames: ['1月','2月','3月','4月','5月','6月',
+           		   		 '7月','8月','9月','10月','11月','12月'],
+            monthNamesShort: ['1','2','3','4','5','6',
+           		   		 '7','8','9','10','11','12'],
+            //onChangeMonthYear:fetchEventDays,	
+            beforeShowDay:highlightDays,                		 
+			//onSelect:getday,
+			onSelect:function(dateText,inst){  				
+				//alert(dateText);				
+				 var uid=document.getElementById('uid').value;
+				 var geturl = "index.php?r=admin/dayrecorddetailex/index&uid="+uid+"&time="+dateText;
+			     geturl=encodeURI(encodeURI(geturl));
+			     window.location.href =geturl;
+				 //$("#end").datepicker("option","minDate",dateText);  
+				  //start = dateText;
+			}, 				      
+		});
+   // }, 100);
+	    // ------------------------------------------------------------------
+	    // highlightDays - Add a custom css class to dates that exist in the
+	    // eventDates array. Must also add the css for td.highlight (above).
+	    // ------------------------------------------------------------------
+	    var yearkeep=0;
+	    var monthkeep=0;
+	    function highlightDays(date) {
+	    	//console.log(date.getFullYear());
+	    	//console.log(date.getMonth());
+	    	//console.log(date.getDate());
+	    	var year=date.getFullYear();
+	    	var month=date.getMonth()+1;
+	    	//console.log(month);
+	    	//console.log(monthkeep);
+	    	if(month==monthkeep&&year==yearkeep){
+		    }else{
+			    	monthkeep=month;
+			    	yearkeep=year;
+			      	var uid=document.getElementById('uid').value;
+			       	$.get("index.php?r=admin/dayrecorddate/data",{year:year,month:month,uid:uid
+			    	    	},function(result){	    		
+			    	    		//console.log(result);
+			    	    		if(result){	  
+			    	    			 var event_dates = result;
+			    	    			 //alert(event_dates);  
+			    	    		       for(var i = 0; i < event_dates.length; i++) {
+			    	    		        var date_parts = event_dates[i].split('-');
+			    	    		        eventDates.push(new Date(date_parts[0], date_parts[1]-1, date_parts[2]));
+				    		    		   }
+			    	    		}else{
+			    	     			//alert("fail");
+			    	    		}
+			    	     
+			    	    	},'json');	    	    	
+			}	
+	    	 console.log(eventDates);			 			    	 
+	      for (var i = 0; i < eventDates.length; i++) {
+	    	 //console.log(eventDates.length);	
+	      if ((eventDates[i].getTime() == date.getTime())) {
+	    	  //alert(eventDates); 
+	       return [true, 'highlight'];
+	      }
+	     }
+	     return [false, ''];
+	 
+	    }
+	   });		
+   		
+	</script>	
+</body>
+</html>

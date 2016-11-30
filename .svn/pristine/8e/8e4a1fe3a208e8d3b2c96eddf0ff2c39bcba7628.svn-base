@@ -1,0 +1,281 @@
+<?php
+namespace app\modules\admin\controllers;
+use yii;
+use yii\web\Controller;
+use Rest;
+use Client;
+use app\modules\admin\models\AuthToken;
+use app\modules\admin\models\IctWebService;
+class SigninsteadController extends Controller
+{
+	public $layout  = false;
+    public function actionIndex()
+    {
+        //$uid =\Yii::$app->session['user.uid'];
+    	require_once(dirname(__FILE__)."/config.php");
+    	//$token=\yii::$app->request->get('auth_token');
+    	//print_r($token);
+    	//\Yii::$app->session['token']=$token;
+    	$uid=\yii::$app->request->get('uid');//教师uid
+    	//\Yii::$app->session['user.uid']=$uid;
+    	\Yii::$app->session['user.uid']=$uid;
+    	//$auth = new AuthToken();
+    	//$auth->authTokenSession();
+    	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+    	header("Content-type:text/html;charset=utf-8");
+    	$timenow=time();
+    	$timenow=date("Y-m-d",$timenow);
+    	   	
+    	$sql="SELECT classid,name FROM lcmemdata WHERE muid='".$uid."'";
+        $command = $connection->createCommand($sql);
+   	    $classidall = $command->queryAll();
+   	    $classid=$classidall[0]['classid'];
+   	    $name=$classidall[0]['name'];
+   	    \Yii::$app->session['user.name']=$name;
+   	    //echo $name;
+   	    $sq2="SELECT id,name,UAvator FROM lcchildren WHERE classid='".$classid."' LIMIT 5";
+   	    $command = $connection->createCommand($sq2);
+   	    $childlist = $command->queryAll();
+   	    $count=count($childlist);
+   	    
+   	    for($i=0;$i<$count;$i++){
+   	    	$childuid=$childlist[$i]['id'];
+   	    	$sq3="SELECT timein,timeout,istimeout FROM childsign WHERE childuid='".$childuid."'  AND timein>='".$timenow."' order by timein desc";
+   	    	$command = $connection->createCommand($sq3);
+   	    	$child = $command->queryAll();
+   	    	//$childuid[$i]['sign']=$child[0];
+   	    	//print_r($child);
+   	    	//print_r($sq3);
+   	    	if(isset($child[0])){
+   	    	$childlist[$i]['sign']=$child[0];
+   	    	//print_r($child[0]);
+   	    	 } else{
+   	    	$childlist[$i]['sign']=0;
+   	    	 }
+   	    	 $UAvator=$childlist[$i]['UAvator'];
+   	    	 if($UAvator){}else{
+   	    	 	$childlist[$i]['UAvator']="img2/sdydychild.png";
+   	    	 } 
+   	    }
+   	    //print_r($childlist);
+    	\Yii::$app->session['public_count']=$count;   	
+    	
+    	//$tt=strtotime($course['PublicTime']);    	
+    	//$course['PublicTime']=date('Y-m-d H:i',$tt);
+    	$sign=2;
+    	
+        return $this->render('index',[
+        		'list'=>$childlist,        		
+        		'count'=>$count,
+        		//'sign'=>$sign       		
+        ]);
+    }
+    public function actionSignin(){
+    
+    	$childuid=\yii::$app->request->get('uid');
+    	$uid =\Yii::$app->session['user.uid'];
+    	$name =\Yii::$app->session['user.name'];
+    	require_once(dirname(__FILE__)."/config.php");
+     	$connection = Yii::$app->db;
+    	$connection->open();
+    	$time=date('Y-m-d H:i:s',time());
+    	$timelast=date('Y-m-d H:i',time());
+    	$time0=date('H:i',time());
+    	
+     	$sq3='SELECT classid,name,eid FROM lcchildren WHERE id='.$childuid;
+    	$command = $connection->createCommand($sq3);
+    	$child = $command->queryAll();
+    	$classuid=$child[0]['classid'];
+    	$childname=$child[0]['name'];
+    	$eid=$child[0]['eid'];
+    	
+        $sql="INSERT INTO childsign(classuid,childuid,childname,timein,personin,insteadin,namein,schoolid) VALUES('$classuid','$childuid','$childname','$time','$uid','1','$name','$eid')"; //SET course=".$id." AND uid=".$uid;  
+    //	file_put_contents("D://wt1.txt","sql:".$sql."\n", FILE_APPEND);
+    	$command = $connection->createCommand($sql);
+    	$command->execute();
+    	
+    	/***************插入公告内容*****************/
+    	$content=$childname." 于 ".$time." 签到。代签人：".$name."。";
+    	$sq3="INSERT INTO signinfo(title, content,sender,sender_name,childuid) VALUES ('签到通知', '$content', '$uid','管理员','$childuid')";
+    	$command = $connection->createCommand($sq3);
+    	$command->execute();
+    	
+    	$sq2="SELECT id FROM signinfo WHERE childuid='".$childuid."' AND sender='".$uid."' AND DATE_FORMAT(time,'%Y-%m-%d %H:%i')='".$timelast."' order by time desc";//
+    	$command = $connection->createCommand($sq2);
+    	$sign= $command->queryAll();
+    	//file_put_contents("D://wt1.txt","sql:".$sq2."\n", FILE_APPEND);
+    	//print_r($sign);
+    	$signid=$sign[0]['id'];
+   /**************报名通知uids****************/
+    	$sq6="SELECT muid FROM lcmemdata where childid='$childuid' AND mtype=1";
+    	$command = $connection->createCommand($sq6);
+    	$parents=$command->queryAll();
+    	$count=count($parents);
+    	$data9=array();
+    	for($i=0;$i<$count;$i++){
+    		$uid0 = $parents[$i]["muid"];
+    		$data9["uids[$i]"]=$uid0;
+    	}
+/**************报名通知 轻应用接口****************/
+    	$authtoken= $elggclient->post('/rest/json/?method=auth.gettoken',array("name"=>"buliping","password"=>"123456","flag"=>"1","api_key"=>$api_key));
+    	$authtoken=$authtoken['result']['auth_token'];
+    	$eid=explode('@',$uid);
+    	$data9["id"]="78";
+    	$data9["api_key"]=$api_key;
+    	$data9["eid"]="$eid[1]";
+    	$data9["title"]="签到通知";
+    	$data9["url"]="/childqing/web/index.php?r=admin/signinfo/index&id=".$signid;
+    	//$data["auth_token"]="$token";
+    	$data9["auth_token"]="$authtoken";
+    	//$data9["uids[0]"]="$uid";
+    	//print_r($data9);
+    	$pc= $elggclient->post('/rest/json/?method=lapp.notice',$data9);
+    	//print_r($pc);
+/****************发通知end******************/
+    	
+    	/***************记录发送目标*****************/
+    /*	$sq5="SELECT * FROM noticeinfo where sender='$uid' AND time='$time'";
+    	$command = $connection->createCommand($sq5);
+    	$ann=$command->queryAll();
+    	//print_r($ann[0]['announce_id']);
+    	$announce_id =$ann[0]['announce_id'];
+    	
+    	$sq6="SELECT muid FROM lcmemdata where childid='$childuid' AND mtype=1";
+    	$command = $connection->createCommand($sq6);
+    	$parents=$command->queryAll();
+    	$count=count($parents);
+    	for($i=0;$i<$count;$i++){
+    		$uid0 = $parents[0]["muid"];
+    		$sq7="INSERT INTO noticereader(uid,relation,announce_id,time) VALUES('$uid0','unread','$announce_id','$time')";
+    		$command = $connection->createCommand($sq7);
+    		$command->execute();
+    	}
+    	
+    	/***************插入公告内容end*****************/
+    	echo json_encode($time0);  	
+    	exit();
+    
+    }
+    public function actionSignout(){
+    
+    	$childuid=\yii::$app->request->get('uid');
+    	$uid =\Yii::$app->session['user.uid'];
+    	$name =\Yii::$app->session['user.name'];
+    	require_once(dirname(__FILE__)."/config.php");
+    	$connection = Yii::$app->db;
+    	$connection->open();
+    	$time=date('Y-m-d H:i:s',time());
+    	$timelast=date('Y-m-d H:i',time());
+    	$time0=date('H:i',time());
+    	
+    	$sq3='SELECT classid,name,eid FROM lcchildren WHERE id='.$childuid;
+    	$command = $connection->createCommand($sq3);
+    	$child = $command->queryAll();
+    	$classuid=$child[0]['classid'];
+    	$childname=$child[0]['name'];
+    	$eid=$child[0]['eid'];
+    	
+    	$sq3='SELECT id FROM childsign WHERE childuid='.$childuid.' AND istimeout=0 order by timein desc';
+    	$command = $connection->createCommand($sq3);
+    	$child = $command->queryAll();
+    	$id=$child[0]['id'];    	
+    	$sql="UPDATE childsign SET nameout='".$name."',insteadout=1,istimeout=1,personout='".$uid."' WHERE id=".$id;
+    	//	file_put_contents("D://wt1.txt","sql:".$sql."\n", FILE_APPEND); 
+    	$command = $connection->createCommand($sql);
+    	$command->execute();
+    	/***************插入公告内容*****************/
+    	$content=$childname." 于 ".$time." 签退。代签人：".$name."。";
+    	$sq3="INSERT INTO signinfo(title, content,sender,sender_name,childuid) VALUES ('签退通知', '$content', '$uid','管理员','$childuid')";
+    	$command = $connection->createCommand($sq3);
+    	$command->execute();
+    	 
+    	$sq2="SELECT id FROM signinfo WHERE childuid='".$childuid."' AND sender='".$uid."' AND DATE_FORMAT(time,'%Y-%m-%d %H:%i')='".$timelast."' order by time desc";//
+    	$command = $connection->createCommand($sq2);
+    	$sign= $command->queryAll();
+    	//file_put_contents("D://wt1.txt","sql:".$sq2."\n", FILE_APPEND);
+    	//print_r($sign);
+    	$signid=$sign[0]['id'];
+    	/**************报名通知uids****************/
+    	$sq6="SELECT muid FROM lcmemdata where childid='$childuid' AND mtype=1";
+    	$command = $connection->createCommand($sq6);
+    	$parents=$command->queryAll();
+    	$count=count($parents);
+    	$data9=array();
+    	for($i=0;$i<$count;$i++){
+    		$uid0 = $parents[$i]["muid"];
+    		$data9["uids[$i]"]=$uid0;}
+    	/**************报名通知 轻应用接口****************/
+    	$authtoken= $elggclient->post('/rest/json/?method=auth.gettoken',array("name"=>"buliping","password"=>"123456","flag"=>"1","api_key"=>$api_key));
+    	$authtoken=$authtoken['result']['auth_token'];
+    	$eid=explode('@',$uid);
+    	$data9["id"]="78";
+    	$data9["api_key"]=$api_key;
+    	$data9["eid"]="$eid[1]";
+    	$data9["title"]="签退通知";
+    	$data9["url"]="/childqing/web/index.php?r=admin/signinfo/index&id=".$signid;
+    	//$data["auth_token"]="$token";
+    	$data9["auth_token"]="$authtoken";
+    	//$data9["uids[0]"]="$uid";
+    	//print_r($data9);
+    	$pc= $elggclient->post('/rest/json/?method=lapp.notice',$data9);
+    	//print_r($pc);
+    	/****************发通知end******************/
+    	//echo "1";
+    	echo json_encode($time0);
+    	exit();
+    
+    }
+
+    public function actionGetdata(){
+
+    	//\Yii::$app->session['public_count']="5";
+  
+    	$uid=\Yii::$app->session['user.uid'];
+    	
+    	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+    	$timenow=time();
+    	$timenow=date("Y-m-d",$timenow);
+    	$sql="SELECT classid FROM lcmemdata WHERE muid='".$uid."'";
+    	$command = $connection->createCommand($sql);
+    	$classidall = $command->queryAll();
+    	$classid=$classidall[0]['classid'];
+    	
+    
+        $public_count=\Yii::$app->session['public_count'];
+        $sq2="SELECT id,name,UAvator FROM lcchildren WHERE classid='".$classid."' LIMIT ".$public_count.",5";       		         	
+    	$command = $connection->createCommand($sq2);
+    	$childlist = $command->queryAll();
+    	$count=count($childlist);
+    	
+    	$public_count=$public_count+5;
+    	\Yii::$app->session['public_count']=$public_count;
+    	
+    	for($i=0;$i<$count;$i++){
+    		$childuid=$childlist[$i]['id'];
+    		$sq3="SELECT timein,timeout,istimeout FROM childsign WHERE childuid='".$childuid."' AND timein>='".$timenow."' order by timein desc";
+    		$command = $connection->createCommand($sq3);
+    		$child = $command->queryAll();
+    		//$childuid[$i]['sign']=$child[0];
+    		if(isset($child[0])){
+    			$childlist[$i]['sign']=$child[0];    		
+    			$tt=strtotime($childlist[$i]['sign']['timein']);
+    			$childlist[$i]['sign']['timein']=date('H:i',$tt);
+    			$t2=strtotime($childlist[$i]['sign']['timeout']);
+    			$childlist[$i]['sign']['timeout']=date('H:i',$t2);
+    			//print_r($child[0]);
+    		} else{
+    			$childlist[$i]['sign']=0;
+    		}
+    		$UAvator=$childlist[$i]['UAvator'];
+    		if($UAvator){}else{
+    			$childlist[$i]['UAvator']="img2/sdydychild.png";
+    		}
+    	}
+    	echo json_encode($childlist);
+    	exit();
+    
+    }
+    
+}

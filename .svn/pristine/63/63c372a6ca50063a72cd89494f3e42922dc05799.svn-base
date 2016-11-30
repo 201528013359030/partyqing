@@ -1,0 +1,63 @@
+<?php
+/* @var $this yii\web\View */
+use yii\helpers\Html;
+
+?>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta content="telephone=no" name="format-detection" />
+<meta name="format-detection" content="email=no" />
+
+<?=Html::cssFile('@web/css/share.css')?>
+
+<title>招贴管理移动端分享页</title>
+</head>
+<body>
+
+<div id="wrap" class="wrap"  style="display: block;">
+
+	<div class="moGrid">
+		<div id="content1" class="content">
+		
+			<!--
+			*说明：ul li 结构
+			*class="J_Poster picOne" ： J_Poster为所有图片函数的启动标识
+			*imgsrc：为缩略图的地址  imgsrcBig：加载大图时的地址
+			-->
+			
+			<ul class="J_Poster piclist">
+				<li imgsrc = 'img/50.png' imgsrcBig = 'img/50.png'></li>				
+				<li imgsrc = 'img/50.png' imgsrcBig = 'img/50.png'></li>
+				<li imgsrc = 'img/50.png' imgsrcBig = 'img/50.png'></li>
+				<li imgsrc = 'img/50.png' imgsrcBig = 'img/50.png'></li>
+				<li imgsrc = 'img/50.png' imgsrcBig = 'img/50.png'></li>
+			</ul>			
+		</div>		
+	</div>
+	<div class="moBox commWrap">		
+
+	</div>
+
+</div>
+<?=Html::jsFile('@web/js/momo.js')?>
+<?=Html::jsFile('@web/js/iscroll0.js')?>
+<script type="text/javascript">
+/*
+ * 名称：公共函数
+ * 作用：通用函数 g()
+ */
+
+//定义公共函数
+function g( selector ){
+	var method = selector.substr(0,1) == '.'?'getElementsByClassName':'getElementById';
+	return document[method]( selector.substr(1) );
+}
+//初始化图片列表 相当于 Carsousel var c= new Carsousel(g(".J_Poster")[0]);
+Carsousel.init(g(".J_Poster"));
+
+</script>
+</body>
+</html>

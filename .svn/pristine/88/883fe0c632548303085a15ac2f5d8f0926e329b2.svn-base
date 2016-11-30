@@ -1,0 +1,84 @@
+<?php
+/* @var $this yii\web\View */
+use yii\helpers\Html;
+use yii\bootstrap\Nav;
+use yii\bootstrap\NavBar;
+use yii\widgets\Breadcrumbs;
+use app\assets\AppAsset;
+use yii\web\View;
+?>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta id="viewport" name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0">
+<meta name="format-detection" content="telephone=no">
+<title>每日观察</title>
+<?=Html::jsFile('@web/js/jquery.min.js')?>
+<?=Html::jsFile('@web/js/bootstrap.js')?>
+<?=Html::cssFile('@web/css/bootstrap.css')?>
+<style>
+table td{padding:10px;font-size:11pt;text-align:center;}
+ul{
+	list-style-type:none;
+	font-size:12pt;
+	line-height:2.5em;
+}
+.btn-primary {
+position:absolute;right:2em;
+color: #fff;
+background-color: #30BF78;
+border-color: #30BF78;
+}
+.btn:hover {
+background-color: #30CF78;
+border-color: #30BF78;
+}
+.btn-primary.active, .open > .dropdown-toggle.btn-primary {
+color: #fff;
+background-color: #30CF78;
+border-color: #30CF78;
+}
+.img00{background-color:#30CF78;vertical-align:center;margin:15px;width:40px;height:40px;margin-left:25px;}
+</style>
+</head>
+<body>
+	
+<div>	
+<img  class="img00" src="<?=$pic?>"/>
+<span style="display:inline-block;color:#30BF78;width:15%;"><?=$name?></span>
+<span style="display:inline-block;color:#30BF78;width:20%"><?=$time?>  </span>
+ <?php if($usertype==3):?>
+<button type="button" class="btn btn-primary" style="float:right;margin:15px" name="submitp" id="submitp" data-toggle="button" onclick="next('<?=$childuid?>')">下一个</button>																										
+ <?endif?>  
+</div>
+<table border="1" cellpadding="10" style="margin:20px;width:90%;margin-top:6px">
+<?php foreach ($list as $key=>$value): ?>
+   <tr>
+    <td ><?=$value['name']?></td>
+    <td ><?=$value['default']?></td>  
+  </tr>  
+</div>
+<? endforeach?> 
+ <tr>
+    <td>备注</td>
+    <td ><?=$remark?></td> 
+  </tr>
+</table>
+      <input type="hidden" name="uid" id="uid" value="<?=$childuid?>">
+ 
+<script>
+function next(x){	
+	var uid=x;
+	//alert(uid);
+	 var geturl = "index.php?r=admin/dayrecorddetailex/save&uid="+uid;//+"&type="+type;
+		geturl=encodeURI(encodeURI(geturl));
+		window.location.href =geturl;
+}
+
+</script>
+
+</body>
+</html>

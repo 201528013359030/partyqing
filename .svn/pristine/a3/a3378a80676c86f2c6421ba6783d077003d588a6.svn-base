@@ -1,0 +1,31 @@
+<?php
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+ <html xmlns="http://www.w3.org/1999/xhtml"> <head> <title>runcode</title> 
+ <meta http-equiv="Content-Type" content="text/html; charset=gb2312" /> 
+ <meta name="Author" content="Sheneyan" /> 
+ <script type="text/javascript">
+  function delTbody(n,i){ 
+  	var t=document.getElementById(n);
+    if (!t)return; 
+    var tbs=t.getElementsByTagName('tbody');
+    if (tbs.length==0){ alert('tbody都被你干掉了，你还想怎么样？'); return; } 
+    if (!tbs[i]){ alert('你指定的tbody索引号对应的tbody不存在'); return; } 
+    t.removeChild(tbs[i]); } 
+</script>
+
+     <style type="text/css"> </style> 
+    </head> <body> <table id="tt"> 
+    <tbody> <tr> <td>123</td><td>123</td><td>123</td><td>123</td> 
+    </tr> <tr> <td>123</td><td>123</td><td>123</td><td>123</td> 
+    </tr> <tr> <td>123</td><td>123</td><td>123</td><td>123</td>
+     </tr>
+      </tbody> 
+     <tbody> <tr> <td>abc</td><td>abc</td><td>abc</td><td>abc</td> 
+     </tr> <tr> <td>abc</td><td>abc</td><td>abc</td><td>abc</td> </tr> <tr> 
+     <td>abc</td><td>abc</td><td>abc</td><td>abc</td> </tr> 
+     </tbody>
+      </table> 
+     <button onclick="delTbody('tt',0)">删除表格的第一个tbody（这个表格只有俩tbody，所以这个按钮只能按两次……）
+     </button> 
+     </body> 
+     </html>

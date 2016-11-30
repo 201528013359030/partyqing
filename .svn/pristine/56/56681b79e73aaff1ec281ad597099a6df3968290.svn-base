@@ -1,0 +1,18 @@
+﻿<?php
+/* @var $this yii\web\View */
+use yii\helpers\Html;
+use yii\web\View;
+?>
+
+<html><head><meta content="iE=11.0000" http-equiv="X-Ua-Compatible"><meta content="iE=5.0000" http-equiv="X-Ua-Compatible">
+ 
+<TiTLE>公告详情</TiTLE> 
+
+
+<meta name="GENERaTOR" content="MSHTML 11.00.9600.18098"></HEaD> 
+<body>
+
+<script type="text/javascript">
+
+</script>
+ </body></html>

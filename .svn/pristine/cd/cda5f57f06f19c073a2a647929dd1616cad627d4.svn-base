@@ -1,0 +1,102 @@
+<?php
+namespace app\modules\admin\controllers;
+
+use Yii;
+use yii\web\Controller;
+use app\modules\admin\models\AuthToken;
+use app\modules\admin\models\IctWebService;
+/**
+ * StudentController implements the CRUD actions for Studentinfo model.
+ */
+class PicapplyController extends Controller
+{
+	public $enableCsrfValidation = false;//yii默认表单csrf验证，如果post不带改参数会报错！
+	public $layout  = 'layout';
+
+    public function actionIndex()
+    {
+    	$uid=\yii::$app->request->get('uid');
+    	$token=\yii::$app->request->get('token');
+    	if($token){
+    		\Yii::$app->session['token']=$token;
+    	}
+    	if($uid){
+    		\Yii::$app->session['user.uid']=$uid;
+    	}
+    	$token=\Yii::$app->session['token'];
+    	$sender=\Yii::$app->session['user.uid'];
+    	//print_r($token);
+    	//$auth = new AuthToken();
+    	//$auth->authTokenSession();
+    	header("Content-type:text/html;charset=utf-8");
+    	$connection = Yii::$app->db;
+    	$connection->open();
+    	$id=\yii::$app->request->get('id');
+    	
+    	$sq0='SELECT CourseName FROM Y_Course where YCNo='.$id;
+    	$command = $connection->createCommand($sq0);
+    	$coursename = $command->queryAll();
+    	//print_r($coursename[0]['CourseName']);
+    	
+    	$sql='SELECT *FROM stuapply where course='.$id.' group by uid';;
+    	$command0 = $connection->createCommand($sql);
+    	$all = $command0->queryAll();
+    	$number=count($all);
+    	
+    	$sq2='SELECT oidname FROM stuapply where course='.$id.' GROUP BY oidname';
+    	$command = $connection->createCommand($sq2);
+    	$company = $command->queryAll();
+    	$company0=$company[0]['oidname']; 
+    	
+    	$aa=strlen($company0)/18;    	
+    	//echo $aa;
+    	for($a=0;$a<$aa;$a++)
+    	{
+    		$com=substr($company0,$a*18,18);
+    		if($a==0){
+    		$company00=$com;
+    		}else{
+    		$company00=$company00."\\n".$com;}
+    		
+    	}
+    	//print_r($company00);
+    	$sq3='SELECT * FROM stuapply WHERE  course='.$id.' AND oidname='."'$company0'".' GROUP BY uid';
+    	$command = $connection->createCommand($sq3);
+    	$student = $command->queryAll();
+    	$applynum=count($student);
+    	
+    	$companysmall=$company0;
+    	$company0=$company00;
+    	
+    	for($i=1;$i<=count($company)-1;$i++){
+    		$n=$company[$i]['oidname']; 
+    		$companysmall=$companysmall.",".$n;
+    		$aa=strlen($n)/18;
+    		for($a=0;$a<$aa;$a++)
+    		{
+    		     $com=substr($n,$a*18,18);
+    		     if($a==0){
+    		     $company00=$com;
+    		     }else{
+    		     $company00=$company00."\\n".$com;}    		
+    		}   		
+    		$company0=$company0.",".$company00;
+    		$sql='SELECT * FROM stuapply WHERE  course='.$id.' AND oidname='."'$n'".' GROUP BY uid';
+    		$command = $connection->createCommand($sql);
+    		$student = $command->queryAll();    		
+    		$applynum=$applynum.",".count($student); 
+    	}
+    	//$company0="临床学院,生物医学工程系,生物医学系,眼视光系,艺术学院,药学系,药学院,基础医学院";
+    	//print_r($applynum);
+		return $this->render('index', [
+			'companysmall' => $companysmall,
+            'applynum' => $applynum,
+            'company' => $company0,
+			'number' => $number,
+			'coursename' => $coursename[0]['CourseName'],
+				
+        ]);
+    }
+}
+
+?>

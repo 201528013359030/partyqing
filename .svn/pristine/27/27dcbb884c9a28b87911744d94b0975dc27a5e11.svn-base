@@ -1,0 +1,66 @@
+<?php
+namespace app\modules\admin\controllers;
+use yii;
+use yii\web\Controller;
+use Rest;
+use Client;
+use app\modules\admin\models\AuthToken;
+use app\modules\admin\models\IctWebService;
+class SchoolrulesdetailController extends Controller
+{
+	public $layout  = false;
+    public function actionIndex()
+    {
+        //$uid =\Yii::$app->session['user.uid'];
+    	//require_once(dirname(__FILE__)."/config.php");
+    	//$token=\yii::$app->request->get('auth_token');
+    	//print_r($token);
+    	//\Yii::$app->session['token']=$token;
+    	
+    	//$auth = new AuthToken();
+    	//$auth->authTokenSession();
+ 
+        $No=\yii::$app->request->get('No');    	
+    	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+    	header("Content-type:text/html;charset=utf-8");
+
+    	/**************end********************/
+    	   	
+   	    $sql="SELECT * FROM lcrule where No='".$No."'";
+        $command = $connection->createCommand($sql);
+   	    $info = $command->queryOne();
+   	    
+//    	    更新阅读数
+    	$sq2="update lcrule set ReadCount=ReadCount+1 where No ='".$No."'";    		
+    	$command = $connection->createCommand($sq2);
+    	$readd= $command->execute(); 
+    	//echo $info['AttachmentLocation'];
+    	
+    	if(file_exists("/var/lib/mosquitto/tls")){
+    		$tls = "https://";
+    	}else{
+    		$tls = "http://";
+    	}
+    	if($info['AttachmentLocation']){
+    	$offline_ip="192.168.139.202";
+    	$tmpUrl = explode("webapps/",$info['AttachmentLocation']);
+    	$attachList['path'] = $tls.$offline_ip.'/'.$tmpUrl[1];
+    	$attachList['url'] = $attachList['path'];
+    	$attachList['path'] = base64_encode($attachList['path']);
+    	$tmp = explode("upload/",$info['AttachmentLocation']);
+    	$attachList['name']=$tmp[1];
+    	$attachList['size']=filesize("E:/wamp/www/childqing/upload/ee.txt");
+    	//$attachList['size']="120.0";
+    	}else{
+    		$attachList="";
+    	}
+    	
+        print_r($attachList);	
+        return $this->render('index',[
+        		'info'=>$info,  
+        		'attachList'=>$attachList,
+        ]);
+    }
+  
+}

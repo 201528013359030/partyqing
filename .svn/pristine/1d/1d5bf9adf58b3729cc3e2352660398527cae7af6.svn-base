@@ -1,0 +1,146 @@
+<?php
+namespace app\modules\admin\controllers;
+use yii;
+use yii\web\Controller;
+use Rest;
+use Client;
+use app\modules\admin\models\AuthToken;
+use app\modules\admin\models\IctWebService;
+class SchoollistController extends Controller
+{
+	public $layout  = false;
+    public function actionIndex()
+    {
+        //$uid =\Yii::$app->session['user.uid'];
+    	//require_once(dirname(__FILE__)."/config.php");
+    	//$token=\yii::$app->request->get('auth_token');
+    	//print_r($token);
+    	//\Yii::$app->session['token']=$token;
+    	$uid=\yii::$app->request->get('uid');//学员uid
+    	\Yii::$app->session['user.uid']=$uid;
+    	
+    	//$auth = new AuthToken();
+    	//$auth->authTokenSession();
+    	    
+    	$statis=\yii::$app->request->get('statis');
+    	\Yii::$app->session['statis']=$statis;
+    	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+    	header("Content-type:text/html;charset=utf-8");
+
+  
+    	//print_r($company);
+    	//\Yii::$app->session['personal']=$personal;
+    	/**************end********************/
+    	   	
+    	$sql="SELECT * FROM Y_Course y, announce a where y.YCNo=a.Courseid AND a.uid='".$uid."'  AND y.IsDelete=0 ORDER BY PublicTime DESC LIMIT 8";
+        $command = $connection->createCommand($sql);
+   	    $course = $command->queryAll();
+   	    //print_r($course);
+    	$count=count($course);
+    	for($i=0;$i<=$count-1;$i++){
+    		$couid=$course[$i]['YCNo'];
+    		$sq2="SELECT * FROM stuapply where course=".$couid." AND uid ='".$uid."'";    		
+    		$command = $connection->createCommand($sq2);
+    		$course[$i]['apply']= $command->queryAll();
+    		$sq3="SELECT readed FROM announce where courseid=".$couid." AND uid ='".$uid."'";
+    		$command = $connection->createCommand($sq3);
+    		$course[$i]['readd']= $command->queryAll();    
+    		$tt=strtotime($course[$i]['PublicTime']);
+    		$course[$i]['PublicTime']=date('Y-m-d H:i',$tt);
+    	}
+    	//print_r($course);
+    	\Yii::$app->session['public_count']=$count;
+    	
+    	//$tt=strtotime($course['PublicTime']);    	
+    	//$course['PublicTime']=date('Y-m-d H:i',$tt);
+        return $this->render('index',[
+        		//'model' => $model,
+        		'list'=>$course,  
+        		'statis'=>$statis,
+        		'count'=>$count,
+        		//'personal'=>$personal       		
+        ]);
+    }
+    public function actionSearch(){
+    
+    	$searchtitle=\yii::$app->request->get('searchtitle');
+    	$uid=\Yii::$app->session['user.uid'];
+    	\Yii::$app->session['public_count']=8;
+    	$statis=\Yii::$app->session['statis'];
+    	$personal=\Yii::$app->session['personal'];
+      	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+        $sql="SELECT * FROM Y_Course y, announce a where y.YCNo=a.Courseid AND a.uid='".$uid."' AND y.IsDelete=0 AND y.CourseName like '%".$searchtitle."%' ORDER BY y.PublicTime DESC LIMIT 8";
+        //file_put_contents("D://wj.txt","num:".$sql."\n", FILE_APPEND);
+    	$command = $connection->createCommand($sql);
+    	
+        //查询并显示数据
+    	$course = $command->queryAll();
+    	$count=count($course);
+    	\Yii::$app->session['search_count']=$count;
+    	for($i=0;$i<=$count-1;$i++){
+    		$couid=$course[$i]['YCNo'];
+    		$sq2="SELECT * FROM stuapply where course=".$couid." AND uid ='".$uid."'";
+    		$command = $connection->createCommand($sq2);
+    		$course[$i]['apply']= $command->queryAll();
+    		$sq3="SELECT readed FROM announce where courseid=".$couid." AND uid ='".$uid."'";
+    		$command = $connection->createCommand($sq3);
+    		$course[$i]['readd']= $command->queryAll();
+    		$course[$i]['statis']=$statis;    
+    		$course[$i]['personal']=$personal;
+    		$tt=strtotime($course[$i]['PublicTime']);
+    		$course[$i]['PublicTime']=date('Y-m-d H:i',$tt);
+    	}
+    	echo json_encode($course);
+    	//echo 22;
+    	exit();    
+    }
+    public function actionGetdata(){
+    	
+    	//$uid =\Yii::$app->session['user.uid'];
+    	//\Yii::$app->session['public_count']="5";
+    	$searchcontent=\yii::$app->request->get('searchcontent');
+    	$statis=\Yii::$app->session['statis'];
+    	$uid=\Yii::$app->session['user.uid'];
+    	$personal=\Yii::$app->session['personal'];
+    	
+    	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+    	if(strlen($searchcontent)>0){
+    	$search_count=\Yii::$app->session['search_count'];
+    	$sql="SELECT * FROM Y_Course y, announce a where y.YCNo=a.Courseid AND a.uid='".$uid."' AND y.IsDelete=0 AND y.CourseName like '%".$searchcontent."%' ORDER BY y.PublicTime DESC LIMIT ".$search_count.",5";  
+        $search_count=$search_count+5;
+    	    \Yii::$app->session['search_count']=$search_count;
+    	}else{
+    		$public_count=\Yii::$app->session['public_count'];
+    	    $sql="SELECT * FROM Y_Course y, announce a where y.YCNo=a.Courseid AND a.uid='".$uid."' AND y.IsDelete=0 ORDER BY PublicTime DESC LIMIT ".$public_count.",5";   	
+    	    $public_count=$public_count+5;
+    	    \Yii::$app->session['public_count']=$public_count;
+    	} 
+    	$command = $connection->createCommand($sql);	
+    	//查询并显示数据   	
+    	$course = $command->queryAll();
+    	//file_put_contents("D:\\wt1.txt","sum:".$sql."\n", FILE_APPEND);    	
+    	\Yii::$app->session['searchcontent']=$searchcontent;
+    	
+    	$count=count($course);
+    	for($i=0;$i<=$count-1;$i++){
+    		$couid=$course[$i]['YCNo'];
+    		$sq2="SELECT * FROM stuapply where course=".$couid." AND uid ='".$uid."'";
+    		$command = $connection->createCommand($sq2);
+    		$course[$i]['apply']= $command->queryAll();
+    		$sq3="SELECT readed FROM announce where courseid=".$couid." AND uid ='".$uid."'";
+    		$command = $connection->createCommand($sq3);
+    		$course[$i]['readd']= $command->queryAll();
+    		$course[$i]['statis']=$statis;
+    		$course[$i]['personal']=$personal;
+    		$tt=strtotime($course[$i]['PublicTime']);
+    		$course[$i]['PublicTime']=date('Y-m-d H:i',$tt);
+    	}    	
+    	echo json_encode($course);
+    	exit();
+    
+    }
+    
+}

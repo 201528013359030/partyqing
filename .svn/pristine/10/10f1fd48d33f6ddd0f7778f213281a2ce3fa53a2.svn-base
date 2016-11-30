@@ -1,0 +1,65 @@
+<?php
+namespace app\modules\admin\controllers;
+use yii;
+use yii\web\Controller;
+use Rest;
+use Client;
+use app\modules\admin\models\AuthToken;
+use app\modules\admin\models\IctWebService;
+class SchedulelistController extends Controller
+{
+	public $layout  = false;
+    public function actionIndex()
+    {
+        //$uid =\Yii::$app->session['user.uid'];
+    	//require_once(dirname(__FILE__)."/config.php");
+    	//$token=\yii::$app->request->get('auth_token');
+    	//print_r($token);
+    	//\Yii::$app->session['token']=$token;
+    	$uid=\yii::$app->request->get('uid');//管理员uid
+    	//\Yii::$app->session['user.uid']=$uid;
+    	\Yii::$app->session['user.uid']=$uid;
+    	$auth = new AuthToken();
+    	$auth->authTokenSession();
+    	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+    	header("Content-type:text/html;charset=utf-8");
+    	   	
+    	$sql="SELECT eid FROM lcmemdata WHERE muid='".$uid."'";
+        $command = $connection->createCommand($sql);
+   	    $school = $command->queryAll();
+   	    $schoolid=$school[0]['eid'];
+   	    
+   	    $sq2="SELECT oid,name,gradeid FROM lcorganidata WHERE eid='".$schoolid."' AND orgatype=1 ORDER BY gradeid";
+   	    $command = $connection->createCommand($sq2);
+   	    $class = $command->queryAll();
+   	    $count=count($class);  
+   	    
+   	    for($i=0;$i<$count;$i++){
+  
+   	    	 $gradeid=$class[$i]['gradeid'];
+   	    	 $sq3="SELECT name FROM lcorganidata WHERE oid='".$gradeid."' AND eid='".$schoolid."' AND orgatype=2";
+   	         $command = $connection->createCommand($sq3);
+   	         $grade = $command->queryAll();
+   	         if(isset($grade[0]['name'])){
+   	         $class[$i]['gradename']=$grade[0]['name'];
+   	         }else{
+   	         $class[$i]['gradename']="";
+   	         }   	       	    
+   	    }
+   	       	    
+    	\Yii::$app->session['public_count']=$count;   	
+    	$time=date('Y-m-d',time());
+    	//$tt=strtotime($course['PublicTime']);    	
+    	//$course['PublicTime']=date('Y-m-d H:i',$tt);
+    	//print_r($childlist);
+        return $this->render('index',[
+        		'list'=>$class,        		
+        		'count'=>$count,
+        		//'classid'=> $classid,  
+        		'time'=> $time,     		
+        ]);
+    }
+
+    
+}

@@ -1,0 +1,393 @@
+<?php
+/* @var $this yii\web\View */
+use yii\helpers\Html;
+use yii\bootstrap\Nav;
+use yii\bootstrap\NavBar;
+use yii\widgets\Breadcrumbs;
+use app\assets\AppAsset;
+use yii\web\View;
+?>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>每日观察</title>
+<?//=Html::cssFile('@web/css0/foundation.min.css')?>
+<?=Html::cssFile('@web/css0/home.css')?> 
+<?=Html::cssFile('@web/css/announce2.css')?>
+<?=Html::cssFile('@web/css/bootstrap2.css')?>
+<?=Html::cssFile('@web/css/share.css')?>
+<?=Html::cssFile('@web/css/cssmy.css')?>
+
+
+<?=Html::jsFile('@web/js/iscroll0.js')?>
+<style>
+.btn-primary {
+position:absolute;right:2em;
+color: #fff;
+background-color: #30BF78;
+border-color: #30BF78;
+}
+.btn:hover {
+background-color: #30CF78;
+border-color: #30BF78;
+}
+.btn-primary.active, .open > .dropdown-toggle.btn-primary {
+color: #fff;
+background-color: #30CF78;
+border-color: #30CF78;
+}
+.btn{
+background-color: #30CF78;	
+}
+</style>
+
+<?=Html::jsFile('@web/js/jquery.js')?>
+<?=Html::jsFile('@web/js/bootstrap.js')?>
+<script type="text/javascript">
+
+
+</script>
+</head>
+<body>
+	
+<div id="wrap" class="wrap">
+<div id="scroller">
+	<div id="pullDown">
+		<span class="pullDownIcon"></span><span class="pullDownLabel">下拉即可加载...</span>
+	</div>
+    <div class="moBox"  id="searchBox">		
+	</div>
+<div class="top1">
+   <div id="divcss5"><img src="img/touxiang.png"></div>
+   <div class="border_circle"></div>
+   <span class="text_big">
+   
+   
+   
+<div class="dropdown" >
+   <button type="button" class="btn dropdown-toggle" id="dropdownMenu1" 
+      data-toggle="dropdown">
+         <?=$name?>
+      <span class="caret"></span>
+   </button>
+   <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+      <li role="presentation">
+         <a role="menuitem" tabindex="-1" href="index.php?r=admin/growuplistc/index&s=2&uid=<?=$classuid?>">全部（园所）</a>
+      </li>
+      <li role="presentation">
+         <a role="menuitem" tabindex="-1" href="index.php?r=admin/growuplistc/index&s=1&uid=<?=$classuid?>">班级</a>
+      </li>   
+      <li role="presentation" class="divider"></li>
+   </ul>
+   的成长记录
+</div>
+ </span>  
+   <button type="button" class="btn btn-primary"  data-toggle="button" onclick="add('<?=$classuid?>')">添加</button>																																		
+					
+</div>
+	<div class="moBox">
+		<div id="listBox" class="listBox">
+			<div class="listIteam"  id="empty">
+				<div class="empty">暂无</div>
+			</div>
+			<?php foreach ($list as $key=>$value): ?>
+			<div class="listIteam" id="contentlist_">
+<div class="leaf">
+ <div class="white_k">
+   <span class="time0" ><?=$value['createtime']?></span>
+   <span class="sender0" ><?=$value['sender']?></span>
+   <span class="detail0" ><?=$value['detail']?></span>
+   <span style="display:block;">
+   <div class="moGrid">
+		<div id="content1" class="content">		       			
+			
+			 		<div class="carsousel_box content_img">
+								<ul class="J_Poster carsousel ">
+									<?if(is_array($value['picurl'])):?>
+										<?foreach ($value['picurl'] as $k=>$p):?>
+											<?if($p):?>
+											<li imgsrc="<?=$p?>" imgsrcBig="<?=$p?>"></li>																			
+											<?endif?>
+										<?endforeach?>
+									<?elseif($value['picurl']):?>								
+										<li imgsrc="<?=$value['picurl']?>" imgsrcBig="<?=$value['picurl']?>"></li>
+									<?endif?>				
+								</ul>
+					</div>            
+		
+		</div>		
+	</div>
+   </span>
+ </div>
+ <div><img src="img/kong.png"></div>
+</div>           
+			</div>				
+			<? endforeach?>
+		</div> 		
+	</div>           
+	<div id="pullUp">
+		<span class="pullUpIcon"></span><span class="pullUpLabel">上拉加载更多...</span>
+	</div>
+	<input type="hidden" id="count" value="<?=$count?>"/>
+</div>
+</div>
+
+<a id="sendSucceed" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#sendModal" style="display:none">
+</a>
+
+<div class="modal fade" id="sendModal" tabindex="-1" role="dialog" aria-labelledby="uploadModalLabel" aria-hidden="true">
+	<div class="modal-dialog" style='z-index:60'>
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title" id="uploadModalLabel">
+				</h4>
+			</div>
+			<div class="modal-body">
+				<div style="text-align: center;">
+                   已经没有更多数据！
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal" onclick="">确定
+				</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
+
+</body>
+</html>
+<?=Html::jsFile('@web/js0/carsousel.js')?>
+<?=Html::jsFile('@web/js0/foundation.min.js')?>
+<?=Html::jsFile('@web/js0/iscroll.js')?>
+<script>
+$(function(){	
+    var count=$("#count").val();
+    //alert(count);
+    if(count){
+        $("#empty").hide();
+    }else{
+    	$("#empty").show();
+    }
+	var count=$("#count").val();
+	if(count*1>10){
+		$("#pullUp").show();
+	}else{
+		$("#pullUp").hide();
+	}	
+});
+function g(selector) {	
+	var method = selector.substr(0, 1) == '.' ? 'getElementsByClassName' : 'getElementById';
+		return document[method](selector.substr(1));
+}
+var myScroll,
+	pullDownEl, pullDownOffset,
+	pullUpEl, pullUpOffset,
+	generatedCount = 0;
+
+//下拉加载数据  模拟加载了几个死数据
+function pullDownAction () {
+	location.reload();  
+}
+function getLocalTime(nS) {   
+	var date = new Date(nS*1000);
+	Y = date.getFullYear() + '-';
+	M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
+	D = (date.getDate()+1 < 10 ? '0'+(date.getDate()+1) : date.getDate()+1)  + ' ';
+	h =  (date.getHours()+1 < 10 ? '0'+(date.getHours()+1) : date.getHours()+1) + ':';
+	m = (date.getMinutes()+1 < 10 ? '0'+(date.getMinutes()+1) : date.getMinutes()+1)  + ':';
+	s =  (date.getSeconds()+1 < 10 ? '0'+(date.getSeconds()+1) : date.getSeconds()+1); 
+// 	alert(Y+M+D+h+m+s);
+	return Y+M+D+h+m+s;  
+     
+ }     
+
+function pullUpAction () {	
+		setTimeout(function () {	
+		var el,iteam, i,pageSize,j,ite;
+		el = document.getElementById('listBox');
+		
+			$.get("index.php?r=admin/growuplistc/getdata",{uid:<?=$classuid?>,s:<?=$s?>
+		},function(data){
+			
+	 		//alert(JSON.stringify(data));	
+			var list=eval(data);
+			//alert(list);
+			//console.log(list[0]['picurl'].length);
+			if(list.length){
+				
+				for (i=0; i<list.length; i++) {									
+					iteam = document.createElement('div');
+					iteam.className = 'listIteam'; 
+					 pic=""; 				
+						                  
+                    if(list[i].picurl.length){  
+                    	var a=list[i].picurl.length;     
+                
+                        for(j=0;j<a;j++){
+                          pic=pic+"<li imgsrc =' "+list[i].picurl[j]+"' imgsrcBig ='"+list[i].picurl[j]+"'></li>";        
+                   	      //pic=pic+"<img style='width:60px' src =' "+list[i].picurl[j]+"'>";  
+                         
+                        } 
+                        pic="<div class='carsousel_box content_img'><ul class='J_Poster carsousel '>"+pic+"</div></ul>";                    	                 	                          
+                    }                 						                        
+        		  iteam.innerHTML = "<div class='leaf'><div class='white_k'><span class='time0' >"+list[i].createtime+"</span><span class='sender0' >"+list[i].sender+"</span><span class='detail0' >"+list[i].detail+"</span><span style='display:block;'><div class='moGrid'><div id='content1' class='content'>"+pic+"</div></div></span></div><div><img src='img/kong.png'></div></div>";
+				   el.appendChild(iteam, el.childNodes[0]);
+				   Carsousel.init(g(".J_Poster"));	
+				   //ite = document.createElement('script');
+				   //ite.src="/childqing/web/js/momo.js";
+				  // el.appendChild(ite, el.childNodes[0]);
+				}
+				myScroll.refresh();	 
+			}else{                                 //没有更多数据
+				document.getElementById("sendSucceed").click();
+// 				alert("已经没有更多数据");
+			}    
+		},'json');	
+		myScroll.refresh();		// 当内容完事儿，记得刷新(ie: on ajax completion)
+	}, 1000);	
+	
+}
+
+function loaded() {
+	pullDownEl = document.getElementById('pullDown');
+	pullDownOffset = pullDownEl.offsetHeight;
+	pullUpEl = document.getElementById('pullUp');	
+	pullUpOffset = pullUpEl.offsetHeight;
+	
+	myScroll = new iScroll('wrap', {
+			useTransition: true,
+		topOffset: pullDownOffset,
+		onRefresh: function () {
+			if (pullDownEl.className.match('loading')) {
+				pullDownEl.className = '';
+				pullDownEl.querySelector('.pullDownLabel').innerHTML = '下拉刷新页面...';
+			} else if (pullUpEl.className.match('loading')) {
+				pullUpEl.className = '';
+				pullUpEl.querySelector('.pullUpLabel').innerHTML = '上拉加载更多...';
+			}
+		},
+		onScrollMove: function () {
+			if (this.y > 5 && !pullDownEl.className.match('flip')) {
+				pullDownEl.className = 'flip';
+				pullDownEl.querySelector('.pullDownLabel').innerHTML = '释放即可加载...';
+				this.minScrollY = 0;
+			} else if (this.y < 5 && pullDownEl.className.match('flip')) {
+				pullDownEl.className = '';
+				pullDownEl.querySelector('.pullDownLabel').innerHTML = '下拉刷新页面...';
+				this.minScrollY = -pullDownOffset;
+			} else if (this.y < (this.maxScrollY - 5) && !pullUpEl.className.match('flip')) {
+				pullUpEl.className = 'flip';
+				pullUpEl.querySelector('.pullUpLabel').innerHTML = '释放即可加载...';
+				this.maxScrollY = this.maxScrollY;
+			} else if (this.y > (this.maxScrollY + 5) && pullUpEl.className.match('flip')) {
+				pullUpEl.className = '';
+				pullUpEl.querySelector('.pullUpLabel').innerHTML = '上拉即可加载...';
+				this.maxScrollY = pullUpOffset;
+			}
+		},
+		onScrollEnd: function () {
+			if (pullDownEl.className.match('flip')) {
+				pullDownEl.className = 'loading';
+				pullDownEl.querySelector('.pullDownLabel').innerHTML = '加载中...';				
+				pullDownAction();	// 执行自定义函数（Ajax调用等）
+			} else if (pullUpEl.className.match('flip')) {
+				pullUpEl.className = 'loading';
+				pullUpEl.querySelector('.pullUpLabel').innerHTML = '加载中...';				
+				pullUpAction();	// 执行自定义函数（Ajax调用等）
+			}
+		}
+	});
+	
+setTimeout(function () { document.getElementById('wrap').style.left = '0'; }, 800);
+}
+
+document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
+
+document.addEventListener('DOMContentLoaded', function () { setTimeout(loaded, 200); }, false);
+
+function allowFormsInIscroll(){
+ [].slice.call(document.querySelectorAll('input, select, button')).forEach(function(el){
+ el.addEventListener(('ontouchstart' in window)?'touchstart':'mousedown', function(e){
+ e.stopPropagation();
+ 
+ })
+ })
+ }
+ document.addEventListener('DOMContentLoaded', allowFormsInIscroll, false);
+ </script>
+<script type="text/javascript">
+/*
+ * 名称：公共函数
+ * 作用：通用函数 g()
+ */
+
+//定义公共函数
+function add(x){
+	 var uid=x;	
+	    //alert(uid);
+		    var geturl = "index.php?r=admin/growupsend/index&oid="+uid;//+"&type="+type;
+			geturl=encodeURI(encodeURI(geturl));
+			window.location.href =geturl;
+	};
+function g( selector ){
+	var method = selector.substr(0,1) == '.'?'getElementsByClassName':'getElementById';
+	return document[method]( selector.substr(1) );
+}
+
+
+//初始化图片列表 相当于 Carsousel var c= new Carsousel(g(".J_Poster")[0]);
+Carsousel.init(g(".J_Poster"));
+function g( selector ){
+	var method = selector.substr(0,1) == '.'?'getElementsByClassName':'getElementById';
+	return document[method]( selector.substr(1) );
+}
+function edit(x){
+	 var uid=x;	
+    //alert(uid);
+	    var geturl = "index.php?r=admin/dayrecorddetail/index&uid="+uid;//+"&type="+type;
+		geturl=encodeURI(encodeURI(geturl));
+		window.location.href =geturl;
+};
+function readd(x){
+	 var uid=x;	
+  //alert(uid);
+	    var geturl = "index.php?r=admin/dayrecorddetailex/index&uid="+uid;//+"&type="+type;
+		geturl=encodeURI(encodeURI(geturl));
+		window.location.href =geturl;
+};
+function send(x){
+	 var classid=x;	
+     //alert(uid);
+	 if(confirm("是否发送已编辑的内容？")){
+	    var geturl = "index.php?r=admin/dayrecord/send&classid="+classid;//+"&type="+type;
+		geturl=encodeURI(encodeURI(geturl));
+		window.location.href =geturl;
+	 }
+};
+	
+function getLocalTime(nS) {   
+// 	alert(nS);	
+	var date = new Date(nS*1000);
+	Y = date.getFullYear() + '-';
+	M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
+	D = (date.getDate()+1 < 10 ? '0'+(date.getDate()+1) : date.getDate()+1)  + ' ';
+	h =  (date.getHours()+1 < 10 ? '0'+(date.getHours()+1) : date.getHours()+1) + ':';
+	m = (date.getMinutes()+1 < 10 ? '0'+(date.getMinutes()+1) : date.getMinutes()+1)  + ':';
+	s =  (date.getSeconds()+1 < 10 ? '0'+(date.getSeconds()+1) : date.getSeconds()+1); 
+// 	alert(Y+M+D+h+m+s);
+	return Y+M+D+h+m+s;      
+ }
+
+
+	$("div[id^='contentlist']").each(function(){
+	    $(this).click(function(){    
+	      	var imgid = $(this).attr("id");
+	        var  imgidlist=imgid.split("_");
+	        $(this).find("i[id^=icon_new]").hide();
+
+	    })
+	 });
+</script>

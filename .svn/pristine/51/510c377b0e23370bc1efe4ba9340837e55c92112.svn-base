@@ -1,0 +1,120 @@
+<?php
+namespace app\modules\admin\controllers;
+use yii;
+use yii\web\Controller;
+use Rest;
+use Client;
+use app\modules\admin\models\IctWebService;
+use app\modules\admin\models\AuthToken;
+class SigntController extends Controller
+{
+	public $layout  = false;
+    public function actionIndex()
+    {
+    	//require_once(dirname(__FILE__)."/config.php");
+    	$uid=\yii::$app->request->get('uid');
+    	$cid=\yii::$app->request->get('cid');
+    	$inn=\yii::$app->request->get('in');
+    	$auth = new AuthToken();
+    	$auth->authTokenSession();
+    	$connection = Yii::$app->db;
+    	$connection->open();
+    	$sq2="SELECT mtype FROM lcmemdata WHERE muid='".$uid."'";
+    	$command = $connection->createCommand($sq2);
+    	$user = $command->queryAll();    	
+    	$mtype=$user[0]['mtype'];
+    	//$token=\yii::$app->request->get('auth_token');    	
+    		if($mtype==1){    			
+    		}else{
+    		   $cid="a";//教师
+    		}
+    	/*	if($inn==1){
+    			//签到
+    		}elseif($inn==0){
+    			//签退
+    		}*/
+    		return $this->render('index1',[   
+    	   		'uid' => $uid,
+    			'cid' => $cid,
+    			'inn' => $inn,
+    	   ]);
+    }		  	
+     public function actionTeacher()
+    {	            
+    	$rlongitude=\yii::$app->request->get('a');
+    	$rlatitude=\yii::$app->request->get('b');
+    	$uid=\yii::$app->request->get('uid');
+    	$inn=\yii::$app->request->get('inn');
+    	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+    	 
+    	$timenow=time();
+    	$timenow=date("Y-m-d",$timenow);
+    	$time=date('Y-m-d H:i:s',time());
+  
+    	function getDistance($lat1, $lng1, $lat2, $lng2)
+    	{
+    		$earthRadius = 6367000; //approximate radius of earth in meters
+  
+    		$lat1 = ($lat1 * pi() ) / 180;
+    		$lng1 = ($lng1 * pi() ) / 180;
+    		 
+    		$lat2 = ($lat2 * pi() ) / 180;
+    		$lng2 = ($lng2 * pi() ) / 180;
+  
+    		$calcLongitude = $lng2 - $lng1;
+    		$calcLatitude = $lat2 - $lat1;
+    		$stepOne = pow(sin($calcLatitude / 2), 2) + cos($lat1) * cos($lat2) * pow(sin($calcLongitude / 2), 2);
+    		$stepTwo = 2 * asin(min(1, sqrt($stepOne)));
+    		$calculatedDistance = $earthRadius * $stepTwo;
+    		return round($calculatedDistance);//单位：m
+    	}
+    	//print_r($timenow);
+    	$sq2="SELECT mtype,eid,classid,name FROM lcmemdata WHERE muid='".$uid."'";
+    	$command = $connection->createCommand($sq2);
+    	$user = $command->queryAll();
+    	$schoolid=$user[0]['eid'];
+    	//print_r($user);
+    	$sq0="SELECT * FROM lcenterdata WHERE eid='".$schoolid."'";
+    	$command = $connection->createCommand($sq0);
+    	$school = $command->queryAll();
+    	$slongitude=$school[0]['longitude'];
+    	$slatitude=$school[0]['latitude'];
+    	
+    	$distance=getDistance($slatitude,$slongitude,$rlatitude,$rlongitude);
+
+    	if($distance>1000){
+    		$content="请进园内签到/签退!";
+    		echo 0;
+    		exit();
+    	}else{  
+    		if($inn==1){	
+    			$classid=$user[0]['classid'];
+    			$type=$user[0]['mtype'];
+    			$name=$user[0]['name'];
+    			$sql="INSERT INTO teachersign(schoolid,classuid,teauid,teaname,type) VALUES('$schoolid','$classid','$uid','$name','$type')";
+    			//file_put_contents("D://wj.txt","sql:".$sql."\n", FILE_APPEND);
+    			$command = $connection->createCommand($sql);
+    			$command->execute();
+    			//echo "in";
+    			$content="教师签到成功！";
+    			echo 1;
+    			exit();
+    		}elseif($inn==0){ 
+    			$classid=$user[0]['classid'];
+    			$type=$user[0]['mtype'];
+    			$name=$user[0]['name'];
+    			$sql="INSERT INTO teachersign(schoolid,classuid,teauid,teaname,type,inn) VALUES('$schoolid','$classid','$uid','$name','$type','0')";
+    			//file_put_contents("D://wj.txt","sql:".$sql."\n", FILE_APPEND);
+    			$command = $connection->createCommand($sql);
+    			$command->execute();
+    			//echo "in";
+    			$content="教师签退成功！";
+    			echo 2;
+    			exit();
+    		}	
+    	
+    		    	    	
+    }
+  }
+}

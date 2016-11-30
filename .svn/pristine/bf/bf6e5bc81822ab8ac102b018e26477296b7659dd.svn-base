@@ -1,0 +1,169 @@
+<?php
+/* @var $this yii\web\View */
+use yii\helpers\Html;
+use yii\bootstrap\Nav;
+use yii\bootstrap\NavBar;
+use yii\widgets\Breadcrumbs;
+use app\assets\AppAsset;
+use yii\web\View;
+?>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta id="viewport" name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0">
+<meta name="format-detection" content="telephone=no">
+<title>班级评价</title>
+<?=Html::jsFile('@web/js/jquery.min.js')?>
+<?=Html::jsFile('@web/js/bootstrap.js')?>
+<?=Html::jsFile('@web/js0/jquery-1.11.2.js')?>
+<?=Html::cssFile('@web/css/bootstrap.css')?>
+<style>
+table td,table th{padding:10px;font-size:11pt;text-align:center;}
+ul{
+	list-style-type:none;
+	font-size:12pt;
+	line-height:2.5em;
+}
+.btn-primary {
+position:absolute;right:2em;
+color: #fff;
+background-color: #30BF78;
+border-color: #30BF78;
+}
+.btn:hover {
+background-color: #30CF78;
+border-color: #30BF78;
+}
+.btn-primary.active, .open > .dropdown-toggle.btn-primary {
+color: #fff;
+background-color: #30CF78;
+border-color: #30CF78;
+}
+.title{text-align:center;
+margin-bottom:-10px;}
+.date{text-align:left}
+.row-bt-button a {
+display: block;
+width: 96%;
+height: 40px;
+line-height: 40px;
+margin: 0px auto;
+text-align: center;
+border: 2px #ffdc00 solid;
+background: #ffe600;
+color: #fff;
+-webkit-border-radius: 4px;
+position:fixed;
+bottom:2px;
+left:2%;		
+}
+.row-bt-button a.aa{
+display: block;
+width: 96%;
+height: 40px;
+line-height: 40px;
+margin: 0px auto;
+text-align: center;
+border: 2px #D2D2D2 solid;
+background: #D2D2D2;
+color: #fff;
+-webkit-border-radius: 4px;
+position:fixed;
+bottom:2px;
+left:2%;		
+}
+.but{
+display: inline-block;
+width: 50px;
+height: 30px;
+line-height: 30px;	
+border: 1px #D2D2D2 solid;
+background: #D2D2D2;
+color: #fff;
+-webkit-border-radius: 4px;	
+}
+.but0{
+display: inline-block;
+width: 50px;
+height: 30px;
+line-height: 30px;	
+border: 1px #30BF78 solid;
+background: #30BF78;
+color: #fff;
+-webkit-border-radius: 4px;	
+}
+</style>
+</head>
+<body>	
+<form name="send_form" id="send_form" method="post" enctype="multipart/form-data" action="index.php?r=admin/evaluates/save" >	
+<div style="font-size:11pt;margin-top:20px;margin-left:30px;">园所：<?=$schoolname?></div>
+<table border="1" cellpadding="10" style="margin:20px;width:90%;margin-top:0px;margin-bottom:70px;">
+<caption class="title"><?=$content[0]['title']?></caption>
+<caption class="date">评价时间：<?=date("Y-m-d H:i",strtotime($content[0]['starttime']));?>至<?=date("Y-m-d H:i",strtotime($content[0]['endtime']));?></caption>
+  <tr>
+    <th >评价内容</th>
+    <th >评价</th> 
+  </tr> 
+<?php foreach ($list as $key=>$value): ?>
+  <tr>
+    <td><?=$value['optiname']?></td>  
+    <td>
+       <input type="radio" style="display:none" name="optivalue<?=$key?>" id="la<?=$key?>" value="1" />
+       <label for="la<?=$key?>"><span class="but" id="a<?=$key?>" onclick="changea('<?=$key?>')">优 </span></label>       
+       <input type="radio" style="display:none" name="optivalue<?=$key?>" id="lb<?=$key?>" value="2" />
+       <label for="lb<?=$key?>"><span class="but" id="b<?=$key?>" onclick="changeb('<?=$key?>')">良</span></label>       
+       <input type="radio" style="display:none"  name="optivalue<?=$key?>" id="lc<?=$key?>" value="3" />       
+       <label for="lc<?=$key?>"><span class="but" id="c<?=$key?>" onclick="changec('<?=$key?>')">可 </span></label>       
+       <input type="hidden" name="optionid<?=$key?>" value="<?=$value['id']?>" />
+    </td> 
+  </tr>  
+<form>  
+</div>
+<? endforeach?> 
+</table>
+<div class="row-bt-button">
+<?php if($ab==2):?>
+<a class="aa" href="javascript:void(0);" >评价未开始</a>
+<?elseif($ab==1):?> 
+<a class="aa" href="javascript:void(0);" >评价已结束</a>
+<?else:?> 
+<a href="javascript:void(0);" onclick="send_submit();">提&nbsp;&nbsp;&nbsp;交</a>
+<?endif?>  	
+</div>
+      <input type="hidden" name="id" id="id" value="<?=$id?>">
+      <input type="hidden" name="count" id="count" value="<?=$count?>">
+      <input type="hidden" name="s" id="s" value="<?=$s?>">
+<script>
+function send_submit(){
+	//alert("55");
+    document.send_form.submit();
+    return false;
+}
+function changea(x){
+	var a=x;
+	document.getElementById('a'+a).className = 'but0'; 
+	document.getElementById('b'+a).className = 'but'; 
+	document.getElementById('c'+a).className = 'but'; 
+}
+function changeb(x){
+	var a=x;
+	document.getElementById('b'+a).className = 'but0'; 
+	document.getElementById('a'+a).className = 'but'; 
+	document.getElementById('c'+a).className = 'but'; 
+}
+function changec(x){
+	var a=x;
+	document.getElementById('c'+a).className = 'but0'; 
+	document.getElementById('b'+a).className = 'but'; 
+	document.getElementById('a'+a).className = 'but'; 
+}
+$(document).ready(function(){ 
+
+});
+</script>
+
+</body>
+</html>

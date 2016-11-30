@@ -1,0 +1,76 @@
+<?php
+/* @var $this yii\web\View */
+use yii\helpers\Html;
+use yii\bootstrap\Nav;
+use yii\bootstrap\NavBar;
+use yii\widgets\Breadcrumbs;
+use app\assets\AppAsset;
+use yii\web\View;
+?>
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta http-equiv="X-UA-Compatible" content="IE=9" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta content="email=no" name="format-detection" /> 
+<meta name="format-detection" content="telphone=no" /> 
+<!--bootmomo 为bootstrap.css去掉基础设置版本，所以不需要引用bootstrap.css了-->
+<!--<link href="../css/bootmomo.css" rel="stylesheet" type="text/css">-->
+<title>园内办公</title>
+<?=Html::cssFile('@web/css0/cattalk.css')?>
+<style>
+.listset li .setInfo {
+margin-left: 60px;
+margin-top: 13px;	
+}
+h3{ font-weight:normal; 
+color:#5C5C5C;
+} 
+</style>
+</head>
+<body>	
+<div id="wrap" class="wrap">
+<div id="scroller">	
+	<div class="moBox">
+		<ul class="listset" id="listScroll">			
+			<li>
+				<a href="http://139.129.54.167:8080/activiti2.0/loginAction_loginPoint.action?type=list&app_id=<?=$app_id?>&uid=<?=$uid?>&auth_token=<?=$auth_token?>&provider=sipsys" class="setIteam">					
+					<div class="setpic">
+						<img src="../web/img2/qjt.png">
+					</div>
+					<div class="setInfo">
+						<h3><span >请假条<?//=$app_id?>
+						<?//=$auth_token?>
+					</div>					
+				</a>				
+			</li>
+			<?if($type==4):?>
+			<li>
+				<a href="http://139.129.54.167/notice/web/index.php?r=admin/noticecheck/index&uid=<?=$uid?>&eguid=<?=$eguid?>&auth_token=<?=$auth_token?>" class="setIteam">					
+					<div class="setpic">
+						<img src="../web/img2/tzsp.png">
+					</div>
+					<div class="setInfo">
+						<h3><span>通知审批</span></h3>
+					</div>					
+				</a>				
+			</li>
+			<?endif?>
+			<li>
+				<a href="index.php?r=admin/salary/index&uid=<?=$uid?>" class="setIteam">					
+					<div class="setpic">
+						<img src="../web/img2/srcx.png">
+					</div>
+					<div class="setInfo">
+						<h3><span>收入查询</span></h3>
+					</div>					
+				</a>				
+			</li>				
+		</ul>
+	</div>	
+</div>
+</div>
+</body>
+</html>

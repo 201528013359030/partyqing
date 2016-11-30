@@ -1,0 +1,154 @@
+<?php
+namespace app\modules\admin\controllers;
+use yii;
+use yii\web\Controller;
+use Rest;
+use Client;
+use app\modules\admin\models\AuthToken;
+use app\modules\admin\models\IctWebService;
+
+class DayrecorddetailexController extends Controller
+{
+	public $layout  = false;
+	public $enableCsrfValidation = false;//因为YII2的防止csrf攻击，你则不能多次提交相同的表单。如果你希望当前可以多次重复提交，可以在当前提交的表单controller中添加	
+    public function actionIndex()
+    {
+        //$uid =\Yii::$app->session['user.uid'];
+    	//require_once(dirname(__FILE__)."/config.php");
+    	//$token=\yii::$app->request->get('auth_token');
+    	//print_r($token);
+    	//\Yii::$app->session['token']=$token;
+    	$userid="223";
+    	$childuid=\yii::$app->request->get('uid');
+
+    	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+    	header("Content-type:text/html;charset=utf-8");
+    	$sq0="SELECT mtype FROM lcmemdata WHERE muid='".$userid."'";
+    	$command = $connection->createCommand($sq0);
+    	$user = $command->queryAll();
+    	if($user[0]['mtype']==1){
+    		//echo "家长"; 223
+    		$usertype=1;
+    	}else if($user[0]['mtype']==3){
+    		//echo "教师"; 222
+    		$usertype=3;
+    	}
+    	//\Yii::$app->session['user.uid']=$uid;   	
+    	//$auth = new AuthToken();
+    	//$auth->authTokenSession();
+    	
+   	    $data=array();
+   	    $data[0]['default']="";
+   	    $data[0]['name']="晨间入园";
+   	    $data[1]['default']="";
+   	    $data[1]['name']="早餐";
+   	    $data[2]['default']="";
+   	    $data[2]['name']="间点";
+   	    $data[3]['default']="";
+   	    $data[3]['name']="午餐";
+   	    $data[4]['default']="";
+   	    $data[4]['name']="午睡";
+   	    $data[5]['default']="";
+   	    $data[5]['name']="水果"; 
+   	    $data[6]['default']="";
+   	    $data[6]['name']="晚餐";
+   	    $data[7]['default']="";
+   	    $data[7]['name']="喝水";
+   	    $data[8]['default']="";
+   	    $data[8]['name']="小便";
+   	    $data[9]['default']="";
+   	    $data[9]['name']="大便";
+   	    $data[10]['default']="";
+   	    $data[10]['name']="当天情绪"; 
+   	    $data[11]['default']="";
+   	    $data[11]['name']="活动情况";
+   	    $data[12]['default']="";
+   	    $data[12]['name']="语言表达";
+   	    $data[13]['default']="";
+   	    $data[13]['name']="同伴相处";
+
+   	    $sq5='SELECT * FROM childdayrecord WHERE childuid='.$childuid.' and issend=1 and to_days(createtime) = to_days(now())';
+   	    $command = $connection->createCommand($sq5);
+   	    $childrecord = $command->queryAll();
+   	    //print_r($data[0]['name']);
+   	    $remark="";
+    	   if(isset($childrecord[0])){
+    	    	//print_r($childrecord[0]['initial']);
+    	    	if($childrecord[0]['initial']){     $data[0]['default']=$childrecord[0]['initial'];}
+    	        if($childrecord[0]['breakfast']){   $data[1]['default']=$childrecord[0]['breakfast'];}
+    	        if($childrecord[0]['snack']){       $data[2]['default']=$childrecord[0]['snack'];}
+    	        if($childrecord[0]['lunch']){       $data[3]['default']=$childrecord[0]['lunch'];}
+    	        if($childrecord[0]['middlenap']){   $data[4]['default']=$childrecord[0]['middlenap'];}
+    	        if($childrecord[0]['fruit']){       $data[5]['default']=$childrecord[0]['fruit'];}
+    	        if($childrecord[0]['supper']){      $data[6]['default']=$childrecord[0]['supper'];}
+    	        if($childrecord[0]['drink']){       $data[7]['default']=$childrecord[0]['drink'];}
+    	        if($childrecord[0]['pee']){         $data[8]['default']=$childrecord[0]['pee'];}
+    	        if($childrecord[0]['stool']){       $data[9]['default']=$childrecord[0]['stool'];}
+    	        if($childrecord[0]['mood']){        $data[10]['default']=$childrecord[0]['mood'];}
+    	        if($childrecord[0]['activity']){    $data[11]['default']=$childrecord[0]['activity'];}
+    	        if($childrecord[0]['expression']){  $data[12]['default']=$childrecord[0]['expression'];}
+    	        if($childrecord[0]['peer']){        $data[13]['default']=$childrecord[0]['peer'];}
+    	        $remark=$childrecord[0]['remark'];
+    	    }
+    	    $sq6='SELECT UAvator,name FROM lcchildren WHERE id='.$childuid;
+    	    $command = $connection->createCommand($sq6);
+    	    $childd= $command->queryAll();
+    	    $time=date('Y-m-d',time());
+    	//print_r($childd[0]['UAvator']);
+    
+        return $this->render('index',[
+        		'list'=>$data,        		
+        		'childuid'=>$childuid,
+        		'remark'=>$remark,  
+        		'name'=>$childd[0]['name'],
+        		'pic'=>$childd[0]['UAvator'],
+        		'time'=> $time,
+        		'usertype'=> $usertype,        		
+        ]);
+    }
+    public function actionSave(){
+    	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+    	header("Content-type:text/html;charset=utf-8");
+    
+    	$childuid=\yii::$app->request->get('uid');
+    	//$uid=\Yii::$app->session['user.uid'];
+
+    	$sq2="SELECT classid FROM lcchildren WHERE id=".$childuid;
+    	$command = $connection->createCommand($sq2);
+    	$class = $command->queryAll();
+    	$classid=$class[0]['classid'];
+   
+    	$sq1="SELECT id FROM lcchildren WHERE classid='".$classid."' and id>'".$childuid."' LIMIT 1";
+    	$command = $connection->createCommand($sq1);
+    	$childnext = $command->queryAll();    	
+    	
+    	if($childnext){
+    		$nextchild=$childnext[0]['id'];   		    	
+    	    $sq3='SELECT issend FROM childdayrecord WHERE childuid='.$nextchild.' and to_days(createtime) = to_days(now())';
+    	    $command = $connection->createCommand($sq3);
+    	    $childrecord = $command->queryAll();
+    	    if(isset($childrecord[0]['issend'])){
+    	       if($childrecord[0]['issend']==1){
+    	    	  // echo "查看 ";
+    	       	return $this->redirect(['dayrecorddetailex/index',"uid"=>$nextchild]);
+    	       }else{
+    	    	 //echo "编辑 1";
+    	       	return $this->redirect(['dayrecorddetail/index',"uid"=>$nextchild]);
+    	    }
+    	    }else{
+    	    	 //echo "编辑2 ";
+    	    	return $this->redirect(['dayrecorddetail/index',"uid"=>$nextchild]);
+    	    }
+    	}else{
+    		//echo'<script language="javascript">alert("已是最后一个！");</script>';
+    		//echo '<script language="JavaScript">;alert("已是最后一个！");location.href="index.php?r=admin/dayrecord/index&uid=".$uid.";</script>;';    
+    		return $this->redirect(['dayrecord/index',"uid"=>$uid]);      //最后一个
+    	}
+    	 
+    	//return $this->redirect(['dayrecord/index',"uid"=>$uid]);
+    	//return $this->redirect(['announce/index',"send"=>"succeed","gid"=>Yii::$app->request->post('AnnounceForm')['group']]);
+    }
+    
+}

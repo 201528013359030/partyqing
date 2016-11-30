@@ -1,0 +1,73 @@
+<?php
+/* @var $this yii\web\View */
+use yii\helpers\Html;
+use yii\web\View;
+?>
+<!DOCTYPE HTML>
+<!-- saved from url=(0065)http://sycyh.yqting.com/template/admin.php -->
+<!DOCTYPE html PUBLIC "" ""><HTML><HEAD>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta http-equiv="X-UA-Compatible" content="IE=9" />
+<META charset="utf-8"> 
+<META name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
+<META name="format-detection" content="telephone=no"> 
+<TITLE>签到</TITLE> 
+<LINK href="css/tempshareli.css" rel="stylesheet" type="text/css"> 
+<?=Html::jsFile('@web/js0/jquery-1.11.2.js')?>
+<?=Html::jsFile('@web/js0/htmlset.js')?>
+<?//=Html::jsFile('@web/js/jquery.js')?>
+<META name="GENERATOR" content="MSHTML 11.00.9600.18098"></HEAD> 
+<BODY>
+<style>
+.btnBox_green a {
+background: rgb(66, 217, 120);
+border-radius: 6px;
+height: 2.50em;
+color: rgb(255, 255, 255);
+line-height: 2.50;
+display: block;
+-webkit-border-radius: 6px;
+-moz-border-radius: 6px;
+-ms-border-radius: 6px;
+-o-border-radius: 6px;
+width: 70%;
+font-size: 1.8em;
+}
+.wrap_gray.pic{
+	background:url(img/fail0.png);
+	background-repeat:no-repeat;
+	background-size:100%;
+	background-position:center;
+}
+</style>
+<div class="wrap_gray pic" id="check" style="display:none">
+<input type="button" onclick="aaa()" value="去人">
+<span  style="display:inline-block;margin-top:100%;color:#9a9a9a;font-size:1.6em;">请进园内签到/签退!</span>
+</div>
+<div class="wrap_gray" id="check0" style="display:">
+<input type="button" onclick="aaa()" value="去人">
+<iframe id="success" src="" width="100%" height="100%"></iframe>
+<P style="padding-top:30%;padding-bottom:5%"><IMG src="img/fail.png"></p>
+<p style="color:#333333;font-size:2em;">失败！</p>
+<span  style="color:#9a9a9a;font-size:1.6em;">请进园内签到/签退!</span>
+<!-- 请稍后重新签到 -->
+</DIV>
+
+<script type="text/javascript">
+function aaa(){
+//document.getElementById("aaa").src='http://viewer.maka.im/k/XHBUMSL8';
+	var aa=parseInt(Math.random()*3,10)+1;
+	if(aa==1){
+		alert(1);
+	document.getElementById("success").src='http://viewer.maka.im/k/STWQ1X02';
+	}else if(aa==2){
+		alert(2);
+	document.getElementById("success").src='http://viewer.maka.im/k/OBDTDLTM';
+	}else if(aa==3){
+		alert(3);
+	document.getElementById("success").src='http://viewer.maka.im/k/1VTQRBIJ';}
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,158 @@
+<?php
+/* @var $this yii\web\View */
+use yii\helpers\Html;
+use yii\bootstrap\Nav;
+use yii\bootstrap\NavBar;
+use yii\widgets\Breadcrumbs;
+use app\assets\AppAsset;
+use yii\web\View;
+?>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title></title>
+<?=Html::cssFile('@web/css/announcemy.css')?>
+<?=Html::cssFile('@web/css/bootstrapmy.css')?>
+<?=Html::jsFile('@web/js/iscroll.js')?>
+<?=Html::jsFile('@web/js/jquery.js')?>
+<?=Html::jsFile('@web/js/bootstrap.js')?>
+<style>
+.nav > li {
+position: relative;
+display: inline-block;
+}
+.navbar-nav {
+margin: 7.5px -15px;
+}
+.nav {
+padding-left: 0;
+margin-bottom: 0;
+list-style: none;
+text-align:center;
+}
+.navbar {
+margin-bottom: 0px;
+}
+.row-bt-button a {
+display: block;
+height: 40px;
+line-height: 40px;
+margin: 0px auto;
+text-align: center;
+border: 1px #E6E6E6 solid;
+background: #F7F7F7;
+color: #000;
+-webkit-border-radius: 2px;	
+text-decoration: none;
+}
+.row-bt-button.left {position:fixed;bottom:0;left:0;width: 50%;}
+.row-bt-button.right {position:fixed;bottom:0;right:0;width: 50%;}
+</style>
+<style>
+.clean-gray {
+display: block;
+height: 40px;
+line-height: 40px;
+margin: 0px auto;
+text-align: center;
+border: 1px #E6E6E6 solid;
+background: #F7F7F7;
+color: #000;
+-webkit-border-radius: 2px;	
+text-decoration: none;
+position:fixed;
+bottom:0;
+right:0;
+width: 50%;
+}
+</style>
+</head>
+<body>	
+<div id="wrap" class="wrap">
+<div id="scroller">
+	<div id="pullDown">
+		<span class="pullDownIcon"></span><span class="pullDownLabel">下拉即可加载...</span>
+	</div>
+	<div class="moBox"  id="searchBox">
+		<div class="searchBox">
+			<div class="searchInner">
+			<input id="searchtitle" class="inpSearch" name="searchtitle" value="" type="text" placeholder="输入搜索关键字">			
+			<a href="javascript:void(0);" class="ficon ic_search" id="search"></a>			
+			</div>
+		</div>		
+	</div>
+
+	<div class="moBox">
+		<div id="listBox" class="listBox">
+			<div class="listIteam" id="empty">
+				<div class="empty">暂无</div>
+			</div>
+	
+		</div>
+	</div>	
+
+
+</div>
+</div>	
+<div class="row-bt-button left" >
+  	<a href="">本周(第周)</a>
+</div>
+<select class="clean-gray" id="sea" onchange="search()"> 
+    <option value="77" selected="selected" disabled="disabled">请选择</option> 
+	 <?php for($i=1;$i<54;$i++){?>	    
+	<option  value="<?=$i?>">第<?=$i?>周</option>    
+	 <? }?>      
+</select>  
+	
+<a id="sendSucceed" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#sendModal" style="display:none">
+</a>
+
+<div class="modal fade" id="sendModal" tabindex="-1" role="dialog" aria-labelledby="uploadModalLabel" aria-hidden="true">
+	<div class="modal-dialog" style='z-index:1060'>
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title" id="uploadModalLabel">
+				</h4>
+			</div>
+			<div class="modal-body">
+				<div style="text-align: center;">
+                   已经没有更多数据！
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal" onclick="">确定
+				</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
+</body>
+</html>
+<script type="text/javascript">
+function search(){
+	//var search=document.getElementById("search").value;
+	//var sea=$("#search").find("option:selected").text(); 
+	var options=$("#sea option:selected");  //获取选中的项
+    alert(options.val());   //拿到选中项的值
+    alert(options.text());   //拿到选中项的文本
+	
+//	var  myselect=document.getElementById("search");
+//	var index=myselect.selectedIndex ;   
+//	var sea=myselect.options[index].value;
+	//alert(sea);
+    //var geturl = "admin.php?op=history&search_st="+search_st+"&search="+$("#search").val();//+"&type="+type;
+    //var geturl = "index.php?r=admin/teachingreference/index&id=<?//=$id?>&search="+search+"&searchname="+searchname;
+	//geturl=encodeURI(encodeURI(geturl));
+	//window.location.href =geturl; 
+}
+	$("div[id^='contentlist']").each(function(){
+	    $(this).click(function(){    
+	      	var imgid = $(this).attr("id");
+	        var  imgidlist=imgid.split("_");
+	        $(this).find("i[id^=icon_new]").hide();
+
+	    })
+	 });
+</script>

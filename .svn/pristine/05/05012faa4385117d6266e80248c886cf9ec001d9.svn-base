@@ -1,0 +1,169 @@
+<?php
+namespace app\modules\admin\controllers;
+use yii;
+use yii\web\Controller;
+use Rest;
+use Client;
+class SignController extends Controller
+{
+	public $layout  = false;
+    public function actionIndex()
+    {
+    	require_once(dirname(__FILE__)."/config.php");
+       	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+    	$uid=\yii::$app->request->get('uid');
+    	$cid=\yii::$app->request->get('cid');
+    	$rlongitude=\yii::$app->request->get('a');
+    	$rlatitude=\yii::$app->request->get('b');
+    	$token=\yii::$app->request->get('auth_token');
+    	if(!$rlongitude||!$rlatitude){
+    		if($cid){    			
+    		}else{
+    		   $cid="a";
+    		}
+    		return $this->render('index0',[   
+    	   		'uid' => $uid,
+    			'cid' => $cid,
+    	   ]);  	
+    	}
+    	$timenow=time();
+    	$timenow=date("Y-m-d",$timenow);
+    	$time=date('Y-m-d H:i:s',time());
+    	/**
+    	 * @desc 根据两点间的经纬度计算距离
+    	 * @param float $lat 纬度值
+    	 * @param float $lng 经度值
+    	 * http://www.cocoachina.com/ios/20141118/10238.html
+    	 * http://www.nhc.noaa.gov/gccalc.shtml
+    	 */
+    	function getDistance($lat1, $lng1, $lat2, $lng2)
+    	{
+    		$earthRadius = 6367000; //approximate radius of earth in meters
+    		/*
+    		 Convert these degrees to radians
+    		to work with the formula
+    		*/
+    		$lat1 = ($lat1 * pi() ) / 180;
+    		$lng1 = ($lng1 * pi() ) / 180;
+    		 
+    		$lat2 = ($lat2 * pi() ) / 180;
+    		$lng2 = ($lng2 * pi() ) / 180;
+    		/*
+    		 Using the
+    		Haversine formula
+    		http://en.wikipedia.org/wiki/Haversine_formula
+    		calculate the distance
+    		*/
+    		$calcLongitude = $lng2 - $lng1;
+    		$calcLatitude = $lat2 - $lat1;
+    		$stepOne = pow(sin($calcLatitude / 2), 2) + cos($lat1) * cos($lat2) * pow(sin($calcLongitude / 2), 2);
+    		$stepTwo = 2 * asin(min(1, sqrt($stepOne)));
+    		$calculatedDistance = $earthRadius * $stepTwo;
+    		return round($calculatedDistance);//单位：m
+    	}
+    	//print_r($timenow);
+    	$sq2="SELECT childid,mtype,eid,classid,name FROM lcmemdata WHERE muid='".$uid."'";
+    	$command = $connection->createCommand($sq2);
+    	$user = $command->queryAll();
+    	$schoolid=$user[0]['eid'];
+    	//print_r($user);
+    	$sq0="SELECT * FROM lcenterdata WHERE eid='".$schoolid."'";
+    	$command = $connection->createCommand($sq0);
+    	$school = $command->queryAll();
+    	$slongitude=$school[0]['longitude'];
+    	$slatitude=$school[0]['latitude'];
+    	 
+    	$distance=getDistance($slatitude,$slongitude,$rlatitude,$rlongitude);
+       if($user[0]['mtype']==1){//1-家长   3-教师
+    	//$childuid=$user[0]['childid'];
+    	$childuid=$cid;
+    	$sq3='SELECT classid,name,eid FROM lcchildren WHERE id='.$childuid;
+    	$command = $connection->createCommand($sq3);
+    	$child = $command->queryAll();
+    	$classuid=$child[0]['classid'];
+    	$childname=$child[0]['name'];
+    	$schoolid=$child[0]['eid'];
+    	
+    	if($distance>50){
+    		print_r($distance);
+    		$content="请进园内签到/签退!";
+    		return $this->render('index_d',[
+    				'content' => $content,
+    				]);
+    	}else{
+    	//print_r($distance);
+        $sq3="SELECT id,timein,timeout,istimeout FROM childsign WHERE childuid='".$childuid."' AND timein>='".$timenow."' order by timein desc";
+    	$command = $connection->createCommand($sq3);
+    	$child = $command->queryAll();    	
+    	//print_r($child);
+    	if(isset($child[0]["istimeout"])){
+    		$id=$child[0]['id'];
+    		if($child[0]["istimeout"]==0){
+    			$sql="UPDATE childsign SET istimeout=1,personout=".$uid." WHERE id=".$id;
+    			//	file_put_contents("D://wt1.txt","sql:".$sql."\n", FILE_APPEND);
+    			$command = $connection->createCommand($sql);
+    			$command->execute();   	
+    			//echo "out";	
+    			$content="孩子签退成功！";
+    			return $this->render('index',[
+    					'content' => $content,
+    					]);
+    		}elseif($child[0]["istimeout"]==1){
+    			$sql="INSERT INTO childsign(classuid,childuid,childname,timein,personin,schoolid) VALUES('$classuid','$childuid','$childname','$time','$uid','$schoolid')";
+    			//file_put_contents("D://wj.txt","sql:".$sql."\n", FILE_APPEND);
+    			$command = $connection->createCommand($sql);
+    			$command->execute();
+    			//echo "in";
+    			$content="孩子签到成功！";
+    			return $this->render('index',[
+    					'content' => $content,
+    					]);
+    		}   		
+    	}else{
+    		$sql="INSERT INTO childsign(classuid,childuid,childname,timein,personin,schoolid) VALUES('$classuid','$childuid','$childname','$time','$uid','$schoolid')";
+    		//file_put_contents("D://wj.txt","sql:".$sql."\n", FILE_APPEND);
+    		$command = $connection->createCommand($sql);
+    		$command->execute();
+    		//echo "in0";
+    		$content="孩子签到成功！";  
+    		return $this->render('index',[
+    				'content' => $content,
+    				]);
+    	}
+      }//距离end
+    }else{            //家长给孩子签到end
+    	if($distance>50){
+    		$content="请进园内签到/签退!";
+    		return $this->render('index_d',[
+    				'content' => $content,
+    				]);
+    	}else{
+    		$sq3="SELECT id FROM teachersign WHERE teauid='".$uid."' AND timein>='".$timenow."'";
+    		$command = $connection->createCommand($sq3);
+    		$sign = $command->queryAll();
+    		if($sign){
+    			$content="您已签到过！";
+    			return $this->render('index_d',[
+    					'content' => $content,
+    					]);
+    		}else{
+    		$classid=$user[0]['classid'];
+    		$type=$user[0]['mtype'];
+    		$name=$user[0]['name'];
+    		$sql="INSERT INTO teachersign(schoolid,classuid,teauid,teaname,type) VALUES('$schoolid','$classid','$uid','$name','$type')";
+    		//file_put_contents("D://wj.txt","sql:".$sql."\n", FILE_APPEND);
+    		$command = $connection->createCommand($sql);
+    		$command->execute();
+    		//echo "in";
+    		$content="教师签到成功！";
+    		return $this->render('index',[
+    				'content' => $content,
+    				]);
+    		}
+    	}
+    	
+    	
+    }//职工签到end
+  }
+}

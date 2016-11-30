@@ -1,0 +1,320 @@
+<?php
+/* @var $this yii\web\View */
+use yii\helpers\Html;
+use yii\bootstrap\Nav;
+use yii\bootstrap\NavBar;
+use yii\widgets\Breadcrumbs;
+use app\assets\AppAsset;
+use yii\web\View;
+?>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta id="viewport" name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0">
+<meta name="format-detection" content="telephone=no">
+<title>每周餐谱</title>
+<?=Html::cssFile('@web/css/mydoc.css')?>
+<?=Html::jsFile('@web/js0/build/iscroll.js')?>
+<script type="text/javascript">
+
+</script>
+<style>
+body{
+background:#F0F0F0;	
+}
+table{	
+margin:10px 20px 10px 20px;
+width:90%;
+margin-top:6px;	
+border-collapse: collapse;
+text-align:center;
+border-radius: 20px; 
+-moz-border-radius: 20px; 
+-webkit-border-radius: 20px;
+border:0;				
+}
+table tr th, table tr td {
+color: #4D4D4D;
+font-size: 1.0rem;
+padding:0.5625rem 0.625rem;
+text-align: left;
+}
+table tbody tr td, table tr td {
+color: #4D4D4D;
+font-size: 1.0rem;
+padding: 1.0rem 1.0rem;
+text-align: left;
+line-height:1.5rem;	
+}
+table tr.even, table tr.alt, table tr:nth-of-type(even) {
+background: #fff;
+}
+.head1{
+height:45px;
+background-color:#f7b63b;			
+}
+.head2{
+height:45px;
+background-color:#fe983f;			
+}
+.head3{
+height:45px;
+background-color:#f36059;			
+}
+.head4{
+height:45px;
+background-color:#B56DE9;			
+}
+.head5{
+height:45px;
+background-color:#6E36DD;			
+}
+.radius{
+-border-top-left-radius: 15px;
+-webkit-border-top-left-radius: 15px;
+-moz-border-top-left-radius: 15px;
+-border-top-right-radius: 15px;
+-webkit-border-top-right-radius: 15px;
+-moz-border-top-right-radius: 15px;	
+-border-top-right-radius: 15px;		
+border:0;
+color:#fff;
+font-size:13pt;
+font-weight: normal;	
+}
+.radius0{
+-border-bottom-left-radius: 15px;
+-webkit-border-bottom-left-radius: 15px;
+-moz-border-bottom-left-radius: 15px;
+-border-bottom-right-radius: 15px;
+-webkit-border-bottom-right-radius: 15px;
+-moz-border-bottom-right-radius: 15px;	
+-border-bottom-right-radius: 15px;		
+
+}
+.row-bt-button0 a {
+display: block;
+height: 40px;
+line-height: 40px;
+margin: 0px auto;
+text-align: center;
+border: 1px #E6E6E6 solid;
+background: #F7F7F7;
+color: #000;
+-webkit-border-radius: 2px;	
+text-decoration: none;
+}
+.row-bt-button0.left {position:fixed;bottom:0;left:0;width: 33.4%;}
+.row-bt-button0.right {position:fixed;bottom:0;right:0;width: 33.4%;}
+.row-bt-button0.middle {position:fixed;bottom:0;left:33.4%;width: 33.4%;}
+.under{text-decoration: none;}
+.small-2 {
+width: 90px;
+}
+.small-3 {
+width: 70px;
+}
+.tabs dd > a, .tabs .tab-title > a {
+padding:10px 20px 10px 20px;	
+}
+li {
+text-align:center;
+}
+#wrapper0{
+	height: 60px;
+	width: 100%;
+	overflow: hidden;
+}
+#scroller0 {
+	width: 630px;
+}
+#wrapper1{
+	height: 60px;
+	width: 100%;
+	overflow: hidden;
+}
+#scroller1 {
+	width: 630px;
+}
+#wrapper2{
+	height: 60px;
+	width: 100%;
+	overflow: hidden;
+}
+#scroller2 {
+	width: 630px;
+}
+#wrapper3{
+	height: 60px;
+	width: 100%;
+	overflow: hidden;
+}
+#scroller3 {
+	width: 630px;
+}
+#wrapper4{
+	height: 60px;
+	width: 100%;
+	overflow: hidden;
+}
+#scroller4 {
+	width: 630px;
+}
+.tabs{
+border-bottom:1px solid #D2D2D2;
+}
+</style>
+</head>
+<body onload="loaded()">
+<div style="padding-bottom: 50px">
+<div class="row">
+<div style="text-align:center;margin-bottom:-7px;">
+<ul class="tabs" data-tab style="display:inline-block;">
+<?php foreach ($list as $key0=>$value0): ?>
+<?php if($key0=="0"):?>
+<li class="tab-title small-3 small-collapse active" ><a href="#pane<?=$key0?>"><?=$value0[0][0]['gradename']?></a></li>
+<?else:?>
+<li onclick="re('<?=$key0?>')" class="tab-title small-3 small-collapse"><a href="#pane<?=$key0?>"><?=$value0[0][0]['gradename']?></a></li>
+<?endif?>
+<? endforeach?> 
+</ul></div>
+<div class="tabs-content">
+    <?php foreach ($list as $key0=>$value0): ?> 
+            <?php if($key0=="0"):?>
+            <div class="content active" id="pane<?=$key0?>">
+            <?else:?>
+             <div class="content" id="pane<?=$key0?>">
+            <?endif?>
+  <div  id="wrapper<?=$key0?>">
+	<div  id="scroller<?=$key0?>">  	
+            <ul class="tabs" data-tab>			  						
+			  <?php foreach ($value0 as $key=>$value): ?> 
+			  <?php if($value[0]['today']=="1"):?>
+			  <li class="tab-title small-2 small-collapse active"><a href="#panel<?=$key?>">
+			    <span style="font-size:11pt;">今天</br></span><?=$value[0]['coursetime']?></a></li>
+			  <?elseif($nowweek=="0"&&$key==0):?>
+			  <li class="tab-title small-2 small-collapse active"><a href="#panel<?=$key?>">
+			    <span style="font-size:11pt;"><?=$value[0]['week']?></br></span><?=$value[0]['coursetime']?></a></li>
+			  <?else:?>
+              <li class="tab-title small-2 small-collapse"><a href="#panel<?=$key?>">              
+			   <span style="font-size:11pt;"><?=$value[0]['week']?></br></span><?=$value[0]['coursetime']?></a></li>
+              <?endif?>	
+              <? endforeach?>            
+			</ul>
+	 </div>
+   </div>			
+			<div class="tabs-content">
+			  <?php foreach ($value0 as $key=>$value): ?>
+			  <?php if($value[0]['today']=="1"):?>
+			  <div class="content active" id="panel<?=$key?>">
+			  <?elseif($nowweek=="0"&&$key==0):?>
+			  <div class="content active" id="panel<?=$key?>">
+			  <?else:?>
+              <div class="content" id="panel<?=$key?>">
+              <?endif?>	
+              <?//php if($value[0]['breakfast']==""):?>
+              <?//else:?>
+			  	<table >
+                <tr class="head1">  
+                <th class="radius">早餐</th> 
+                </tr>   
+                <tr >                 
+                <td class="radius0"><?=$value[0]['breakfast']?></td>      
+                </tr>
+                </table>
+                <?//endif?>
+                <?//php if($value[0]['breakfasta']==""):?>
+                <?//else:?>	  
+                <table >
+                <tr class="head2">  
+                <th class="radius">早加餐</th> 
+                </tr>   
+                <tr class="tcontent">  
+                <td class="radius0"><?=$value[0]['breakfasta']?></td>      
+                </tr>
+                </table>
+                <?//endif?>
+                <?//php if($value[0]['lunch']==""):?>
+                <?//else:?> 
+                <table >
+                <tr class="head3">  
+                <th class="radius">午餐</th> 
+                </tr>   
+                <tr>  
+                <td class="radius0"><?=$value[0]['lunch']?></td>      
+                </tr>
+                </table>
+                <?//endif?>
+                <?php if($value[0]['luncha']==""):?>
+                <?else:?>
+                <table >
+                <tr class="head4">  
+                <th class="radius">午加餐</th> 
+                </tr>   
+                <tr class="tcontent">  
+                <td class="radius0"><?=$value[0]['luncha']?></td>      
+                </tr>
+                </table>
+                <?endif?>
+                <?php if($value[0]['dinner']==""):?>
+                <?else:?> 
+                <table >
+                <tr class="head5">  
+                <th class="radius">晚餐</th> 
+                </tr>   
+                <tr>  
+                <td class="radius0"><?=$value[0]['dinner']?></td>      
+                </tr>
+                </table> 
+                <?endif?>			    
+			    </div>			 
+			  <? endforeach?>  			 
+			  </div>	
+            </div>
+        <? endforeach?>
+   </div>	
+  </div>
+</div>	
+<div class="row-bt-button0 left" >
+  	<a href="index.php?r=admin/menus/index&uid=<?=$uid?>&day=<?=$lastday?>">上一周</a>
+</div>
+<div class="row-bt-button0 middle" >
+  	<a href="index.php?r=admin/menus/index&uid=<?=$uid?>">本周</a>
+</div> 
+<div class="row-bt-button0 right" >
+  	<a href="index.php?r=admin/menus/index&uid=<?=$uid?>&day=<?=$day?>" >下一周</a>
+</div> 				
+	<input type="hidden" id="count" value=<?//=$sex2?>>
+</body>
+</html>
+<?=Html::jsFile('@web/js/vendor/jquery.js')?>
+<?=Html::jsFile('@web/js/foundation.min.js')?>
+<script type="text/javascript">
+$(document).foundation(); 
+var myScroll0;
+var myScroll1;
+var myScroll2;
+var myScroll3;
+var myScroll4;
+function loaded () {
+	myScroll0 = new IScroll('#wrapper0', { eventPassthrough: true, scrollX: true, scrollY: false, preventDefault: false });
+	myScroll1 = new IScroll('#wrapper1', { eventPassthrough: true, scrollX: true, scrollY: false, preventDefault: false });
+//console.log(myScroll0);
+//console.log(myScroll1);
+	myScroll2 = new IScroll('#wrapper2', { eventPassthrough: true, scrollX: true, scrollY: false, preventDefault: false });
+	myScroll3 = new IScroll('#wrapper3', { eventPassthrough: true, scrollX: true, scrollY: false, preventDefault: false });	
+	myScroll4 = new IScroll('#wrapper4', { eventPassthrough: true, scrollX: true, scrollY: false, preventDefault: false });		
+}
+function re(x){
+	var a=x;
+	//alert(a);
+	//console.log(5555);
+	if(a==1){ setTimeout(function () {myScroll1.refresh(); }, 100);}
+	if(a==2){ setTimeout(function () {myScroll2.refresh(); }, 100);}
+	if(a==3){ setTimeout(function () {myScroll3.refresh(); }, 100);}
+	if(a==4){ setTimeout(function () {myScroll4.refresh(); }, 100);}
+}
+</script>

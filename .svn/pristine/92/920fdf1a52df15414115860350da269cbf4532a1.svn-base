@@ -1,0 +1,188 @@
+<?php
+/* @var $this yii\web\View */
+use yii\helpers\Html;
+use yii\bootstrap\Nav;
+use yii\bootstrap\NavBar;
+use yii\widgets\Breadcrumbs;
+use app\assets\AppAsset;
+use yii\web\View;
+?>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta id="viewport" name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0">
+<meta name="format-detection" content="telephone=no">
+<title>每日观察</title>
+<?=Html::jsFile('@web/js/jquery.min.js')?>
+<?=Html::jsFile('@web/js/bootstrap.js')?>
+<?=Html::cssFile('@web/css/bootstrap.css')?>
+<style>
+table td{padding:10px;font-size:11pt;text-align:center;}
+ul{
+	list-style-type:none;
+	font-size:12pt;
+	line-height:2.5em;
+}
+</style>
+</head>
+<body>
+<table border="1" cellpadding="10" style="margin:20px;width:90%;margin-top:6px">
+   <tr>
+    <td >晨间入园</td>
+    <td style="white-space:nowrap;"><a href="#" id="mo1" data-toggle="modal"data-target="#myModal1">正常</a></td>  
+  </tr>  
+  <tr>
+    <td >早餐</td>
+    <td style="white-space:nowrap;">
+    <a href="#" id="mo2" data-toggle="modal"data-target="#myModal2">正常</a></td> 
+  </tr>   
+   <tr>
+    <td >间点</td>
+    <td ></td> 
+  </tr>
+  <tr>
+    <td >午餐</td>
+    <td ></td> 
+  </tr>  
+  <tr>
+    <td >午睡</td>
+    <td ></td> 
+  </tr>
+  <tr>
+    <td >水果</td>
+    <td ></td> 
+  </tr> 
+  <tr>
+    <td >晚餐</td>
+    <td ></td> 
+  </tr>
+  <tr>
+    <td>喝水</td>
+    <td ></td> 
+  </tr> 
+   <tr>
+    <td >小便</td>
+    <td ></td> 
+  </tr>
+  <tr>
+    <td >大便</td>
+    <td ></td> 
+  </tr>  
+  <tr>
+    <td >当天情绪</td>
+    <td ></td> 
+  </tr>
+  <tr>
+    <td >活动情况</td>
+    <td ></td> 
+  </tr> 
+  <tr>
+    <td >语言表达</td>
+    <td ></td> 
+  </tr>
+  <tr>
+    <td>同伴相处</td>
+    <td > </td> 
+  </tr> 
+  <tr>
+    <td>备注</td>
+    <td ></td> 
+  </tr>
+</table>
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="myModal1" tabindex="-1" role="dialog" 
+   aria-labelledby="myModalLabel" aria-hidden="true">
+   <div class="modal-dialog">
+      <div class="modal-content">
+         <div class="modal-header">
+            <button type="button" class="close" 
+               data-dismiss="modal" aria-hidden="true">
+                  &times;
+            </button>
+            <h4 class="modal-title" id="myModalLabel">
+               晨间入园
+            </h4>
+         </div>
+         <div class="modal-body"> 
+         <ul>      
+         <li><input name="initial" checked="checked" type="radio" value="持续哭闹 "/>持续哭闹</li>  
+         <li><input name="initial" type="radio" value="间歇性哭闹 " />间歇性哭闹 </li> 
+         <li><input name="initial" type="radio" value="正常" />正常 </li> 
+         <li><input name="initial" type="radio" value="高兴" />高兴</li> 
+         <li><input name="initial" id="initial0" type="radio" value="其它" />其它  </li> 
+         <input id="initial" type="text" disabled="true" value="" />  
+         <ul>    
+         </div>
+         <div class="modal-footer">
+            <button type="button" id="submit" class="btn btn-default" 
+               data-dismiss="modal">确定
+            </button>
+         </div>
+      </div><!-- /.modal-content -->
+</div><!-- /.modal -->
+</div>
+
+<div class="modal fade" id="myModal2" tabindex="-1" role="dialog" 
+   aria-labelledby="myModalLabel" aria-hidden="true">
+   <div class="modal-dialog">
+      <div class="modal-content">
+         <div class="modal-header">
+            <button type="button" class="close" 
+               data-dismiss="modal" aria-hidden="true">
+                  &times;
+            </button>
+            <h4 class="modal-title" id="myModalLabel">
+                                                     早餐
+            </h4>
+         </div>
+         <div class="modal-body"> 
+         <ul>      
+         <li><input name="initial" checked="checked" type="radio" value="量多"/>量多</li>  
+         <li><input name="initial" type="radio" value="正常 " />正常 </li> 
+         <li><input name="initial" type="radio" value="量少" />量少 </li> 
+         <li><input name="initial" type="radio" value="自己进餐" />自己进餐</li> 
+         <li><input name="initial" type="radio" value="教师辅助进餐" />教师辅助进餐</li> 
+         <li><input name="initial" id="initial0" type="radio" value="其它" />其它  </li> 
+         <input id="initial" type="text" disabled="true" value="" />  
+         <ul>    
+         </div>
+         <div class="modal-footer">
+            <button type="button" id="submit" class="btn btn-default" 
+               data-dismiss="modal">确定
+            </button>
+         </div>
+      </div><!-- /.modal-content -->
+</div><!-- /.modal -->
+</div>
+<!-- 模态框（Modal） -->
+<script>
+$(document).ready(function() {
+	  $("#initial0").click(function() {
+		  var pp= $('input[name="Fruit"]:checked').val();
+		  document.getElementById("initial").disabled=false; 
+	    //$("#Modal").modal();
+	  });
+	  $("#initial").click(function() {
+		  this
+		  document.getElementById("initial").disabled=true; 
+	    //$("#Modal").modal();
+	  });
+	  $("#submit").click(function() {
+		  var pp= $('input[name="initial"]:checked').val();
+		  if(pp=="其它"){
+			// var p=$('input[name="Fruit"]').val();
+			var p=document.getElementById("initial").value;			  			
+		  }else{
+		    var p = pp;
+		  }
+		 document.getElementById("mo1").innerHTML=p;	   
+	    //$("#Modal").modal();
+	  });
+});
+</script>
+
+</body>
+</html>

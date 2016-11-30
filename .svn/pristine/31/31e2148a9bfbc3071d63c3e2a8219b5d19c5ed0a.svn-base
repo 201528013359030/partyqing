@@ -1,0 +1,38 @@
+<?php
+namespace app\modules\admin\controllers;
+use Yii;
+use app\modules\admin\models\IctWebService;
+use app\modules\admin\models\AuthToken;
+use app\models\Curl;
+
+class SchoolintroController extends \yii\web\Controller
+{
+	public $enableCsrfValidation = false;//yii默认表单csrf验证，如果post不带改参数会报错！
+//    public $layout  = 'main';
+    public $layout  = 'announce';
+//    public $layout  = 'layout';
+    public function actionIndex()
+    {    
+        $uid=\yii::$app->request->get('uid');  //用户uid
+        $connection = Yii::$app->db;
+        $connection->open();  //初始化数据库
+               
+        $sql="SELECT eid FROM lcmemdata WHERE muid='".$uid."'";
+        $command = $connection->createCommand($sql);
+        $school = $command->queryAll();
+        $schoolid=$school[0]['eid'];
+
+        $sql="SELECT detail FROM lcenterdata WHERE eid='".$schoolid."'";
+        $command = $connection->createCommand($sql);
+        $detail = $command->queryAll();
+        if(isset($detail[0]['detail'])){
+        	$detail0=$detail[0]['detail'];
+        }else{
+        	$detail0="";
+        }
+        return $this->render('index', [ 
+        		'detail'=> $detail0,
+        		]);              
+    }
+
+}

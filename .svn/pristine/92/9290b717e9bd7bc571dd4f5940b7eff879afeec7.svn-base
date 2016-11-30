@@ -1,0 +1,26 @@
+<?php
+/* @var $this yii\web\View */
+use yii\helpers\Html;
+use app\assets\AppAsset;
+AppAsset::register($this);
+//use yii\web\View;
+?>
+<!DOCTYpE HTML pUBLiC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0083)https://192.168.139.246/notice/web/index.php -->
+<html><head>
+<html >
+<head>	
+	<title>what</title>
+<style>
+
+
+</style>	
+
+</head>
+<body>
+
+<h1>渲染页面</h1>
+<?php echo $content; ?>
+
+</body>
+</html>

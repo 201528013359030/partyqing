@@ -1,0 +1,79 @@
+<?php
+namespace app\modules\admin\controllers;
+use yii;
+use yii\web\Controller;
+use Rest;
+use Client;
+use app\modules\admin\models\AuthToken;
+use app\modules\admin\models\IctWebService;
+class evaluatelistController extends Controller
+{
+	public $layout  = false;
+    public function actionIndex()
+    {
+        //$uid =\Yii::$app->session['user.uid'];
+    	//require_once(dirname(__FILE__)."/config.php");
+    	//$token=\yii::$app->request->get('auth_token');
+    	//print_r($token);
+    	//\Yii::$app->session['token']=$token;
+    	$uid=\yii::$app->request->get('uid');//家长uid
+    	\Yii::$app->session['user.uid']=$uid;
+    	$cid=\yii::$app->request->get('cid');
+    	$s=\yii::$app->request->get('s');//s=1教师
+    	$auth = new AuthToken();
+    	$auth->authTokenSession();     
+    	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+    	header("Content-type:text/html;charset=utf-8");
+     	
+    	$sql="SELECT eid,mtype FROM lcmemdata WHERE muid='".$uid."'";
+    	$command = $connection->createCommand($sql);
+    	$school = $command->queryAll();
+    	$schoolid=$school[0]['eid'];
+    	$mtype=$school[0]['mtype'];
+    	$sq2="SELECT classid FROM lcchildren WHERE id='".$cid."'";
+    	$command = $connection->createCommand($sq2);
+    	$class = $command->queryAll();
+    	//print_r($class);exit;
+    	if(isset($class[0]['classid'])){
+    	$classid=$class[0]['classid'];}
+    	//print_r($company);
+    	//\Yii::$app->session['personal']=$personal;
+    	/**************end********************/
+    	if($s==1){//echo "教师";
+    		$sql="SELECT * FROM lcevaluate where eid='".$schoolid."' AND  owneroid='".$classid."' AND type=2 AND status=1 AND isdelete=0 ORDER BY createtime DESC";    		 
+    	}elseif($s==3){//echo "教师端";
+    		$sql="SELECT * FROM lcevaluate where eid='".$schoolid."' AND type=3 AND status=1 AND isdelete=0 ORDER BY createtime DESC";    		 
+    	}else{
+    		//echo "园所";
+    		$sql="SELECT * FROM lcevaluate where eid='".$schoolid."' AND type=1 AND status=1 AND isdelete=0 ORDER BY createtime DESC";    		 
+    	}    	
+   	   $command = $connection->createCommand($sql);//1-幼儿园评价表 2-教师评价表
+   	    $new = $command->queryAll();
+   	    //print_r($course);
+    	$count=count($new);
+     	//for($i=0;$i<=$count-1;$i++){
+    	//	$newsid=$news[$i]['id'];
+    	//	$sq2="SELECT * FROM schoolnewsread where uid=".$uid." AND newsid ='".$newsid."'";    		
+    	//	$command = $connection->createCommand($sq2);
+    	//	$readd= $command->queryAll();
+    		//print_r($newsid);
+    	//	if(isset($readd[0]['id'])){$news[$i]['readd']=1;}else{$news[$i]['readd']=0;}  		
+    		//$tt=strtotime($course[$i]['PublicTime']);
+    		//$course[$i]['PublicTime']=date('Y-m-d H:i',$tt);
+    	//}
+    	//print_r($course);
+
+    	//$tt=strtotime($course['PublicTime']);    	
+    	//$course['PublicTime']=date('Y-m-d H:i',$tt);    
+        return $this->render('index',[
+        		'uid' => $uid,
+        		'cid' => $cid,
+        		'list'=>$new,  
+        		's'=>$s,  
+        		'count'=>$count,
+        		'mtype'=>$mtype,
+        ]);
+    }
+ 
+}

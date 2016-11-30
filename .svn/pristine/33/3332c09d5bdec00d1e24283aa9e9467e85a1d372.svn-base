@@ -1,0 +1,272 @@
+<?php
+/* @var $this yii\web\View */
+use yii\helpers\Html;
+use yii\web\View;
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>签到详情</title>
+<?=Html::cssFile('@web/css0/jquery-ui.css')?>
+<?=Html::cssFile('@web/css0/jquery-ui-timepicker-addon.css')?>
+<?=Html::jsFile('@web/js0/jquery-1.11.2.js')?>
+<?=Html::jsFile('@web/js0/jquery-ui.js')?>
+<?=Html::jsFile('@web/js0/jquery-ui-timepicker-addon.js')?>
+<style>
+.ui-widget-header {
+border: 1px solid #d4d1bf;
+background: #ffffff url("../web/css0/images/bg2.png") 50% 50% repeat;
+color: #453821;
+font-weight: bold;
+}
+.ui-datepicker select.ui-datepicker-month, .ui-datepicker select.ui-datepicker-year {
+width: 45%;
+background: #30BF78;
+height:35px;
+}
+.ui-datepicker {
+width: 100%;
+padding: 0em 0em 0;
+margin:0;	
+display: none;
+height:auto;	
+font-size:1.5em;
+font-family: 幼圆;
+}
+.ui-widget-content {
+border: 1px solid #d9d6c4;
+background: #eceadf url("../web/css0/images/bg2.png") 50% 50% repeat;	
+background-color:;	
+color: #1f1f1f;
+}
+thead {
+display: table-header-group;
+vertical-align: middle;
+border-color: inherit;
+font-size:12pt;
+}
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
+border: 1px solid #cbc7bd;
+font-weight: bold;
+background-color: #FFA8AA;
+height:37px;
+color:grey;	
+font-size:12pt;
+text-align:center;
+}
+.ui-state-disabled, .ui-widget-content .ui-state-disabled, .ui-widget-header .ui-state-disabled {
+opacity: .95;
+filter: Alpha(Opacity=35);
+/* support: IE8; */
+background-image: none;
+height:37px;
+}
+.ui-widget-header .ui-icon {
+background-image: url("../web/css0/images/sanjiao1.png");
+}
+.ui-icon-circle-triangle-e {
+background-position: -22px 0px;
+}
+.ui-icon-circle-triangle-w {
+background-position: 0px 0px;
+}
+.ui-icon {
+width: 22px;
+height: 32px;
+}
+.ui-datepicker .ui-datepicker-prev span, .ui-datepicker .ui-datepicker-next span {
+display: block;
+position: absolute;
+margin-left: -5px;
+margin-top: -5px;
+}
+
+/* This is the selected day in the inline datepicker. */
+.ui-state-active, .ui-widget-content .ui-state-active {
+ background: #FF6669;
+ opacity: 1.0;
+ filter:Alpha(Opacity=100);
+ color:#000;	
+}
+/* Add a little separation between month and year select menus */
+.ui-datepicker select.ui-datepicker-month {
+ width: 42%;
+ margin-right: 6px;
+}
+.ui-state-highlight, .ui-widget-content .ui-state-highlight, .ui-widget-header .ui-state-highlight {
+border: 1px solid #b2a266;
+background: #30BF78;
+color: #3a3427;
+}
+table{	
+margin:10px 20px 10px 6px;
+width:95%;
+margin-top:50px;	
+border-collapse: collapse;
+text-align:center;
+ border: 1px solid #d3d3d3; 				
+}
+table tr th, table tr td {
+color: #4D4D4D;
+font-size: 0.9rem;
+padding:0.5625rem 0.625rem;
+text-align: left;
+border: 1px solid #d3d3d3; 	
+}
+</style>
+</head>
+<body>
+	<div class="container">
+		<div class="box">                 
+			<div id="start"></div>
+		</div>
+	</div>
+<table>
+	   <tr>  
+            <th style="white-space:nowrap;">日期</th> 
+            <th style="white-space:nowrap;">星期</th> 
+            <th style="white-space:nowrap;">出勤人数</th>  
+       </tr>
+        <tr>  
+            <td style="white-space:nowrap;">2016-2-2</td> 
+            <td style="white-space:nowrap;">星期二</td> 
+            <td style="white-space:nowrap;">22</td>  
+       </tr>
+</table>
+<div class="off-canvas-wrap" data-offcanvas>
+	<div class="inner-wrap">
+	       <ul class="list">
+			
+				<li>
+					<a href="###" class="pic_text_iteam" style="min-height: 50px;">	  						  			
+			  				<p class="pic_text_name">
+			  					<span class="fr viewnum">
+			  					<?//=$child[0]['name']?>
+			  					</span>姓名
+			  				</p>			  					  						  			
+			  		</a>
+				</li>
+				<li>
+				<li>
+					<a href="###" class="pic_text_iteam" style="min-height: 50px;">	  						  			
+			  				<p class="pic_text_name">
+			  					<span class="fr viewnum">
+			  					<?//=$child[0]['schoolname']?>
+			  					</span>学校
+			  				</p>			  					  						  			
+			  		</a>
+				</li>	  						
+			</ul>
+		</div>	
+	</div>
+</div>
+
+<table id="table0">
+	   <tr>  
+            <th style="white-space:nowrap;"></th>
+            <th style="white-space:nowrap;">时间</th> 
+            <th style="white-space:nowrap;">签到人</th> 
+            <th style="white-space:nowrap;">代签</th>  
+       </tr>
+</table>
+<input type="hidden" id="uid" value="<?=$cid?>">
+<?=Html::jsFile('@web/js0/foundation.min.js')?>
+$(document).foundation();	
+<script type="text/javascript">
+$(document).ready(function(){	
+    var today = new Date();
+    var m = today.getMonth(), 
+    d = today.getDate(), 
+    y = today.getFullYear();
+    var eventDates = [];
+    $.ajaxSetup({  
+        async : false  
+        	}); 
+    fetchEventDays(y, m+1);
+    // Get events for the current year and month.
+    //setTimeout(function () {
+    $("#start").datepicker({			
+	    	prevText: '&#x3c;上月',
+			nextText: '下月&#x3e;',
+			//defaultDate:"2016-12-22",
+			duration:"10s",//日期选择器呈现的速度，可以为毫秒数
+	    	changeMonth: true,
+	        changeYear: true,
+	        firstDay: 0,
+            dateFormat: "yy-mm-dd",
+            showTime: false,
+            showHour: false,
+            showMinute: false,
+            showMonthAfterYear: true,
+            dayNames: ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'],
+      		dayNamesShort: ['周日','周一','周二','周三','周四','周五','周六'],
+      		dayNamesMin: ['日','一','二','三','四','五','六'],
+      		monthNames: ['1月','2月','3月','4月','5月','6月',
+           		   		 '7月','8月','9月','10月','11月','12月'],
+            monthNamesShort: ['1','2','3','4','5','6',
+           		   		 '7','8','9','10','11','12'],
+            onChangeMonthYear:fetchEventDays,	
+            //beforeShowDay:highlightDays,                		 
+			//onSelect:getday,				      
+		});
+    //}, 100);
+	    function fetchEventDays(year, month, inst) {
+		    //alert(month);
+	    	 eventDates = [];
+	    	var cid=document.getElementById('uid').value;
+	    	var el,iteam, i;
+	    	el = document.getElementById('table0');	
+	    	var length=el.rows.length;
+	    	for(var k=1;k<length;k++){		    	
+	    	     el.deleteRow(1);
+	    	}
+	    	$.get("index.php?r=admin/signdate/data",{year:year,month:month,cid:cid
+	    	},function(result){	    		
+	    		//alert(JSON.stringify(result));
+	    		//var result=eval(result0);
+	    		//alert(result);
+	    		if(result){	  
+	    			 var event_dates = result.day;
+	    		       for(var i = 0; i < event_dates.length; i++) {
+	    		        var date_parts = event_dates[i].split('-');
+	    		        eventDates.push(new Date(date_parts[0], date_parts[1]-1, date_parts[2]));
+		    		   }	    		       
+	    		       for (i=0; i<result.days.length; i++) {
+		    		       									
+	    					iteam = document.createElement('tr');
+	    					iteam0 = document.createElement('tr');
+	    					//iteam.className = 'listIteam'; 
+	    					if(result.days[i].insteadin==0){            //签到       
+		    					var insteadin=  "否";                   
+	    					}else{
+	    						var insteadin=  "是";  
+			  	    			}
+	    					if(result.days[i].insteadout==0){            //签到       
+		    					var insteadout=  "否";                   
+	    					}else{
+	    						var insteadout=  "是";  
+			  	    			}
+	    					if(result.days[i].istimeout==0){            //签到                            
+	    						iteam.innerHTML = "<td style='white-space:nowrap;'>签到</td><td>"+result.days[i].timein+"</td><td>"+result.days[i].namein+"</td><td>"+insteadin+"</td>";
+		  	    			}else{
+                                iteam0.innerHTML = "<td style='white-space:nowrap;'>签到</td><td>"+result.days[i].timein+"</td><td>"+result.days[i].namein+"</td><td>"+insteadin+"</td>";				  	    			
+			  	    			iteam.innerHTML = "<td style='white-space:nowrap;'>签退</td><td>"+result.days[i].timeout+"</td><td>"+result.days[i].nameout+"</td><td>"+insteadout+"</td>";
+			  		    	}  	                						                        
+	    	    		    el.appendChild(iteam0, el.childNodes[0]);
+	    	    		    el.appendChild(iteam, el.childNodes[0]);
+	    				}		    		   
+	    		}else{
+	     			//alert("fail");
+	    		}
+	    	},'json');
+		}
+	    // ------------------------------------------------------------------
+	    // highlightDays - Add a custom css class to dates that exist in the
+	    // eventDates array. Must also add the css for td.highlight (above).
+	    // ------------------------------------------------------------------
+	   });		
+   		
+	</script>	
+</body>
+</html>

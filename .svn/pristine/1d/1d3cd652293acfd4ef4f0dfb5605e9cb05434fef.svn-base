@@ -1,0 +1,64 @@
+
+/***************************web与Native交互使用 原文件为 htmlset.js************************************/
+var Global_id=0;
+var Global_bridge;
+var Global_back_data="";
+var os=0;
+var API={"os":"",
+     init:function(){
+		 if(/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)){
+			 os=1;window.onerror=function(err){console.log("window.onerror: "+err)};
+			 this.connectWebViewJavascriptBridge(function(bridge){
+				 Global_bridge=bridge;bridge.init(function(message,responseCallback){});
+				 bridge.registerHandler("SendToJs",function(data,responseCallback){API.SendToJs(data);
+				 if(responseCallback){responseCallback(data)}});
+				 bridge.registerHandler("JsCallback",function(data,responseCallback){API.JsCallback(data);
+				 
+				 if(responseCallback){responseCallback(data)}})})
+				 }else{
+					 if(/(Android)/i.test(navigator.userAgent)){
+						 os=2
+						 }else{
+							 os=3
+						}
+				}
+			},
+			connectWebViewJavascriptBridge:function(callback){
+				if(window.WebViewJavascriptBridge){
+					callback(WebViewJavascriptBridge)
+					}else{
+						document.addEventListener("WebViewJavascriptBridgeReady",function(){
+							callback(WebViewJavascriptBridge)},false)}},
+
+							
+	   send_tonative:function(param,callback){ 
+	   var json={
+		   "request":{
+			   "id":Global_id,
+			   "name":param.name,
+			   "callback":param.callback||null,
+			   "params":param.params||null
+			   }
+			};
+        if(os==2){
+			  window.JavaScriptInterface.sendToNative(JSON.stringify(json))
+			  }
+		if(os==1){
+			Global_bridge.callHandler("SendToNative",JSON.stringify(json),
+			function(data){if(callback){callback(json)}})}
+		if(os==3){
+			window.HandleEvent("SendToNative",JSON.stringify(json))}Global_id++},
+
+			
+	   SendToJs:function(data){  
+	   var datas=JSON.parse(data);
+	   var callback=datas.request.callback;eval(callback+"(datas)")
+	   },
+	   
+	   
+	   JsCallback:function(data){
+	   var datas=JSON.parse(data);
+       var callback=datas.request.callback;  
+       eval(callback+"(datas)")
+	   }
+	   };

@@ -1,0 +1,56 @@
+<?php
+/* @var $this yii\web\View */
+use yii\helpers\Html;
+use yii\bootstrap\Nav;
+use yii\bootstrap\NavBar;
+use yii\widgets\Breadcrumbs;
+use app\assets\AppAsset;
+use yii\web\View;
+?>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>每日观察</title>
+
+<?=Html::cssFile('@web/css/share.css')?>
+<?=Html::jsFile('@web/js/momo.js')?>
+<?=Html::jsFile('@web/js/iscroll.js')?>
+
+<script type="text/javascript">
+</script>
+</head>
+<body>
+	
+ <div class="moGrid">
+		<div id="content1" class="content">		       			
+			 <ul class="J_Poster piclist">
+			 rrrrrrr           				
+               <li imgsrc = "./img/50.png" imgsrcBig = "img/50.png"></li>	  
+               <li imgsrc = "../img/50.png" imgsrcBig = "img/50.png"></li>
+               <li imgsrc = "img/50.png" imgsrcBig = "img/50.png"></li>
+               <li imgsrc = "img/50.png" imgsrcBig = "img/50.png"></li>
+               <li imgsrc = "img/50.png" imgsrcBig = "img/50.png"></li>               
+			</ul>			
+		</div>		
+    </div>
+</body>
+</html>
+<script type="text/javascript">
+/*
+ * 名称：公共函数
+ * 作用：通用函数 g()
+ */
+
+//定义公共函数
+function g( selector ){
+	var method = selector.substr(0,1) == '.'?'getElementsByClassName':'getElementById';
+	return document[method]( selector.substr(1) );
+}
+
+
+//初始化图片列表 相当于 Carsousel var c= new Carsousel(g(".J_Poster")[0]);
+Carsousel.init(g(".J_Poster"));
+
+</script>

@@ -1,0 +1,118 @@
+<?php
+/* @var $this yii\web\View */
+use yii\helpers\Html;
+use yii\bootstrap\Nav;
+use yii\bootstrap\NavBar;
+use yii\widgets\Breadcrumbs;
+use app\assets\AppAsset;
+use yii\web\View;
+?>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>班级评价</title>
+<?=Html::cssFile('@web/css/announcemy.css')?>
+<?=Html::cssFile('@web/css/bootstrapmy.css')?>
+<?=Html::jsFile('@web/js/iscroll.js')?>
+<?=Html::jsFile('@web/js/jquery.js')?>
+<?=Html::jsFile('@web/js/bootstrap.js')?>
+<style>
+.nav > li {
+position: relative;
+display: inline-block;
+}
+.navbar-nav {
+margin: 7.5px -15px;
+}
+.nav {
+padding-left: 0;
+margin-bottom: 0;
+list-style: none;
+text-align:center;
+}
+.navbar {
+margin-bottom: 0px;
+}
+</style>
+<script type="text/javascript">
+</script>
+</head>
+<body>	
+<nav class="navbar navbar-default" role="navigation">
+   <div>
+      <ul class="nav navbar-nav">
+         <li id="rule" class="active"><a href="index.php?r=admin/evaluatelist/index&uid=223">园所篇</a></li>
+         <li id="law"><a href="index.php?r=admin/evaluatelist/index&s=1&uid=223">教师篇</a></li>
+      </ul>
+   </div>
+</nav>
+	<div class="moBox">
+		<div id="listBox" class="listBox">
+			<div class="listIteam" id="empty">
+				<div class="empty">暂无</div>
+			</div>
+			<?php foreach ($list as $key=>$value): ?>
+			<div class="listIteam"  id="contentlist_">
+			<?php if($s==1):?>
+		         <a href="index.php?r=admin/evaluate/index&id=<?=$value['id']?>" class="listInner"> 
+		    <?else:?>     				
+				 <a href="index.php?r=admin/evaluates/index&id=<?=$value['id']?>" class="listInner">  
+			<?endif?>  	
+					<p class="listInfo">					
+                    <span class="title">      
+                    <?php //if($value['readd']=="0"):?>
+                    <i class="ficon ic_new"  id="icon_new_">NEW</i>
+                    <?//endif?>
+                    <?=$value['title']?></span>
+					</p>					
+					<p class="listInfo">
+						<span class="date"><?=$value['createtime']?></span>	
+					</p>					
+					<span class="tip ficon ic_arrow_right"></span>
+				</a>
+			</div>
+			<? endforeach?>
+		</div>
+	</div>
+	<input type="hidden" id="count" value=<?=$count?>>
+	<input type="hidden" id="s" value=<?=$s?>>
+</div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+
+function getLocalTime(nS) {   
+// 	alert(nS);	
+	var date = new Date(nS*1000);
+	Y = date.getFullYear() + '-';
+	M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
+	D = (date.getDate()+1 < 10 ? '0'+(date.getDate()+1) : date.getDate()+1)  + ' ';
+	h =  (date.getHours()+1 < 10 ? '0'+(date.getHours()+1) : date.getHours()+1) + ':';
+	m = (date.getMinutes()+1 < 10 ? '0'+(date.getMinutes()+1) : date.getMinutes()+1)  + ':';
+	s =  (date.getSeconds()+1 < 10 ? '0'+(date.getSeconds()+1) : date.getSeconds()+1); 
+// 	alert(Y+M+D+h+m+s);
+	return Y+M+D+h+m+s;      
+ }
+$(function(){
+	   var s=$("#s").val();
+	   // alert(s);
+	    if(s){
+	        //$("#law").hide();
+	        $("#law").attr('class','active');
+	        $("#rule").attr('class','');
+	    }else{
+	    	$("#rule").attr('class','active');
+	    }
+
+	    var count=$("#count").val();
+	    //alert(count);
+	    if(count==0){
+	        $("#empty").show();
+	    }else{
+	    	$("#empty").hide();
+	    }
+});
+</script>

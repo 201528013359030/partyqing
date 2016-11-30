@@ -1,0 +1,102 @@
+<?php
+namespace app\modules\admin\controllers;
+use yii;
+use yii\web\Controller;
+use Rest;
+use Client;
+use app\modules\admin\models\AuthToken;
+use app\modules\admin\models\IctWebService;
+class SchoolruleslistController extends Controller
+{
+	public $layout  = false;
+    public function actionIndex()
+    {
+    	$uid=\yii::$app->request->get('uid');//uid
+    	\Yii::$app->session['user.uid']=$uid;
+    	$auth = new AuthToken();
+    	$auth->authTokenSession();
+    	$s=\yii::$app->request->get('s');
+    	//$CodeNum=empty(\yii::$app->request->get('CodeNum'))?'01':\yii::$app->request->get('CodeNum');    	
+    	$CodeNum=\yii::$app->request->get('CodeNum');
+    	if($CodeNum){}else{$CodeNum="01";}
+    	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+    	header("Content-type:text/html;charset=utf-8");
+    	$sql="SELECT eid FROM lcmemdata WHERE muid='".$uid."'";
+    	$command = $connection->createCommand($sql);
+    	$school = $command->queryAll();
+    	if(!empty($school))
+    	   $schoolid=$school[0]['eid'];
+    	else 
+    	{
+    	    echo "用户未绑定！！！";
+    	    exit();
+    	}
+    	   	
+    	$typecode="rule";
+    	
+    	/**************end********************/
+    	if($s){//echo "政策法规";
+    	}else{
+    		//echo "本园制度";
+    	}
+//     	获取tab信息------------start------------------
+   	    $sql="SELECT * FROM g_type where code='$typecode'  ";
+        $command = $connection->createCommand($sql);
+   	    $tabs = $command->queryAll();
+//     	获取tab信息------------end------------------   
+        
+//     	获取信息列表------------start------------------
+    	$sql="SELECT * FROM lcrule where TypeCode='".$typecode."' and Type='$CodeNum' and (Eid='".$schoolid."' or Eid='') and ReadType=1 ORDER BY UpdateTime DESC LIMIT 0,10";
+    	$command = $connection->createCommand($sql);
+    	$list = $command->queryAll();
+    	$count=count($list);
+//     	获取信息列表------------end------------------
+    	//print_r($list);
+    	//exit();
+    	\Yii::$app->session['public_count']=$count;   	
+        return $this->render('index',[
+                'tabs'=>$tabs,
+        		'list'=>$list,  
+        		's'=>$s,
+        		'count'=>$count,
+                'uid'=>$uid,
+                'CodeNum'=>$CodeNum,
+            
+        ]); 
+    }
+    public function actionGetdata(){
+    	
+    	//$uid =\Yii::$app->session['user.uid'];
+    	//\Yii::$app->session['public_count']="5";
+    	$uid=\Yii::$app->session['user.uid'];    	
+    	//$CodeNum=empty(\yii::$app->request->get('CodeNum'))?'01':\yii::$app->request->get('CodeNum');
+    	$CodeNum=\yii::$app->request->get('CodeNum');
+    	if($CodeNum){}else{$CodeNum="01";}
+    	$typecode="rule";
+    	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+    	$sql="SELECT eid FROM lcmemdata WHERE muid='".$uid."'";
+    	$command = $connection->createCommand($sql);
+    	$school = $command->queryAll();
+    	$schoolid=$school[0]['eid'];
+    	if(!empty($school))
+    	    $schoolid=$school[0]['eid'];
+    	else
+    	{
+    	    echo "用户未绑定！！！";
+    	    exit();
+    	}
+    	$public_count=\Yii::$app->session['public_count'];
+
+    	    $sql="SELECT * FROM lcrule where  TypeCode='".$typecode."' and Type='$CodeNum'  and (Eid='".$schoolid."' or Eid='') and ReadType=1 ORDER BY UpdateTime DESC LIMIT ".$public_count.",5"; 
+    	    $public_count=$public_count+5;
+    	    \Yii::$app->session['public_count']=$public_count;
+    
+    	$command = $connection->createCommand($sql);
+    	$list = $command->queryAll();
+
+    	echo json_encode($list);
+    	exit();    
+    }   
+}

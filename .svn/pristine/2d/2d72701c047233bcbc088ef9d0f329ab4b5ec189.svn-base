@@ -1,0 +1,424 @@
+<?php
+/* @var $this yii\web\View */
+use yii\helpers\Html;
+use yii\bootstrap\Nav;
+use yii\bootstrap\NavBar;
+use yii\widgets\Breadcrumbs;
+use app\assets\AppAsset;
+use yii\web\View;
+?>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta id="viewport" name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0">
+<meta name="format-detection" content="telephone=no">
+<title>每日观察</title>
+<?=Html::jsFile('@web/js/jquery.min.js')?>
+<?=Html::jsFile('@web/js/bootstrap.js')?>
+<?=Html::cssFile('@web/css/bootstrap.css')?>
+<style>
+table td{padding:10px;font-size:11pt;text-align:center;}
+ul{
+	list-style-type:none;
+	font-size:12pt;
+	line-height:2.5em;
+}
+.btn-primary {
+position:absolute;
+right:4px;
+color: #fff;
+background-color: #30BF78;
+border-color: #30BF78;
+}
+.btn:hover {
+background-color: #30CF78;
+border-color: #30BF78;
+}
+.btn-primary.active, .open > .dropdown-toggle.btn-primary {
+color: #fff;
+background-color: #30CF78;
+border-color: #30CF78;
+}
+.img00{vertical-align:center;margin:15px;width:40px;height:40px;margin-left:25px;}
+</style>
+</head>
+<body>
+	
+<form name="send_form" id="send_form" method="post" enctype="multipart/form-data" action="index.php?r=admin/dayrecorddetail/save" >
+<div>	
+<img  class="img00" src="<?=$pic?>"/>
+<span style="display:inline-block;width:15%;"><?=$name?></span>
+<span style="display:inline-block;width:25%"><?=$time?>  </span>
+<button type="button" class="btn btn-primary" style="display:inline-block;width:30%;float:right;margin-top:15px;" name="submitp" id="submitp" data-toggle="button" onclick="send_submit();">保存/下一个</button>																										
+</div>
+<table border="1" cellpadding="10" style="margin:20px;width:90%;margin-top:6px">
+<?php foreach ($list as $key=>$value): ?>
+   <tr>
+    <td ><?=$value['name']?></td>
+    <td ><a href="#" name="mo<?=$value['no']?>" id="mo<?=$value['no']?>" data-toggle="modal"data-target="#myModal_<?=$value['no']?>"><?=$value['default']?></a></td>  
+      <input type="hidden" name="mm<?=$value['no']?>" id="mm<?=$value['no']?>" value="<?=$value['default']?>">
+  </tr>  
+<form>  
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="myModal_<?=$value['no']?>" tabindex="-1" role="dialog" 
+   aria-labelledby="myModalLabel" aria-hidden="true">
+   <div class="modal-dialog">
+      <div class="modal-content">
+         <div class="modal-header">
+            <button type="button" class="close" 
+               data-dismiss="modal" aria-hidden="true">
+                  &times;
+            </button>
+            <h4 class="modal-title" id="myModalLabel">
+               <?=$value['name']?>
+            </h4>
+         </div>
+         <div class="modal-body"> 
+         <ul>  
+         <?php if($value['no']==7):?>
+         <li>
+                                       当天共  <input style="width:40px;" id="in1<?=$value['no']?>" type="text"value="" />次  
+          &nbsp;平均量  <input style="width:40px;" id="in2<?=$value['no']?>" type="text" value="" />杯 
+         </li>                                       
+         <?elseif($value['no']==8):?>
+          <li>
+                                       小便<input style="width:40px;" id="in1<?=$value['no']?>" type="text"value="" />次  
+          </li> 
+         <?elseif($value['no']==9):?>
+         <li>
+                                          大便<input style="width:40px;" id="in1<?=$value['no']?>" type="text"value="" />次  
+         &nbsp;大便时间  <input style="width:80px;" id="in2<?=$value['no']?>" type="text" value="" />
+         </li> 	
+         <?endif?>  
+         <?php foreach ($value['state'] as $key=>$value0): ?>          
+         <li><input class="inpCheck"  name="in<?=$value['no']?>" type="checkbox"  value="<?=$value0?>"><?=$value0?></li>                                       
+         <? endforeach?>         
+         <li><input class="inpCheck"  name="in<?=$value['no']?>" id="in<?=$value['no']?>" type="checkbox" onclick="ab('<?=$value['no']?>')"  value="其它">其它</li>                                              
+         <input id="in0<?=$value['no']?>" type="text" disabled="true" value="" /> 
+         <input id="inn<?=$value['no']?>" type="hidden" value="0" /> 
+         <ul>    
+         </div>
+         <div class="modal-footer">
+            <button type="button" id="submit<?=$value['no']?>" class="btn btn-default" 
+               data-dismiss="modal">确定
+            </button>
+         </div>
+      </div><!-- /.modal-content -->
+</div><!-- /.modal -->
+</div>
+<? endforeach?> 
+ <tr>
+    <td>备注</td>
+    <td ><textarea class="inp inpmid" name="mm14" id="mm14" type="textarea" ><?=$remark?></textarea></td> 
+  </tr>
+</table>
+      <input type="hidden" name="uid" id="uid" value="<?=$childuid?>">
+ 
+<script>
+function send_submit(){
+	//alert("55");
+    document.send_form.submit();
+    return false;
+}
+function ab(x){
+    var a=x;
+    var b=document.getElementById("inn"+a).value;
+    if(b==0){
+    document.getElementById("in0"+a).disabled=false;
+    document.getElementById("inn"+a).value=1; 
+    }else if(b==1){
+        document.getElementById("in0"+a).disabled=true;
+        document.getElementById("inn"+a).value=0; 
+    }
+}
+$(document).ready(function() { 
+	$("#submit0").click(function() {
+	 var aa=new Array();
+	 $('input:checkbox[name="in0"]:checked').each(function(x) //multiple checkbox的name  
+	   {  
+	        var z=$(this).val(); 
+		    //alert ($(this).val());
+		    //alert (aa[x]);
+	          if(z=="其它"){	
+	        	  zz=document.getElementById("in00").value;
+	        	  if(zz.length>0){ aa[x]=zz;}					        	 	     		 			
+			  }else{
+				 aa[x]	=z;
+			  }	    
+	   });
+	 if(aa.length>0){}else{aa="正常"}
+	 document.getElementById("mo0").innerHTML=aa;
+	 document.getElementById("mm0").value=aa;
+	});   
+	$("#submit1").click(function() {
+		 var aa=new Array();
+		 $('input:checkbox[name="in1"]:checked').each(function(x) //multiple checkbox的name  
+		   {  
+		        var z=$(this).val(); 
+			    //alert ($(this).val());
+			    //alert (aa[x]);
+		          if(z=="其它"){	
+		        	  zz=document.getElementById("in01").value;
+		        	  if(zz.length>0){ aa[x]=zz;}					        	 	     		 			
+				  }else{
+					 aa[x]	=z;
+				  }	    
+		   });
+		 if(aa.length>0){}else{aa="正常"}
+		 document.getElementById("mo1").innerHTML=aa;
+		 document.getElementById("mm1").value=aa;
+		}); 
+	$("#submit2").click(function() {
+		 var aa=new Array();
+		 $('input:checkbox[name="in2"]:checked').each(function(x) //multiple checkbox的name  
+		   {  
+		        var z=$(this).val(); 
+		          if(z=="其它"){	
+		        	  zz=document.getElementById("in02").value;
+		        	  if(zz.length>0){ aa[x]=zz;}					        	 	     		 			
+				  }else{
+					 aa[x]	=z;
+				  }	    
+		   });
+		 if(aa.length>0){}else{aa="正常"}
+		 document.getElementById("mo2").innerHTML=aa;
+		 document.getElementById("mm2").value=aa;
+		}); 
+	$("#submit3").click(function() {
+		 var aa=new Array();
+		 $('input:checkbox[name="in3"]:checked').each(function(x) //multiple checkbox的name  
+		   {  
+		        var z=$(this).val(); 
+		          if(z=="其它"){	
+		        	  zz=document.getElementById("in03").value;
+		        	  if(zz.length>0){ aa[x]=zz;}					        	 	     		 			
+				  }else{
+					 aa[x]	=z;
+				  }	    
+		   });
+		 if(aa.length>0){}else{aa="正常"}
+		 document.getElementById("mo3").innerHTML=aa;
+		 document.getElementById("mm3").value=aa;
+		}); 
+	$("#submit4").click(function() {
+		 var aa=new Array();
+		 $('input:checkbox[name="in4"]:checked').each(function(x) //multiple checkbox的name  
+		   {  
+		        var z=$(this).val(); 
+		          if(z=="其它"){	
+		        	  zz=document.getElementById("in04").value;
+		        	  if(zz.length>0){ aa[x]=zz;}					        	 	     		 			
+				  }else{
+					 aa[x]	=z;
+				  }	    
+		   });
+		 if(aa.length>0){}else{aa="请选择"}
+		 document.getElementById("mo4").innerHTML=aa;
+		 document.getElementById("mm4").value=aa;
+		}); 
+	$("#submit5").click(function() {
+		 var aa=new Array();
+		 $('input:checkbox[name="in5"]:checked').each(function(x) //multiple checkbox的name  
+		   {  
+		        var z=$(this).val(); 
+		          if(z=="其它"){	
+		        	  zz=document.getElementById("in05").value;
+		        	  if(zz.length>0){ aa[x]=zz;}					        	 	     		 			
+				  }else{
+					 aa[x]	=z;
+				  }	    
+		   });
+		 if(aa.length>0){}else{aa="正常"}
+		 document.getElementById("mo5").innerHTML=aa;
+		 document.getElementById("mm5").value=aa;
+		}); 
+	$("#submit6").click(function() {
+		 var aa=new Array();
+		 $('input:checkbox[name="in6"]:checked').each(function(x) //multiple checkbox的name  
+		   {  
+		        var z=$(this).val(); 
+		          if(z=="其它"){	
+		        	  zz=document.getElementById("in06").value;
+		        	  if(zz.length>0){ aa[x]=zz;}					        	 	     		 			
+				  }else{
+					 aa[x]	=z;
+				  }	    
+		   });
+		 if(aa.length>0){}else{aa="正常"}
+		 document.getElementById("mo6").innerHTML=aa;
+		 document.getElementById("mm6").value=aa;
+		}); 
+	
+	$("#submit7").click(function() {
+		 var aa=new Array();
+		 var a1=new Array();
+		 $('input:checkbox[name="in7"]:checked').each(function(x) //multiple checkbox的name  
+		   {  
+			 var z=$(this).val(); 			  
+		          if(z=="其它"){	
+		        	  zz=document.getElementById("in07").value;
+		        	  if(zz.length>0){ aa[x]=zz;}					        	 	     		 			
+				  }else{
+					 aa[x]	=z;
+				  }	  
+		   });
+		 aa1=document.getElementById("in17").value;
+		 aa2=document.getElementById("in27").value; 
+		 if(aa.length>0){ 
+		          if(aa2.length>0){
+			             aa="平均量"+aa2+"杯,"+aa;
+			             if(aa1.length>0){
+			                    aa="当天共"+aa1+"次,"+aa;					
+			             }
+		          }else if(aa1.length>0){
+			              aa="当天共"+aa1+"次,"+aa;					
+		          }			
+		 }else{   if(aa2.length>0){
+                           aa="平均量"+aa2+"杯";
+                          if(aa1.length>0){
+                           aa="当天共"+aa1+"次,"+aa;					
+                        }
+                  }else if(aa1.length>0){
+                  aa="当天共"+aa1+"次";					
+                  }	
+	      } 
+		 if(aa.length>0){ }else{aa="请选择"} 
+		 document.getElementById("mo7").innerHTML=aa;
+		 document.getElementById("mm7").value=aa;
+		}); 
+	$("#submit8").click(function() {
+		 var aa=new Array();
+		 var a1=new Array();
+		 $('input:checkbox[name="in8"]:checked').each(function(x) //multiple checkbox的name  
+		   {  
+			 var z=$(this).val(); 			  
+		          if(z=="其它"){	
+		        	  zz=document.getElementById("in08").value;
+		        	  if(zz.length>0){ aa[x]=zz;}					        	 	     		 			
+				  }else{
+					 aa[x]	=z;
+				  }	  
+		   });
+		 aa1=document.getElementById("in18").value;		 
+		 if(aa.length>0){ 		         
+		      if(aa1.length>0){
+			         aa="小便"+aa1+"次,"+aa;					
+		       }			
+		 }else{  
+			  if(aa1.length>0){
+                aa="小便"+aa1+"次";						
+	         } 
+		 }
+		 if(aa.length>0){ }else{aa="颜色正常"} 
+		 document.getElementById("mo8").innerHTML=aa;
+		 document.getElementById("mm8").value=aa;
+		}); 
+	$("#submit9").click(function() {
+		 var aa=new Array();
+		 var a1=new Array();
+		 $('input:checkbox[name="in9"]:checked').each(function(x) //multiple checkbox的name  
+		   {  
+			 var z=$(this).val(); 			  
+		          if(z=="其它"){	
+		        	  zz=document.getElementById("in09").value;
+		        	  if(zz.length>0){ aa[x]=zz;}					        	 	     		 			
+				  }else{
+					 aa[x]	=z;
+				  }	  
+		   });
+		 aa1=document.getElementById("in19").value;
+		 aa2=document.getElementById("in29").value; 
+		 if(aa.length>0){ 
+		          if(aa2.length>0){
+			             aa="大便时间"+aa2+","+aa;
+			             if(aa1.length>0){
+			                    aa="大便"+aa1+"次,"+aa;					
+			             }
+		          }else if(aa1.length>0){
+			              aa="大便"+aa1+"次,"+aa;					
+		          }			
+		 }else{   if(aa2.length>0){
+                         aa="大便时间"+aa2;
+                        if(aa1.length>0){
+                         aa="大便"+aa1+"次,"+aa;					
+                      }
+                }else if(aa1.length>0){
+                aa="大便"+aa1+"次";					
+                }	
+	      } 
+		 if(aa.length>0){ }else{aa="状态正常"} 
+		 document.getElementById("mo9").innerHTML=aa;
+		 document.getElementById("mm9").value=aa;
+		}); 
+	$("#submit10").click(function() {
+		 var aa=new Array();
+		 $('input:checkbox[name="in10"]:checked').each(function(x) //multiple checkbox的name  
+		   {  
+		        var z=$(this).val(); 
+		          if(z=="其它"){	
+		        	  zz=document.getElementById("in010").value;
+		        	  if(zz.length>0){ aa[x]=zz;}					        	 	     		 			
+				  }else{
+					 aa[x]	=z;
+				  }	    
+		   });
+		 if(aa.length>0){}else{aa="请选择"}
+		 document.getElementById("mo10").innerHTML=aa;
+		 document.getElementById("mm10").value=aa;
+		}); 
+	$("#submit11").click(function() {
+		 var aa=new Array();
+		 $('input:checkbox[name="in11"]:checked').each(function(x) //multiple checkbox的name  
+		   {  
+		        var z=$(this).val(); 
+		          if(z=="其它"){	
+		        	  zz=document.getElementById("in011").value;
+		        	  if(zz.length>0){ aa[x]=zz;}					        	 	     		 			
+				  }else{
+					 aa[x]	=z;
+				  }	    
+		   });
+		 if(aa.length>0){}else{aa="请选择"}
+		 document.getElementById("mo11").innerHTML=aa;
+		 document.getElementById("mm11").value=aa;
+		});
+	$("#submit12").click(function() {
+		 var aa=new Array();
+		 $('input:checkbox[name="in12"]:checked').each(function(x) //multiple checkbox的name  
+		   {  
+		        var z=$(this).val(); 
+		          if(z=="其它"){	
+		        	  zz=document.getElementById("in012").value;
+		        	  if(zz.length>0){ aa[x]=zz;}					        	 	     		 			
+				  }else{
+					 aa[x]	=z;
+				  }	    
+		   });
+		 if(aa.length>0){}else{aa="请选择"}
+		 document.getElementById("mo12").innerHTML=aa;
+		 document.getElementById("mm12").value=aa;
+		});
+	$("#submit13").click(function() {
+		 var aa=new Array();
+		 $('input:checkbox[name="in13"]:checked').each(function(x) //multiple checkbox的name  
+		   {  
+		        var z=$(this).val(); 
+		          if(z=="其它"){	
+		        	  zz=document.getElementById("in013").value;
+		        	  if(zz.length>0){ aa[x]=zz;}					        	 	     		 			
+				  }else{
+					 aa[x]	=z;
+				  }	    
+		   });
+		 if(aa.length>0){}else{aa="请选择"}
+		 document.getElementById("mo13").innerHTML=aa;
+		 document.getElementById("mm13").value=aa;
+		});
+});
+</script>
+
+</body>
+</html>

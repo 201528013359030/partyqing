@@ -1,0 +1,226 @@
+<?php
+/* @var $this yii\web\View */
+use yii\helpers\Html;
+use yii\web\View;
+?>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<?=Html::cssFile('@web/css/bootmomo.css')?>
+<?=Html::cssFile('@web/css/catcharts.css')?>
+<?=Html::jsFile('@web/js0/jquery-1.11.2.js')?>
+<title>签到统计</title>
+<style>
+.chartwrap {
+margin-top:0px;
+}
+#chartBox {
+/* width: 50%; */
+height: 530px;	
+}
+.row-bt-button a {
+display: block;
+height: 40px;
+line-height: 40px;
+margin: 0px auto;
+text-align: center;
+border: 1px #E6E6E6 solid;
+background: #F7F7F7;
+color: #000;
+-webkit-border-radius: 2px;	
+text-decoration: none;
+}
+.row-bt-button.left {position:fixed;bottom:0;left:0;width: 33.4%;}
+.row-bt-button.right {position:fixed;bottom:0;right:0;width: 33.4%;}
+.row-bt-button.middle {position:fixed;bottom:0;left:33.4%;width: 33.4%;}
+</style>
+</head>
+<body>
+<div class="wrap">
+	<div class="moBox" style="padding-bottom: 60px">   
+		<div class="chartwrap">					
+			<div id="chartBox"></div>
+		</div>		
+		<a style=" display:block ;text-align: center; color:#666;" href="javascript:location.reload()">为保证统计准确请刷新页面</a> 
+	</div>
+</div>
+<div class="row-bt-button left" >
+  	<a href="index.php?r=admin/signpic/index&cid=<?=$cid?>&year=<?=$lastyear?>">上一年</a>
+</div>
+<div class="row-bt-button middle" >
+  	<a href="index.php?r=admin/signpic/index&cid=<?=$cid?>">今年</a>
+</div> 
+<div class="row-bt-button right" >
+  	<a href="index.php?r=admin/signpic/index&cid=<?=$cid?>&year=<?=$nextyear?>" >下一年</a>
+</div> 
+<?=Html::jsFile('@web/js/dist/echarts.js')?>
+<script>
+setTimeout("showcharts()",800);
+function showcharts(){
+var win_w = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+document.getElementById('chartBox').style.width = (win_w+40)+'px';
+//获取变量
+
+var _legend='签到天数,总天数'.split(","), 
+    _arrcat = '<?=$month?>'.split(","),  //院系名称 与下面数据为一一位置对应，最后一个为展示时的第一个
+    _arrcat0 = '<?=$month?>'.split(","), 
+     //_arrvalue=[[],[31,30,30,29,28]], //前一组是已报到人数，后一组是各院系应报到人数
+    _arrvalue=[[<?=$days?>],[<?=$monthdays?>]],
+    _title='<?=$year?>', //后台算出来直接传过来   报到比率=报到总数/所有学生数
+    _unit='天',
+    _barname='条形图名称'; //无用但保留
+    
+    //控制表格label的属性
+	var attrSeries = 'inside,right'.split(",");
+	var barIndex = [1,0];
+    var barwidth = [20,5];
+    var attrcolor = '#73A2F2,#E3ECFC'.split(",");
+
+    
+	// 路径配置
+	require.config({
+		paths: {
+		    echarts: '../web/js/dist'
+		}
+	});
+	// 具体画图使用
+	require(
+	    [
+	        'echarts',           // 此项为固定保留
+	        'echarts/theme/macarons',
+	        'echarts/chart/bar'  // 按需加载所需图表，如需动态类型切换功能，别忘了同时加载相应图表
+	    ],
+	    function (ec,theme) {
+	        var myChart = ec.init(document.getElementById("chartBox"),theme);
+	        option = {
+			    title : {
+			        text: _title,
+			        subtext: "单位："+_unit,
+			        x:'left',
+			        textStyle:{color:'#000',fontSize:18},			       
+			    },
+			    tooltip : {
+			        trigger: 'axis',
+			        axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+			            type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+			        },
+			        position:function(p){
+			        	return [win_w,30];
+			        },					        
+			    },
+			    legend: {
+			    	show : true,		
+			        data:_legend,
+			        orient: 'horizontal',      // 布局方式，默认为水平布局，可选为：
+                    // 'horizontal' ¦ 'vertical'
+                     x: 'center',               // 水平安放位置，默认为全图居中，可选为：
+                    // 'center' ¦ 'left' ¦ 'right'
+                    // ¦ {number}（x坐标，单位px）
+                     y: 'top',                  // 垂直安放位置，默认为全图顶端，可选为：
+                    // 'top' ¦ 'bottom' ¦ 'center'
+                    // ¦ {number}（y坐标，单位px）
+                    backgroundColor: 'rgba(0,0,0,0)',
+                    borderColor: '#ccc',       // 图例边框颜色
+                    borderWidth: 0,            // 图例边框线宽，单位px，默认为0（无边框）
+                    padding: 15,                // 图例内边距，单位px，默认各方向内边距为5，
+                    // 接受数组分别设定上右下左边距，同css
+                    itemGap: 10,               // 各个item之间的间隔，单位px，默认为10，
+                    // 横向布局时为水平间隔，纵向布局时为纵向间隔
+                    itemWidth: 20,             // 图例图形宽度
+                    itemHeight: 14,            // 图例图形高度
+                    textStyle: {
+                    color: '#333'          // 图例文字颜色
+                   }
+			    },			    
+			    grid: {
+				   x:60,				
+			    },
+			    toolbox: {
+			        show : false,
+			        feature : {
+			            mark : {show: true},
+			            dataView : {show: true, readOnly: false},
+			            magicType: {show: true, type: ['line', 'bar']},
+			            restore : {show: true},
+			            saveAsImage : {show: true}
+			        }
+			    },
+			    calculable : false,			  
+			    xAxis : [
+			        {
+			            type : 'value',
+			            //axisLabel:{formatter:'{value}'}
+			            boundaryGap: [0, 0.1],
+			            axisLine: { 
+			            	 show: true,                         
+			            	   lineStyle: {       // 属性lineStyle控制线条样式
+			                   color: '#73A2F2',
+			                   width:2,
+			                   type: 'solid'
+			                   }                         
+                        }
+			        }
+			    ],
+			    yAxis : [
+			    	{
+			            type : 'category',
+			            data : _arrcat,
+			            axisLine: { 
+			            	 show: true,                         
+			            	   lineStyle: {       // 属性lineStyle控制线条样式
+			                   color: '#73A2F2',
+			                   width: 2,
+			                   type: 'solid'
+			                   }                         
+                      }			          
+			        },
+			        {
+			            type : 'category',
+			            axisLine: {show:false},
+			            axisTick: {show:false},
+			            axisLabel: {show:false},
+			            splitArea: {show:false},
+			            splitLine: {show:false},
+			            data : _arrcat0
+			        }
+			    ],
+				series : [							
+				{
+		            name:_legend[0],
+		            type:'bar',
+		            yAxisIndex:barIndex[0],
+           			itemStyle: {
+           				normal: {color:attrcolor[0],
+           				label:{show:true,position:'insideRight'}}
+           				},
+		            data:_arrvalue[0]
+			    },
+				{
+		            name:_legend[1],
+		            type:'bar',
+		            yAxisIndex:barIndex[1],
+           			itemStyle: {
+           				normal: {color:attrcolor[1],
+           				label:{show:true,
+           					formatter:function(params){return params.value > 0 ? (params.value):'';}}
+           				}},
+		            data:_arrvalue[1]
+		        }
+				]
+
+			};
+                    
+			// 如果需要再次使用ECharts的图表实例，建议你还是保存init返回的图表实例
+			var myChart = require('echarts').init(document.getElementById("chartBox"),theme);
+	        myChart.setOption(option,true);
+	    }
+	);
+
+}
+</script>
+
+</body>
+</html>

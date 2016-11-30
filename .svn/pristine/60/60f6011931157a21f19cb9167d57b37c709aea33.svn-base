@@ -1,0 +1,52 @@
+<?php
+namespace app\modules\admin\controllers;
+use Yii;
+use app\modules\admin\models\IctWebService;
+use app\modules\admin\models\AuthToken;
+use app\models\Curl;
+
+class MainteachingreferenceController extends \yii\web\Controller
+{
+	public $enableCsrfValidation = false;//yii默认表单csrf验证，如果post不带改参数会报错！
+//    public $layout  = 'main';
+    public $layout  = 'announce';
+//    public $layout  = 'layout';
+    public function actionIndex()
+    {    
+        $uid=\yii::$app->request->get('uid');//uid
+        \Yii::$app->session['user.uid']=$uid;
+        $s=\yii::$app->request->get('s');
+        //$CodeNum=empty(\yii::$app->request->get('CodeNum'))?'01':\yii::$app->request->get('CodeNum');
+        $CodeNum=\yii::$app->request->get('CodeNum');
+        if($CodeNum){}else{$CodeNum="01";}
+        $connection = Yii::$app->db;
+        $connection->open();  //初始化数据库
+        header("Content-type:text/html;charset=utf-8");
+        $sql="SELECT eid FROM lcmemdata WHERE muid='".$uid."'";
+        $command = $connection->createCommand($sql);
+        $school = $command->queryAll();
+        if(!empty($school))
+            $schoolid=$school[0]['eid'];
+        else
+        {
+            echo "用户未绑定！！！";
+            exit();
+        }
+        //     	获取tab信息------------start------------------
+        $typecode="teachingreference";
+        $sql="SELECT * FROM g_type where code='$typecode'  and LENGTH(CodeNum)=2  ";
+        $command = $connection->createCommand($sql);
+        $tabs = $command->queryAll();
+        //     	获取tab信息------------end------------------
+         
+        
+       
+        return $this->render('index', [  
+            'tabs'=>$tabs,
+            's'=>$s,
+            'uid'=>$uid,
+            'CodeNum'=>$CodeNum,
+        		]);              
+    }
+
+}

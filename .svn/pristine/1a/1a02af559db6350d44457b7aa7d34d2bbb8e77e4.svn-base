@@ -1,0 +1,124 @@
+<?php
+/* @var $this yii\web\View */
+use yii\helpers\Html;
+use yii\bootstrap\Nav;
+use yii\bootstrap\NavBar;
+use yii\widgets\Breadcrumbs;
+use app\assets\AppAsset;
+use yii\web\View;
+?>
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<meta id="viewport" name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0">
+		<meta name="format-detection" content="telephone=no">
+		<title>校园招贴</title>
+		<?=Html::cssFile('@web/css0/bootstrap.min.css')?>
+        <?=Html::cssFile('@web/css0/foundation.min.css')?>
+        <?=Html::cssFile('@web/css0/font-awesome.min.css')?>
+        <?=Html::cssFile('@web/css0/home.css')?>
+        <?=Html::cssFile('@web/css0/poster-content.css')?>
+	</head>
+	<body class="home_body marbot">
+		<div id="wrap">			
+			<div class="home_content">
+				<?foreach ($list as $key => $value):?>
+                           hhhhh
+					<div class="zhaotie_contents" onclick="detail();">
+							<p class="yc"><?//=$value['description']?></p>
+							<?//if($value['picmediu']):?>
+							<div class="carsousel_box content_img">
+								<ul class="J_Poster carsousel ">
+									<?if(is_array($value['picurl'])):?>
+										<?foreach ($value['picurl'] as $k=>$p):?>
+											<?if($p):?>
+											<li imgsrc="<?=$p?>" imgsrcBig="<?=$p?>"></li>
+											<img src="<?=$p?>">
+											<?endif?>
+										<?endforeach?>
+									<?elseif($value['picurl']):?>	
+										<li imgsrc="<?=$value['picurl']?>" imgsrcBig="<?=$value['picurl']?>"></li>
+									<?endif?>
+				
+								</ul>
+							</div>
+							<?//endif?>
+
+							</div>
+						</div>
+					</div>
+
+				</div>
+				<?endforeach?>				
+				<div id="more" class="morediv" >
+				<a class="more" href="javascript:void(0);" onclick="getData()">查看更多</a>
+				</div>
+			</div>
+		</div>
+		<div id="J_confirm" class="reveal-modal confirm-modal" data-groupid data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+		<p id="modalTitle" class="modal-title">是否删除？</p>   
+</div>
+	</body>
+	<?=Html::jsFile('@web/js0/jquery.js')?>
+	<?=Html::jsFile('@web/js0/foundation.min.js')?>
+	<?=Html::jsFile('@web/js0/iscroll.js')?>
+	<?=Html::jsFile('@web/js0/carsousel.js')?>
+	<?=Html::jsFile('@web/js0/bootstrap.min.js')?>
+	<?=Html::jsFile('@web/js0/htmlset.js')?>
+	<?=Html::jsFile('@web/js0/public.js')?>
+	<script>
+
+	var delGuid = 0;
+	$(document).foundation();	
+	function getData(){
+		var type = "<?//=$type?>";
+		var oldCount = <?//=$posterList['count']?>;
+		$.get("index.php?r=admin/growuplist/getdata",{get:1,offset:dataNum,limit:5},
+			function(data){
+      			if(data){
+					// alert(JSON.stringify(data));
+         			showMoreData(data);
+		      	}else{                           
+      				alert("操作失败!");
+      			}
+				},'json'); 
+	}		
+		$(document).foundation();		
+        function g(selector) {
+			var method = selector.substr(0, 1) == '.' ? 'getElementsByClassName' : 'getElementById';
+			return document[method](selector.substr(1));
+		}
+		Carsousel.init(g(".J_Poster"));
+		function showMoreData(data){
+		var num = serverNum; //页面要生成多少个数据
+		//data json 串 转成json格式的，可能需要格式化
+
+		for(var i=0; i<data.posterList.infos.length;i++){
+			var poster = data.posterList.infos[i];	
+			var picmaster = '';
+			id_min = poster.guid;		
+			//alert(JSON.stringify( poster.picmaster));
+			for (var m = 0; m < poster.picmediu.length; m++) {
+				if(poster.picmediu[m]){
+					picmaster += '<li imgsrc="'+poster.picmediu[m]+'" imgsrcBig="'+poster.picmaster[m]+'"></li>';
+				}
+			};
+			$('#J_showMoreData').append(
+					'<div class="zhaotie_contents">'
+						+picmaster			
+				+'</div>'
+				);
+		}
+		dataNum = dataNum+data.posterList.infos.length;
+		more();
+		Carsousel.init(g(".J_Poster"));
+		}
+}
+				
+	</script>
+
+</html>

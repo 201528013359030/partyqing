@@ -1,0 +1,67 @@
+<?php
+namespace app\modules\admin\controllers;
+use yii;
+use yii\web\Controller;
+use Rest;
+use Client;
+use app\modules\admin\models\AuthToken;
+use app\modules\admin\models\IctWebService;
+class SignlistController extends Controller
+{
+	public $layout  = false;
+// 	public $username="";
+    public function actionIndex()
+    {
+        //$auth = new AuthToken();
+        //$auth->authTokenUrl();
+//     	$searchcontent=\Yii::$app->session['searchcontent'];
+    	$cid=\yii::$app->request->get('cid');
+    	$uid =\Yii::$app->session['user.uid'];
+    	\Yii::$app->session['user.cid']=$cid;
+       	$connection = Yii::$app->db;
+    	$connection->open();
+
+        $sq1="select * from signinfo where childuid='".$cid."' order by time desc LIMIT 5";
+     	$command = $connection->createCommand($sq1);
+    	$integralArr = $command->queryAll();   
+    	$count=count($integralArr);    	
+    	\Yii::$app->session['public_count']=$count; 
+    	 
+       return $this->render('index',array('NoticeList'=>$integralArr,'count'=>$count,'cid'=>$cid));
+    }
+    public function actionGetdata(){
+    	$cid=\yii::$app->request->get('cid');
+    	$connection = Yii::$app->db;
+    	$connection->open();
+    	$public_count=\Yii::$app->session['public_count']; 
+    	$uid =\Yii::$app->session['user.uid'];
+        $sq1="select * from signinfo where childuid='".$cid."' order by time desc LIMIT ".$public_count.",5"; 
+    	$result = \yii::$app->db->createCommand($sq1);
+    	$integralArr = $result->queryAll();   	
+     	$public_count=$public_count+5;
+    	\Yii::$app->session['public_count']=$public_count; 
+    	echo json_encode($integralArr);
+    	exit();
+    }
+    public function actionDel() {
+
+    	$id=\yii::$app->request->get('id');
+    	$connection = Yii::$app->db;
+    	$connection->open();
+    	$sq1="select * from signinfo where id='".$id."'";
+    	$result =$connection->createCommand($sq1);
+    	$in = $result->queryAll();
+    	if($in){ 
+    		$sq2="DELETE FROM signinfo WHERE id='".$id."'";
+    		//file_put_contents("D://wj.txt","sql:".$sql."\n", FILE_APPEND);
+    		$command = $connection->createCommand($sq2);
+    		$command->execute();
+    	}else{echo 0; }
+
+    	//exit;
+    	return $this->redirect(['signlist/index',
+    			"cid"=>\yii::$app->session['user.cid'],    
+    			]);
+    }
+
+}

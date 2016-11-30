@@ -1,0 +1,82 @@
+<?php
+namespace app\modules\admin\controllers;
+use yii;
+use yii\web\Controller;
+use Rest;
+use Client;
+use app\modules\admin\models\AuthToken;
+use app\modules\admin\models\IctWebService;
+class ClasslistController extends Controller
+{
+	public $layout  = false;
+    public function actionIndex()
+    {
+        //$uid =\Yii::$app->session['user.uid'];
+    	//require_once(dirname(__FILE__)."/config.php");
+    	//$token=\yii::$app->request->get('auth_token');
+    	//print_r($token);
+    	//\Yii::$app->session['token']=$token;
+    	$uid=\yii::$app->request->get('uid');//教师uid
+    	//\Yii::$app->session['user.uid']=$uid;
+    	\Yii::$app->session['user.uid']=$uid;
+    	//$auth = new AuthToken();
+    	//$auth->authTokenSession();
+    	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+    	header("Content-type:text/html;charset=utf-8");
+
+    	   	
+    	$sql="SELECT classid FROM lcmemdata WHERE muid='".$uid."'";
+        $command = $connection->createCommand($sql);
+   	    $classidall = $command->queryAll();
+   	    $classid=$classidall[0]['classid'];
+   	    
+   	    $sq2="SELECT oid,name,gradeid FROM lcorganidata WHERE classid='".$classid."' ORDER BY id LIMIT 5";
+   	    $command = $connection->createCommand($sq2);
+   	    $childlist = $command->queryAll();
+   	    $count=count($childlist);   	      	    
+   	    
+    	\Yii::$app->session['public_count']=$count;   	
+    	$time=date('Y-m-d',time());
+    	//$tt=strtotime($course['PublicTime']);    	
+    	//$course['PublicTime']=date('Y-m-d H:i',$tt);
+    	//print_r($childlist);
+        return $this->render('index',[
+        		'list'=>$childlist,        		
+        		'count'=>$count,
+        		'classid'=> $classid,  
+        		'time'=> $time,     		
+        ]);
+    }
+
+
+    public function actionGetdata(){
+
+    	//\Yii::$app->session['public_count']="5";
+  
+    	$uid=\Yii::$app->session['user.uid'];
+    	
+    	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+
+    	$sql="SELECT classid FROM lcmemdata WHERE muid='".$uid."'";
+    	$command = $connection->createCommand($sql);
+    	$classidall = $command->queryAll();
+    	$classid=$classidall[0]['classid'];
+    	
+    
+        $public_count=\Yii::$app->session['public_count'];
+        $sq2="SELECT id,name,UAvator,sex FROM lcchildren WHERE classid='".$classid."' ORDER BY id LIMIT ".$public_count.",5";       		         	
+    	$command = $connection->createCommand($sq2);
+    	$childlist = $command->queryAll();
+    	$count=count($childlist);
+    	
+    	$public_count=$public_count+5;
+    	\Yii::$app->session['public_count']=$public_count;
+    	
+    	echo json_encode($childlist);
+    	exit();
+    
+    }
+    
+}

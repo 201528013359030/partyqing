@@ -1,0 +1,143 @@
+<?php
+namespace app\modules\admin\controllers;
+use yii;
+use yii\web\Controller;
+use Rest;
+use Client;
+use app\modules\admin\models\AuthToken;
+use app\modules\admin\models\IctWebService;
+
+class MenusController extends Controller
+{
+	public $layout  = false;
+	public $enableCsrfValidation = false;//因为YII2的防止csrf攻击，你则不能多次提交相同的表单。如果你希望当前可以多次重复提交，可以在当前提交的表单controller中添加	
+    public function actionIndex()
+    {
+        //$uid =\Yii::$app->session['user.uid'];
+    	//require_once(dirname(__FILE__)."/config.php");
+    	//$token=\yii::$app->request->get('auth_token');
+    	//print_r($token);
+    	//\Yii::$app->session['token']=$token;
+    	//header("Content-type:text/html;charset=utf-8");
+    	$uid=\yii::$app->request->get('uid');
+    	$day=\yii::$app->request->get('day');
+    	//\Yii::$app->session['user.uid']=$uid;   	
+    	$auth = new AuthToken();
+    	$auth->authTokenSession();
+    	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+    	header("Content-type:text/html;charset=utf-8");    	   	
+    	//print_r($week);
+    	if($day){
+    		$todayday=$day;
+    		$t=strtotime($todayday);
+    		$week0=date("N",$t);
+    	}else{
+    		$week0=date("N",time());
+    		$todayday=date("Y-m-d",time());
+    	};    
+    	//print_r($week0); 
+    	if($week0==1){
+            //$week[0]=date("Y-m-d",strtotime("Monday"));    
+            $week[0]=date("Y-m-d",strtotime('Mon',strtotime("$todayday")));
+    	}else{
+    		//$week[0]=date("Y-m-d",strtotime("-1 Monday"));
+    		$week[0]=date("Y-m-d",strtotime('-1 Mon',strtotime("$todayday")));
+    	}
+    	$monday=$week[0];
+    	$week[1]=date("Y-m-d",strtotime('+1 day',strtotime("$monday")));
+    	$week[2]=date("Y-m-d",strtotime('+2 day',strtotime("$monday")));
+    	$week[3]=date("Y-m-d",strtotime('+3 day',strtotime("$monday")));
+    	$week[4]=date("Y-m-d",strtotime('+4 day',strtotime("$monday")));
+    	$week[5]=date("Y-m-d",strtotime('+5 day',strtotime("$monday")));
+    	$week[6]=date("Y-m-d",strtotime('+6 day',strtotime("$monday")));
+    	$week[7]=date("Y-m-d",strtotime('+7 day',strtotime("$monday")));
+    	$week[8]=date("Y-m-d",strtotime('-1 day',strtotime("$monday")));
+    	//echo date("Y-m-d",strtotime('-1 Mon',strtotime("2016-03-14")));//返回日期所在时间的星期一
+    	//echo date("Y-m-d",strtotime('+1 day',strtotime("$monday")));
+    	//echo strtotime('Mon',strtotime("2010-01-01"));//返回日期所在时间的下一个星期一的时间   	
+    	//echo date("Y-m-d",strtotime("now")), "\n";    	
+    	//echo date("Y-m-d",strtotime("+1 Monday")), "\n";
+		//print_r($week); 
+    	$month=date("m",strtotime('+1 day',strtotime("$monday")));
+
+    	//$sq5="SELECT classid FROM lcmemdata WHERE muid='".$uid."'"; 
+    	$sq0="SELECT eid FROM lcmemdata WHERE muid='".$uid."'";
+    	$command = $connection->createCommand($sq0);
+    	$school= $command->queryAll();
+    	$schoolid=$school[0]['eid'];
+    	//echo $schoolid;
+    	$sq1="SELECT oid,name FROM lcorganidata WHERE eid='".$schoolid."' AND orgatype=2";
+    	$command = $connection->createCommand($sq1);
+    	$grade= $command->queryAll();
+    	if($grade){}else{echo "未建立班级！";exit;}
+    	//$gradeid=$grade[0]['gradeid'];
+    	//echo $classid;
+    	//print_r($grade); 
+    	if(!$grade){
+    		return $this->redirect(['menu/index',"uid"=>$uid]);
+    	}
+    	$nowweek=0;
+    for($j=0;$j<count($grade);$j++){
+    	$gradeid=$grade[$j]['oid'];
+        for($i=0;$i<7;$i++){
+        	$weektime=$week[$i];
+    	    $sq5="SELECT * FROM lcdinningt WHERE gradeoid='".$gradeid."' AND dinnertime='".$weektime."' AND usedstat=1";
+    	    $command = $connection->createCommand($sq5);
+    	    $data[$j][$i]= $command->queryAll();
+            //print_r($data);
+    	    $tt=strtotime($weektime);
+    	    $data[$j][$i][0]['coursetime']=date('m-d',$tt);
+    	    $todayy=date("Y-m-d",time());
+    	    if($week[$i]==$todayy){
+    	    	$data[$j][$i][0]['today']=1;
+    	    	$nowweek=1;    	    	
+    	    }else{
+    	    	$data[$j][$i][0]['today']=0;   	    	   	    	
+    	    }
+    	    if(isset($data[$j][$i][0]['breakfast'])){}else{$data[$j][$i][0]['breakfast']="";}
+    	    if(isset($data[$j][$i][0]['breakfasta'])){}else{$data[$j][$i][0]['breakfasta']="";}
+    	    if(isset($data[$j][$i][0]['lunch'])){}else{$data[$j][$i][0]['lunch']="";}
+    	    if(isset($data[$j][$i][0]['luncha'])){}else{$data[$j][$i][0]['luncha']="";}
+    	    if(isset($data[$j][$i][0]['dinner'])){}else{$data[$j][$i][0]['dinner']="";}  	    	    	    
+    	    if(isset($data[$j][$i][0]['name'])){    	    	
+    	    }else{ 
+    	    	if($i==5||$i==6){$data[$j][$i][0]['name']="休息";
+    	    	}else{
+    	    		$data[$j][$i][0]['name']="";
+    	    	}
+    	    }
+    	    //file_put_contents("D://wt1.txt","sql:".$sq5."\n", FILE_APPEND);
+        } 
+        $data[$j][0][0]['week']="星期一";
+        $data[$j][1][0]['week']="星期二";
+        $data[$j][2][0]['week']="星期三";
+        $data[$j][3][0]['week']="星期四";
+        $data[$j][4][0]['week']="星期五";
+        $data[$j][5][0]['week']="星期六";
+        $data[$j][6][0]['week']="星期日";
+        $data[$j][0][0]['gradename']=$grade[$j]['name'];
+    }     
+        //print_r($data); 	
+   	    $day=$week[7];
+   	    $lastday=$week[8];
+    	    //$time=date('Y-m-d',time());
+    	//print_r($data[6]);
+   	    $tt=strtotime($week[0]);
+   	    $first=date('d',$tt);
+   	    $tt=strtotime($week[6]);
+   	    $last=date('d',$tt);
+    	$time=$first."~".$last;   	
+    	   	  
+    	
+        return $this->render('index',[
+        		'list'=>$data,        		        	
+       		    'time'=> $time,
+        		'day'=> $day,
+        		'lastday'=> $lastday,
+        		'nowweek'=> $nowweek,
+        		'uid'=> $uid,
+        ]);
+    }
+    
+}

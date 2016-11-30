@@ -1,0 +1,97 @@
+<?php
+/* @var $this yii\web\View */
+use yii\helpers\Html;
+use yii\bootstrap\Nav;
+use yii\bootstrap\NavBar;
+use yii\widgets\Breadcrumbs;
+use app\assets\AppAsset;
+use yii\web\View;
+?>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta id="viewport" name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0">
+<meta name="format-detection" content="telephone=no">
+<title>班级评价</title>
+<?=Html::jsFile('@web/js/jquery.min.js')?>
+<?=Html::jsFile('@web/js/bootstrap.js')?>
+<?=Html::cssFile('@web/css/bootstrap.css')?>
+<style>
+table td,table th{padding:10px;font-size:11pt;text-align:center;}
+ul{
+	list-style-type:none;
+	font-size:12pt;
+	line-height:2.5em;
+}
+.btn-primary {
+position:absolute;right:2em;
+color: #fff;
+background-color: #30BF78;
+border-color: #30BF78;
+}
+.btn:hover {
+background-color: #30CF78;
+border-color: #30BF78;
+}
+.btn-primary.active, .open > .dropdown-toggle.btn-primary {
+color: #fff;
+background-color: #30CF78;
+border-color: #30CF78;
+}
+.title{text-align:center;
+margin-bottom:-10px;}
+.date{text-align:left}
+.row-bt-button a {
+display: block;
+width: 96%;
+height: 40px;
+line-height: 40px;
+margin: 0px auto;
+text-align: center;
+border: 1px #D2D2D2 solid;
+background: #D2D2D2;
+color: #fff;
+-webkit-border-radius: 4px;
+position:fixed;
+bottom:2px;
+left:2%;		
+}
+</style>
+</head>
+<body>	
+<div style="font-size:11pt;margin-top:20px;margin-left:30px;">年级：<?=$gradename?></div>
+<div style="font-size:11pt;margin-top:6px;margin-left:30px;">班级：<?=$classname?></div>
+<table border="1" cellpadding="10" style="margin:20px;width:90%;margin-top:0px;margin-bottom:70px;">
+<caption class="title"><?=$content[0]['title']?></caption>
+<caption class="date">评价时间：<?=date("Y-m-d H:i",strtotime($content[0]['starttime']));?>至<?=date("Y-m-d H:i",strtotime($content[0]['endtime']));?></caption>
+  <tr>
+    <th >岗位</th>
+    <th >姓名</th>  
+    <th >评价</th> 
+  </tr> 
+<?php foreach ($list as $key=>$value): ?>
+  <tr>
+    <td><?=$value['mtype']?></td>
+    <td><?=$value['optiname']?></td>  
+    <td>
+       <?=$value['op']?>
+    </td> 
+  </tr>  
+<form>  
+</div>
+<? endforeach?> 
+</table>
+<div class="row-bt-button">
+  	<a href="javascript:void(0);">已&nbsp;&nbsp;&nbsp;提&nbsp;&nbsp;&nbsp;交</a>
+</div>
+      <input type="hidden" name="id" id="id" value="<?=$id?>">
+      <input type="hidden" name="count" id="count" value="<?=$count?>">
+<script>
+
+</script>
+
+</body>
+</html>

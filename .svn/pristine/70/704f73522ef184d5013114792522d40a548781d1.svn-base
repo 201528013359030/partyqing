@@ -1,0 +1,27 @@
+
+#UidBtnPos{
+      margin-top:2.55em;
+      /* margin-bottom:2.55em; */
+}
+.checkUidBtn {
+    background-color: #46A3EB;
+    color: #FFFFFF;
+}
+
+.uid_input{
+    padding-bottom: 10%;
+}
+body {
+    padding-top: 10%;
+}
+
+.icon{ display:inline-block;vertical-align:top; -webkit-background-size:cover;
+-moz-background-size:cover;
+-ms-background-size:cover;
+-o-background-size:cover;
+background-size:cover;
+}
+@media screen and (min-width:640px){
+    .container{ width:640px;}
+}
+

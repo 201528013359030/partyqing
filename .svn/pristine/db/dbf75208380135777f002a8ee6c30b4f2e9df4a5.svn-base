@@ -1,0 +1,59 @@
+<?php
+
+namespace app\modules\admin\controllers;
+use yii;
+use yii\web\Controller;
+use app\modules\admin\models\AuthToken;
+use app\modules\admin\models\IctWebService;
+use Rest;
+use Client;
+class SigndateController extends Controller
+{
+	public $layout  = false;
+    public function actionIndex()
+    {    
+    	//$auth = new AuthToken();
+    	//$auth->authTokenSession();
+    	//require_once(dirname(__FILE__)."/config.php");
+    	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+    	$uid=\yii::$app->request->get('uid');
+    	$cid=\yii::$app->request->get('cid');
+    	$childid=$cid;
+    	//$token=\yii::$app->request->get('auth_token');
+
+    	return $this->render('index0',[
+    			//'list'=>$data,
+    			'cid'=>$childid,   	
+    			]);
+    }
+    public function actionData()
+    {
+    	$cid=\yii::$app->request->get('cid');
+    	$year=\yii::$app->request->get('year');
+    	$month=\yii::$app->request->get('month');
+    	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+    	if($month<10){
+    		$month="0".$month;
+    	}
+    	$time=$year."-".$month;
+    	//file_put_contents("D://wt1.txt","sq0:".$childuid."\n", FILE_APPEND);
+        //$sq0="SELECT DATE(createtime) FROM childdayrecord WHERE childuid=".$childuid." and issend=1 and DATE_FORMAT(createtime,'%Y-%m')='".$time."'";    	
+    	$sq0="SELECT DATE(timein) FROM childsign WHERE childuid='".$cid."' AND DATE_FORMAT(timein,'%Y-%m')='".$time."' GROUP BY DATE(timein)";   	
+    	$command = $connection->createCommand($sq0);
+    	$day['day'] = $command->queryAll();
+    	
+    	$sq1="SELECT * FROM childsign WHERE childuid='".$cid."' AND DATE_FORMAT(timein,'%Y-%m')='".$time."'";
+    	$command = $connection->createCommand($sq1);
+    	$day['days'] = $command->queryAll();
+    	
+    	$count=count($day['day']);
+    	for($i=0;$i<$count;$i++){
+    		$day['day'][$i]=$day['day'][$i]['DATE(timein)'];
+    	}    	
+    	echo json_encode($day);
+    	//echo 1;
+    	exit();
+    }
+}

@@ -1,0 +1,121 @@
+<?php
+namespace app\modules\admin\controllers;
+use yii;
+use yii\web\Controller;
+use Rest;
+use Client;
+use app\modules\admin\models\AuthToken;
+use app\modules\admin\models\IctWebService;
+
+class EvaluateController extends Controller
+{
+	public $layout  = false;
+	public $enableCsrfValidation = false;//因为YII2的防止csrf攻击，你则不能多次提交相同的表单。如果你希望当前可以多次重复提交，可以在当前提交的表单controller中添加	
+    public function actionIndex()
+    {
+        //$uid =\Yii::$app->session['user.uid'];
+    	//require_once(dirname(__FILE__)."/config.php");
+    	//$token=\yii::$app->request->get('auth_token');
+    	//print_r($token);
+    	//\Yii::$app->session['token']=$token;
+    	//header("Content-type:text/html;charset=utf-8");
+    	$id=\yii::$app->request->get('id');
+        $uid=\Yii::$app->session['user.uid'];   
+        //$uid=223;	
+    	$auth = new AuthToken();
+    	$auth->authTokenSession();
+    	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+    	header("Content-type:text/html;charset=utf-8");
+    	
+    	$sq0="SELECT id FROM lcevafamilyop where familymuid='".$uid."'AND evaid='".$id."'";
+    	$command = $connection->createCommand($sq0);
+    	$ab = $command->queryAll();
+    	if(isset($ab[0]['id'])){ 
+    		return $this->redirect(['evaluatex/index',"id"=>$id]);
+    	}    	
+    	$time=date('Y-m-d H:i:s',time());   	
+    	$sq1="SELECT * FROM lcevaluate where id='".$id."'AND status=1 AND isdelete=0";    		 
+        $command = $connection->createCommand($sq1);
+    	$content = $command->queryAll();
+    	$classid=$content[0]['owneroid'];
+    	$starttime=$content[0]['starttime'];
+    	$endtime=$content[0]['endtime'];
+    	$abc="";
+    	//echo $time;
+    	//echo $starttime;
+    	//$time="2016-03-02";
+        if($time<$starttime){//echo "评价未开始"; 
+        	$abc="2";
+        }else if($time>$endtime){//echo "评价已结束"; 
+        	$abc="1";}
+      
+    	$sq2="SELECT gradeid,name FROM lcorganidata where oid='".$classid."'AND orgatype=1";
+    	$command = $connection->createCommand($sq2);
+    	$class = $command->queryAll();
+    	$gradeid=$class[0]['gradeid'];
+    	$classname=$class[0]['name'];
+    	//print_r($content[0]['owneroid']);
+    	
+    	$sq3="SELECT name FROM lcorganidata where oid='".$gradeid."'AND orgatype=2";
+    	$command = $connection->createCommand($sq3);
+    	$grade = $command->queryAll();
+    	$gradename=$grade[0]['name'];
+    	
+    	$sq5="SELECT id,optiname,teacheruid FROM lcevaoptions where evaid='".$id."'";
+    	$command = $connection->createCommand($sq5);
+    	$data = $command->queryAll();
+    	$count=count($data);
+    	for($i=0;$i<$count;$i++){
+    		$tuid=$data[$i]['teacheruid'];
+    		$sq6="SELECT mtype FROM lcmemdata where muid='".$tuid."'";
+    		$command = $connection->createCommand($sq6);
+    		$name = $command->queryAll(); 
+    		//print_r($tuid);
+    		if(isset($name[0]['mtype'])){	$mtype=$name[0]['mtype'];}   else{$mtype="";}	
+    		
+    		if($mtype==2){$data[$i]['mtype']="教职工";}else if($mtype==3){$data[$i]['mtype']="教师";}
+    		else if($mtype==4){$data[$i]['mtype']="园长";}else{$data[$i]['mtype']="其他";}
+    	}
+    	//print_r($data);
+    	//echo $abc;
+        return $this->render('index',[
+        		'content'=>$content,  
+        		'list'=>$data,
+        		'id'=> $id,
+        		'classname'=> $classname,
+        		'gradename'=> $gradename,
+        		'count'=> $count,
+        		'ab'=> $abc,
+        ]);
+    }
+    public function actionSave(){  
+    	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+    	header("Content-type:text/html;charset=utf-8");
+ 
+    	$id=\yii::$app->request->post('id');
+    	$count=\yii::$app->request->post('count');
+    	$uid=\Yii::$app->session['user.uid'];
+    	
+    	$sq1="SELECT eid FROM lcevaluate where id='".$id."'";
+    	$command = $connection->createCommand($sq1);
+    	$content = $command->queryAll();
+    	$eid=$content[0]['eid'];
+    	for($i=0;$i<$count;$i++){
+    	$aa=\yii::$app->request->post('optivalue'.$i);
+    	$optionid=\yii::$app->request->post('optionid'.$i);
+    	if($aa){
+    	$sql="INSERT INTO lcevafamilyop(eid,evaid,optionid,familymuid,optivalue) VALUES('$eid','$id','$optionid','$uid','$aa')"; //
+    	//file_put_contents("D://wt1.txt","sql:".$a13."\n", FILE_APPEND);
+    	$command = $connection->createCommand($sql);
+    	$command->execute();}else{}
+    	}
+    	//return;
+    	//if($childnext){ 
+        return $this->redirect(['evaluatex/index',"id"=>$id]);   
+    	//}
+   	      	
+   }
+    
+}

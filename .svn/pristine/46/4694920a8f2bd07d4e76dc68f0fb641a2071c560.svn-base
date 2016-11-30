@@ -1,0 +1,33 @@
+<?php
+namespace app\modules\admin\controllers;
+use Yii;
+use app\modules\admin\models\IctWebService;
+use app\modules\admin\models\AuthToken;
+use app\models\Curl;
+
+class MainofficeController extends \yii\web\Controller
+{
+	public $enableCsrfValidation = false;//yii默认表单csrf验证，如果post不带改参数会报错！
+//    public $layout  = 'main';
+    public $layout  = 'announce';
+//    public $layout  = 'layout';
+    public function actionIndex()
+    {    
+        $uid=\yii::$app->request->get('uid');  
+        $auth_token=\yii::$app->request->get('auth_token');
+        $eguid=\yii::$app->request->get('eguid');
+        $connection = Yii::$app->db;
+        $connection->open();
+        $sq3="SELECT mtype FROM lcmemdata WHERE muid='".$uid."'";
+        $command = $connection->createCommand($sq3);
+        $usr = $command->queryAll();
+        if($usr[0]["mtype"]==4){$type=4;}elseif($usr[0]["mtype"]==1){$type=1;}else{$type=0;}
+        return $this->render('index', [  
+        		'uid'=>$uid,
+        		'eguid'=>$eguid,
+        		'type'=>$type,
+        		'auth_token'=>$auth_token
+        		]);              
+    }
+
+}

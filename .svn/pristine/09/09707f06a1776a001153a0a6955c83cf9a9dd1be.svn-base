@@ -1,0 +1,145 @@
+<?php
+namespace app\modules\admin\controllers;
+use yii;
+use yii\web\Controller;
+use Rest;
+use Client;
+use app\modules\admin\models\AuthToken;
+use app\modules\admin\models\IctWebService;
+class DayrecordController extends Controller
+{
+	public $layout  = false;
+    public function actionIndex()
+    {
+        //$uid =\Yii::$app->session['user.uid'];
+    	//require_once(dirname(__FILE__)."/config.php");
+    	//$token=\yii::$app->request->get('auth_token');
+    	//print_r($token);
+    	//\Yii::$app->session['token']=$token;
+    	$uid=\yii::$app->request->get('uid');//教师uid
+    	//\Yii::$app->session['user.uid']=$uid;
+    	\Yii::$app->session['user.uid']=$uid;
+    	//$auth = new AuthToken();
+    	//$auth->authTokenSession();
+    	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+    	header("Content-type:text/html;charset=utf-8");
+    	   	
+    	$sql="SELECT classid FROM lcmemdata WHERE muid='".$uid."'";
+        $command = $connection->createCommand($sql);
+   	    $classidall = $command->queryAll();
+   	    $classid=$classidall[0]['classid'];
+   	    
+   	    $sq3="SELECT name,gradeid FROM lcorganidata WHERE oid='".$classid."' AND orgatype=1";
+   	    $command = $connection->createCommand($sq3);
+   	    $class0 = $command->queryAll();
+   	    $classname=$class0[0]['name'];
+   	    $gradeid=$class0[0]['gradeid'];
+   	    $sq6="SELECT name FROM lcorganidata WHERE oid='".$gradeid."' AND orgatype=2";
+   	    $command = $connection->createCommand($sq6);
+   	    $grade0= $command->queryAll();
+   	    $gradename=$grade0[0]['name'];
+   	    
+   	    $sq2="SELECT id,name,UAvator FROM lcchildren WHERE classid='".$classid."' ORDER BY id LIMIT 5";
+   	    $command = $connection->createCommand($sq2);
+   	    $childlist = $command->queryAll();
+   	    $count=count($childlist);
+   	    
+   	    for($i=0;$i<$count;$i++){
+   	    	$childuid=$childlist[$i]['id'];   	   
+   	    	 /**是否已编写***/
+   	    	 $sq5='SELECT issend FROM childdayrecord WHERE childuid='.$childuid.' and to_days(createtime) = to_days(now())';
+   	    	 $command = $connection->createCommand($sq5);
+   	    	 $childrecord = $command->queryAll();
+   	    	 //print_r($childrecord);
+   	    	 if(isset($childrecord[0])){  //已编写
+   	    	       $childlist[$i]['record']=$childrecord[0]['issend'];  	    	       
+   	    	 //print_r($child[0]);
+   	    	 } else{
+   	    	       $childlist[$i]['record']=2; //未编写
+   	    	 }
+   	    	 $UAvator=$childlist[$i]['UAvator'];
+   	    	 if($UAvator){}else{
+   	    	 	$childlist[$i]['UAvator']="img2/sdydychild.png";
+   	    	 }
+   	    	
+   	    }   	    
+   	    
+    	\Yii::$app->session['public_count']=$count;   	
+    	$time=date('Y-m-d',time());
+    	//$tt=strtotime($course['PublicTime']);    	
+    	//$course['PublicTime']=date('Y-m-d H:i',$tt);
+    	//print_r($childlist);
+        return $this->render('index',[
+        		'list'=>$childlist,        		
+        		'count'=>$count,
+        		'classid'=> $classid,  
+        		'time'=> $time, 
+        		'classname'=> $gradename." ".$classname,
+        ]);
+    }
+    public function actionSend(){
+    
+    	$classid=\yii::$app->request->get('classid');
+    	$uid=\Yii::$app->session['user.uid'];
+     	$connection = Yii::$app->db;
+    	$connection->open();
+    	
+    	$sq0="UPDATE childdayrecord SET issend='1' WHERE classid='".$classid."' and to_days(createtime) = to_days(now())";
+    	$command = $connection->createCommand($sq0);
+    	$command->execute();
+    	 
+    	return $this->redirect(['dayrecord/index',"uid"=>$uid]);
+    
+    }
+
+
+    public function actionGetdata(){
+
+    	//\Yii::$app->session['public_count']="5";
+  
+    	$uid=\Yii::$app->session['user.uid'];
+    	
+    	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+
+    	$sql="SELECT classid FROM lcmemdata WHERE muid='".$uid."'";
+    	$command = $connection->createCommand($sql);
+    	$classidall = $command->queryAll();
+    	$classid=$classidall[0]['classid'];
+    	
+    
+        $public_count=\Yii::$app->session['public_count'];
+        $sq2="SELECT id,name,UAvator FROM lcchildren WHERE classid='".$classid."' ORDER BY id LIMIT ".$public_count.",5";       		         	
+    	$command = $connection->createCommand($sq2);
+    	$childlist = $command->queryAll();
+    	$count=count($childlist);
+    	
+    	$public_count=$public_count+5;
+    	\Yii::$app->session['public_count']=$public_count;
+    	
+        for($i=0;$i<$count;$i++){
+   	    	$childuid=$childlist[$i]['id'];   	   
+   	    	 /**是否已编写***/
+   	    	 $sq5='SELECT issend FROM childdayrecord WHERE childuid='.$childuid.' and to_days(createtime) = to_days(now())';
+   	    	 $command = $connection->createCommand($sq5);
+   	    	 $childrecord = $command->queryAll();
+   	    	 //print_r($childrecord);
+   	    	 if(isset($childrecord[0])){  //已编写
+   	    	       $childlist[$i]['record']=$childrecord[0]['issend'];  	    	       
+   	    	 //print_r($child[0]);
+   	    	 } else{
+   	    	       $childlist[$i]['record']=2; //未编写
+   	    	 }
+   	    	 $UAvator=$childlist[$i]['UAvator'];
+   	    	 if($UAvator){}else{
+   	    	 	$childlist[$i]['UAvator']="img2/sdydychild.png";
+   	    	 }
+   	    	
+   	    }
+    	echo json_encode($childlist);
+    	exit();
+    
+    }
+    
+}

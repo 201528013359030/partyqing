@@ -1,0 +1,93 @@
+<?php
+namespace app\modules\admin\controllers;
+use Yii;
+use yii\web\Controller;
+use app\modules\admin\models\AuthToken;
+use app\modules\admin\models\IctWebService;
+/**
+ * StudentController implements the CRUD actions for Studentinfo model.
+ */
+class SignpicsController extends Controller
+{
+	public $enableCsrfValidation = false;//yii默认表单csrf验证，如果post不带改参数会报错！
+	public $layout  = false;
+
+    public function actionIndex()
+    {
+    	$uid=\yii::$app->request->get('uid');
+    	$date=\yii::$app->request->get('date');
+    	$token=\yii::$app->request->get('token');
+ 	
+    	$token=\Yii::$app->session['token'];
+    	//print_r($token);
+    	$auth = new AuthToken();
+    	$auth->authTokenSession();   	    	
+    	if($date){}else{$date=date('Y-m-d',time());}
+    	//$date="2016-03-24";
+    	header("Content-type:text/html;charset=utf-8");
+    	$connection = Yii::$app->db;
+    	$connection->open();
+    	$sq0="SELECT eid FROM lcmemdata WHERE muid='".$uid."'";
+    	$command = $connection->createCommand($sq0);
+    	$school= $command->queryAll();
+    	$schoolid=$school[0]['eid'];
+    	
+    	$sq1="SELECT oid,name,gradeid FROM lcorganidata WHERE eid='".$schoolid."' AND orgatype=1";
+    	$command = $connection->createCommand($sq1);
+    	$class= $command->queryAll();
+        if($class){}else{echo "未建立班级！";exit;}
+    	//print_r($class);
+    	for($i=0;$i<count($class);$i++){
+    		$classid=$class[$i]['oid'];
+  
+    		$sq2="SELECT id FROM childsign WHERE classuid='".$classid."' AND DATE(timein)='".$date."' GROUP BY childuid";
+    		$command = $connection->createCommand($sq2);
+    		$sign= $command->queryAll();
+    		if($i==0){$days=count($sign);}else{
+    			$days=count($sign).",".$days;}
+    			   			
+    		$sq3="SELECT id FROM lcchildren WHERE classid='".$classid."'";
+    		$command = $connection->createCommand($sq3);
+    		$all= $command->queryAll();
+    	
+    		//print_r($all);
+    		//print_r($classid);
+    		if($i==0){$allnumer=count($all);}else{
+    		$allnumer=count($all).",".$allnumer;}
+    		$gradeid=$class[$i]['gradeid'];
+    		if($gradeid){
+    			$sq5="SELECT name FROM lcorganidata WHERE oid='".$gradeid."' AND orgatype=2";
+    			$command = $connection->createCommand($sq5);
+    			$grade= $command->queryAll();
+    			//echo $grade[0]['name'];
+    			//echo $class[$i]['name'];
+    			//exit;
+    			$class[$i]['name']=$grade[0]['name']."".$class[$i]['name'];
+    			
+    		}else{  }
+    		$aa=strlen($class[$i]['name'])/15;
+    		//echo $aa;
+    		for($a=0;$a<$aa;$a++){
+    		        $com=substr($class[$i]['name'],$a*15,15);
+    		        if($a==0){
+    		        $mm=$com;
+    		        }else{
+    			    $mm=$mm."\\n".$com;}    			    //
+    		}	
+    		$class[$i]['name']=$mm;
+    		//echo $class[$i]['name'];
+    		if($i==0){$classnames=$class[0]['name'];}else{
+    			$classnames=$class[$i]['name'].",".$classnames;}	   			
+    	}
+   	
+		return $this->render('index', [
+			'uid' => $uid,
+            'allnumer' => $allnumer,
+            'classnames' => $classnames,
+			'days' => $days,   //签到的人数
+			'date' => $date,				
+        ]);
+    }
+}
+
+?>

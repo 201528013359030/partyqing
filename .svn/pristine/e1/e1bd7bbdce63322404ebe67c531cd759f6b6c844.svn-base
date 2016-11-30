@@ -1,0 +1,32 @@
+<?php
+/* @var $this yii\web\View */
+use yii\helpers\Html;
+use yii\bootstrap\Nav;
+use yii\bootstrap\NavBar;
+use yii\widgets\Breadcrumbs;
+use app\assets\AppAsset;
+use yii\web\View;
+?>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>课程列表</title>
+
+<script type="text/javascript">
+
+	
+</script>
+<style>
+
+
+</style>
+</head>
+<body>
+
+</body>
+</html>
+<script type="text/javascript">
+
+</script>

@@ -1,0 +1,22 @@
+<?php
+namespace app\modules\admin\controllers;
+use yii;
+use yii\web\Controller;
+use Rest;
+use Client;
+class SigntableController extends Controller
+{
+	public $layout  = false;
+    public function actionIndex()
+    {
+    	require_once(dirname(__FILE__)."/config.php");
+       	//$connection = Yii::$app->db;
+    	//$connection->open();  //初始化数据库
+    	//$date="{"signDay":"10"},{"signDay":"11"},{"signDay":"12"},{"signDay":"13"}";
+          
+          	return $this->render('index',[
+          			//'data' => $date,
+          			]);
+               
+    }
+}

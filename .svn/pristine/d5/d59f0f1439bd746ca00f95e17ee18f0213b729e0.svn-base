@@ -1,0 +1,63 @@
+<?php
+
+namespace app\modules\admin\controllers;
+use yii;
+use yii\web\Controller;
+use app\modules\admin\models\AuthToken;
+use app\modules\admin\models\IctWebService;
+use Rest;
+use Client;
+class DayrecorddateController extends Controller
+{
+	public $layout  = false;
+    public function actionIndex()
+    {    
+    	$uid=\yii::$app->request->get('uid');
+    	$cid=\yii::$app->request->get('cid');
+    	$auth = new AuthToken();
+    	$auth->authTokenSession();
+    	//require_once(dirname(__FILE__)."/config.php");
+    	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+    	
+    	$childid=$cid;
+    	//$token=\yii::$app->request->get('auth_token');
+    	$data2=array();
+    	$data2["user_id"]="$uid";
+    	$data2["id_list[0]"]="$uid";
+    	$data2["attr_list[0]"]="departmentnumber";
+    	//$data2["attr_list[1]"]="departmentdn";
+    	//$data2["auth_token"]="$token";
+    	//$data2["api_key"]=$api_key;
+    	//Array ( [0] => Array ( [DATE(createtime)] => 2016-03-08 ) )
+    	//echo $cid;
+    	return $this->render('index',[
+    			//'list'=>$data,
+    			'cid'=>$childid,   	
+    			]);
+    }
+    public function actionData()
+    {
+    	$childuid=\yii::$app->request->get('uid');
+    	$year=\yii::$app->request->get('year');
+    	$month=\yii::$app->request->get('month');
+    	$connection = Yii::$app->db;
+    	$connection->open();  //初始化数据库
+    	if($month<10){
+    		$month="0".$month;
+    	}
+    	$time=$year."-".$month;
+    	//file_put_contents("D://wt1.txt","sq0:".$childuid."\n", FILE_APPEND);
+    	//file_put_contents("D://wt1.txt","sq0:".$time."\n", FILE_APPEND);
+    	$sq0="SELECT DATE(createtime) FROM childdayrecord WHERE childuid=".$childuid." and issend=1 and DATE_FORMAT(createtime,'%Y-%m')='".$time."'";    	
+    	$command = $connection->createCommand($sq0);
+    	$day = $command->queryAll();
+    	$count=count($day);
+    	for($i=0;$i<$count;$i++){
+    		$day[$i]=$day[$i]['DATE(createtime)'];
+    	}    	
+    	echo json_encode($day);
+    	//echo 1;
+    	exit();
+    }
+}
