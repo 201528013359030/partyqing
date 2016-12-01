@@ -29,7 +29,7 @@ border-bottom: 0px #d0d0d0 solid;
 }
 .listIteam {
 position: relative;
-height:50px;	
+height:50px;
 }
 #pullUp {
 border-bottom: 0px solid #ccc;
@@ -62,7 +62,7 @@ select{
 	margin:10px 0px 0px 10px;
 	height: 2.2em;
 border: #d0d0d0 1px solid;
-background: #fff;	
+background: #fff;
 -webkit-border-radius: 15px;
 border-radius: 15px;
 }
@@ -86,52 +86,53 @@ padding-bottom: 20px;
   <div style="display:inline-block;width:47%;">
   <select id="grade" onchange="grade()">
   <?php foreach ($grade as $key=>$value): ?>
-  <option value ="<?=$value['gradeid']?>"><?=$value['grade']?></option>
-  <? endforeach?>
+    <option value ="<?=$value['gradeid']?>"><?=$value['grade']  ?></option>
+	  <? endforeach?>
   </select>
    </div>
    <div class="moBox"  style="display:inline-block;height:20px;width:47%" id="searchBox">
 		<div class="searchBox" style="width:100%;margin-top:6px;margin-right:0px">
 			<div class="searchInner">
-			<input id="searchtitle" class="inpSearch" style="width:75%;height: 2.2em;" name="searchtitle" value="" type="text" placeholder="请输入城市名称">			
-			<a href="javascript:void(0);" class="ficon ic_search" id="search"></a>			
+			<input id="searchtitle" class="inpSearch" style="width:75%;height: 2.2em;" name="searchtitle" value="" type="text" placeholder="请输入城市名称">
+			<a href="javascript:void(0);" class="ficon ic_search" id="search"></a> <!--  搜索框中的放大镜图标 -->
 			</div>
-		</div>		
+		</div>
 	</div>
 </div>
-<div style="height: 56px;padding-top:8px;border-bottom:1px solid #ededed">				
+<div style="height: 56px;padding-top:8px;border-bottom:1px solid #ededed">
                 <span class="title0">常去城市</span>
 	</div>
-	<div>				
-	<?php foreach ($listtop as $key=>$value): ?>	
+	<div>
+	<?php foreach ($listtop as $key=>$value): ?>
                 <a href="index.php?r=admin/triptiplist/index&stateid=<?=$value['stateid']?>">
                 <span class="title1"><?=$value['statename']?></span>
                 </a>
-   <? endforeach?>             
+   <? endforeach?>
 	</div>
-	<div style="margin-top:20px;margin-bottom:10px;height:10px;background-color:#ededed"></div>	
+	<div style="margin-top:20px;margin-bottom:10px;height:10px;background-color:#ededed"></div>
 	<div class="moBox">
-		<div id="listBox" class="listBox">		  
-	        <div style="height: 50px;margin-bottom:10px;border-bottom:1px solid #ededed">				
+		<div id="listBox" class="listBox">
+	        <div style="height: 50px;margin-bottom:10px;border-bottom:1px solid #ededed">
                 <span class="title0">按地区搜索</span>
 			</div>
 			<div class="listIteam" id="empty">
 				<div class="empty">暂无</div>
 			</div>
-			<?php foreach ($list as $key=>$value): ?>			
+
+			<?php foreach ($list as $key=>$value): ?>
 			<div class="listIteam"  id="contentlist_">
-		        <a href="index.php?r=admin/triptiplist/index&stateid=<?=$value['id']?>" class="listInner"> 				
-					<p class="listInfo">					
-                    <span class="title">      
+		        <a href="index.php?r=admin/triptiplist/index&stateid=<?=$value['id'] ?>" class="listInner">
+					<p class="listInfo">
+                    <span class="title">
                     <?=$value['statename']?></span>
 					</p>
-					<span class="tip ficon ic_arrow_right" style="margin-top:-17px;"></span>																		
+					<span class="tip ficon ic_arrow_right" style="margin-top:-17px;"></span>
 				</a>
 			</div>
 			<? endforeach?>
 		</div>
 	</div>
-	<div id="pullUp">		
+	<div id="pullUp">
 	</div>
 	<input type="hidden" id="count" value=<?=$count?>>
 </div>
@@ -139,6 +140,8 @@ padding-bottom: 20px;
 </body>
 </html>
 <script type="text/javascript">
+ //var ee= '<?php echo "方业全" ;?>';  //测试js接收php后台数据。--此方法成功。
+//  console.log(ee);   //浏览器控制台打印js变量。--成功
 function grade(){
 	var gradeid=$('#grade option:selected').val();//选中的值
 	$.get("index.php?r=admin/triptip/grade",{gradeid:gradeid
@@ -152,51 +155,63 @@ document.getElementById('searchtitle').addEventListener('input', function(e){
 	$.get("index.php?r=admin/triptip/search",{searchtitle:$("#searchtitle").val(),
 	},function(data){
 		//alert("55");
-	    //alert(JSON.stringify(data));
-		var list=eval(data);
+// 	    alert(JSON.stringify(data));
+		var list=eval(data);  //解析json字符串，其实不解析也能用，因为后台返回的数据格式为json。
+// 		var list=data;
+// 		alert(list[0].id);
+// 		alert(list[0].statename);
+// 		alert(JSON.stringify(list));
+// 		alert(typeof(list));
+// 		alert(toString(list));
 		//var relation;
-		$("#listBox").empty();	
-		if(list.length){           //如果获得了数据			
+		$("#listBox").empty();
+		if(list.length){           //如果获得了数据
 			for (i=0; i<list.length; i++) {
 				iteam = document.createElement('div');
-				iteam.className = 'listIteam';		
-				//relation=list[i].relation;	
-				//var time=getLocalTime(list[i].CreateTime); 
-				//var time=list[i].PublicTime; 
-//					alert(relation);	
-	
+				iteam.className = 'listIteam';
+				//relation=list[i].relation;
+				//var time=getLocalTime(list[i].CreateTime);
+				//var time=list[i].PublicTime;
+//					alert(relation);
+
 			     iteam.innerHTML = "<a href='index.php?r=admin/triptiplist/index&stateid="+list[i].id+"'class='listInner'><p class='listInfo'><span class='title'>"+list[i].statename+"</span></p><span class='tip ficon ic_arrow_right'></span></a>";
-					
-				$("#listBox").append(iteam);					
+
+				$("#listBox").append(iteam);
 				}
 		}else{              //如果没有数据，提示空
 // 			alert(123);
 			iteam = document.createElement('div');
-			iteam.className = 'listIteam';			
-			iteam.innerHTML = '<div class="empty">暂无</div>';				
+			iteam.className = 'listIteam';
+			iteam.innerHTML = '<div class="empty">暂无</div>';
 //				$("#listBox").empty();
 // 			$("#pullUp").hide();
 			$("#listBox").append(iteam);
 //				alert("fail");
 		}
 	},'json');
-	myScroll.refresh();	
+	myScroll.refresh();
 });
 
-function getLocalTime(nS) {   
-// 	alert(nS);	
+function getLocalTime(nS) {
+// 	alert("11");
+// 	alert(nS);
 	var date = new Date(nS*1000);
 	Y = date.getFullYear() + '-';
 	M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
 	D = (date.getDate()+1 < 10 ? '0'+(date.getDate()+1) : date.getDate()+1)  + ' ';
 	h =  (date.getHours()+1 < 10 ? '0'+(date.getHours()+1) : date.getHours()+1) + ':';
 	m = (date.getMinutes()+1 < 10 ? '0'+(date.getMinutes()+1) : date.getMinutes()+1)  + ':';
-	s =  (date.getSeconds()+1 < 10 ? '0'+(date.getSeconds()+1) : date.getSeconds()+1); 
+	s =  (date.getSeconds()+1 < 10 ? '0'+(date.getSeconds()+1) : date.getSeconds()+1);
 // 	alert(Y+M+D+h+m+s);
 	return Y+M+D+h+m+s;
  }
+//  function fun(){
+// 	 alert("自动调用匿名函数");
+//  }
+//  fun();
 $(function(){
-	$("#searchtitle").val("");	
+// 	alert("22");
+	$("#searchtitle").val("");  //val() 方法返回或设置被选元素的值。元素的值是通过 value 属性设置的。该方法大多用于 input 元素。如果该方法未设置参数，则返回被选元素的当前值。
     var count=$("#count").val();
     //alert(count);
     if(count==0){
@@ -215,14 +230,20 @@ $(function(){
 	},function(data){
 	},'json');
 });
-$("#searchtitle").keyup(function(){
+// 其实$()就是jq ready()的简写，他等价于：
+// $(document).ready(function(){
+// //do something
+// })
+
+
+$("#").keyup(function(){
  	//alert(123);
 });
 	$("div[id^='contentlist']").each(function(){
-	    $(this).click(function(){    
+	    $(this).click(function(){
 	      	var imgid = $(this).attr("id");
 	        var  imgidlist=imgid.split("_");
-	        $(this).find("i[id^=icon_new]").hide();
+	        $(this).find("i[id^=icon_new]").hide();  //。find()获得当前匹配元素集合中每个元素的后代，由选择器进行筛选。id^=icon_new :表示id以icon_new 开头。符号'^'是正则表达式，匹配指定的开头元素
 
 	    })
 	 });
