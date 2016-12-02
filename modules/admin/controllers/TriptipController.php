@@ -22,8 +22,6 @@ class TriptipController extends \yii\web\Controller
     	//file_put_contents("/usr/local/www/nginx/html/partyqing/wt.txt","num:".$uid."num:".$auth_token."\n", FILE_APPEND);
     	\Yii::$app->session['user.uid']=$uid;
 
-
-
     	$connection = Yii::$app->db;
     	$connection->open();  //初始化数据库
     	header("Content-type:text/html;charset=utf-8");
@@ -33,7 +31,7 @@ class TriptipController extends \yii\web\Controller
     	$count=count($state);
     	\Yii::$app->session['public_count']=$count;
 
-    	$sq0="SELECT * FROM djbusiness_grade where eid='".$eid[1]."'";
+    	$sq0="SELECT * FROM djbusiness_grade where eid='".$eid[1]."'"."order by showorder asc" ; //调价排序功能
     	$command = $connection->createCommand($sq0);
     	$grade = $command->queryAll();
     	//\Yii::$app->session['user.gradeid']=$grade[0]['gradeid'];

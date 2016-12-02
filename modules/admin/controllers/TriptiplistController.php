@@ -11,12 +11,12 @@ class TriptiplistController extends \yii\web\Controller
     public $layout  = false;
 //    public $layout  = 'announce';
 //    public $layout  = 'layout';
-   
+
     public function actionIndex()
-    {    
+    {
     	//$auth = new AuthToken();
     	//$auth->authTokenSession();
-    	$stateid=\yii::$app->request->get('stateid'); 
+    	$stateid=\yii::$app->request->get('stateid');
     	$uid=\Yii::$app->session['user.uid'];
     	$eid=explode('@',$uid);
     	$gradeid=\Yii::$app->session['user.gradeid'];
@@ -27,27 +27,30 @@ class TriptiplistController extends \yii\web\Controller
     	$sq0="SELECT * FROM djbusiness_state WHERE id=".$stateid." and eid='".$eid[1]."'";
     	$command = $connection->createCommand($sq0);
     	$name = $command->queryOne();
-    	
+
     	$sq0="SELECT * FROM djbusiness_list WHERE state=".$stateid." and gradeid=".$gradeid;
     	$command = $connection->createCommand($sq0);
     	$state = $command->queryAll();
-    	$count=count($state);   	
-    	       
-    	for($i=0;$i<$count;$i++){   	
+    	$count=count($state);
+
+    	for($i=0;$i<$count;$i++){
     		$gradeid=$state[$i]['gradeid'];
     		$sq3="SELECT * FROM djbusiness_grade WHERE gradeid='".$gradeid."' and eid='".$eid[1]."'";
     		$command = $connection->createCommand($sq3);
     		$grade = $command->queryAll();
-    		
+
     		$sq0="SELECT * FROM djbusiness_traffic WHERE gradeid=".$gradeid." and eid='".$eid[1]."'";
     		$command = $connection->createCommand($sq0);
     		$tra = $command->queryOne();
+//     		print_r($tra);
+//     		die("dd");
     		$state[$i]['traffic']=$tra;
     		if(isset($grade[0]['grade'])){
     			$state[$i]['gradename']=$grade[0]['grade'];
     		}else{
     			$state[$i]['gradename']="";
     		}
+
     	}
     	/*******count-begin******/
     	$sq0="SELECT id FROM djbusiness_count WHERE stateid='".$stateid."' AND uid='".$uid."'";
@@ -61,9 +64,9 @@ class TriptiplistController extends \yii\web\Controller
     		$sq2="INSERT INTO djbusiness_count(uid,stateid,count) VALUES('$uid','$stateid','1')";
     		$command = $connection->createCommand($sq2);
     		$command->execute();
-    	}    	  	    	
+    	}
     	/*******count-end******/
-    	    	    	
+
         return $this->render('index',[
         		'list' => $state,
         		'count' =>$count,
