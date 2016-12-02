@@ -31,7 +31,7 @@ class TriptipController extends \yii\web\Controller
     	$count=count($state);
     	\Yii::$app->session['public_count']=$count;
 
-    	$sq0="SELECT * FROM djbusiness_grade where eid='".$eid[1]."'"."order by showorder asc" ; //调价排序功能
+    	$sq0="SELECT * FROM djbusiness_grade where eid='".$eid[1]."'"."order by showorder asc" ; //调整排序功能
     	$command = $connection->createCommand($sq0);
     	$grade = $command->queryAll();
     	//\Yii::$app->session['user.gradeid']=$grade[0]['gradeid'];
