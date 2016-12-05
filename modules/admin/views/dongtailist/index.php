@@ -34,64 +34,64 @@ var myScroll,
 
 //下拉加载数据  模拟加载了几个死数据
 function pullDownAction () {
-	location.reload();  
+	location.reload();
 }
-function getLocalTime(nS) {   
+function getLocalTime(nS) {
 	var date = new Date(nS*1000);
 	Y = date.getFullYear() + '-';
 	M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
 	D = (date.getDate()+1 < 10 ? '0'+(date.getDate()+1) : date.getDate()+1)  + ' ';
 	h =  (date.getHours()+1 < 10 ? '0'+(date.getHours()+1) : date.getHours()+1) + ':';
 	m = (date.getMinutes()+1 < 10 ? '0'+(date.getMinutes()+1) : date.getMinutes()+1)  + ':';
-	s =  (date.getSeconds()+1 < 10 ? '0'+(date.getSeconds()+1) : date.getSeconds()+1); 
+	s =  (date.getSeconds()+1 < 10 ? '0'+(date.getSeconds()+1) : date.getSeconds()+1);
 // 	alert(Y+M+D+h+m+s);
-	return Y+M+D+h+m+s;  
-     
- }     
+	return Y+M+D+h+m+s;
 
-function pullUpAction () {	
-		setTimeout(function () {	
+ }
+
+function pullUpAction () {
+		setTimeout(function () {
 		var el, iteam, i,pageSize;
 		el = document.getElementById('listBox');
 		//alert($("#searchtitle").val());
-			$.get("index.php?r=admin/dongtailist/getdata",{searchcontent:$("#searchtitle").val()
+			$.get("index.php?r=admin/dongtailist/getdata",{searchcontent:$("#searchtitle").val() //请求参数 searchcontent 实现能够加载当符合前搜索条件的数据。
 		},function(data){
-	 		//alert(JSON.stringify(data));	
+	 		//alert(JSON.stringify(data));
 			var list=eval(data);
-			if(list.length){				
+			if(list.length){
 				for (i=0; i<list.length; i++) {
 					iteam = document.createElement('div');
-					iteam.className = 'contentbig';        
-					 if(list[i].video=="1"){ 
+					iteam.className = 'contentbig';
+					 if(list[i].video=="1"){
 						 var video="<div class='img5'><img class='img3' src='../web/img/play.png'/></div>";
 					 }else{
 						 var video="";
-					 }   	
-					 if(list[i].pic2=="1"){ 
+					 }
+					 if(list[i].pic2=="1"){
 						 var pic="<img style='height:100%' src='"+list[i].pic+"'/>";
 					 }else{
 						 var pic="<img style='width:100%' src='"+list[i].pic+"'/>";;
-					 } 	
-					iteam.innerHTML ="<a href='index.php?r=admin/dongtai/index&id="+list[i].id+"'><div class='img2 frame-square0'> <div class='crop0'>"+pic+"</div>"+video+"</div><div class='content'><span class='word'>"+list[i].title+"</span><span class='word0'>"+list[i].sender+"</span><span class='word0 right0'>"+list[i].time+"</span></div></a>";						
+					 }
+					iteam.innerHTML ="<a href='index.php?r=admin/dongtai/index&id="+list[i].id+"'><div class='img2 frame-square0'> <div class='crop0'>"+pic+"</div>"+video+"</div><div class='content'><span class='word'>"+list[i].title+"</span><span class='word0'>"+list[i].sender+"</span><span class='word0 right0'>"+list[i].time+"</span></div></a>";
 					el.appendChild(iteam, el.childNodes[0]);
 				}
-				myScroll.refresh();	 
+				myScroll.refresh();
 			}else{                                 //没有更多数据
 				pullUpEl = document.getElementById('pullUp');
-				pullUpEl.querySelector('.pullUpLabel').innerHTML = '已没有更多数据...'; 
-			}    
-		},'json');	
+				pullUpEl.querySelector('.pullUpLabel').innerHTML = '已没有更多数据...';
+			}
+		},'json');
 		myScroll.refresh();		// 当内容完事儿，记得刷新(ie: on ajax completion)
-	}, 1000);	
-	
+	}, 1000);
+
 }
 
 function loaded() {
 	pullDownEl = document.getElementById('pullDown');
 	pullDownOffset = pullDownEl.offsetHeight;
-	pullUpEl = document.getElementById('pullUp');	
+	pullUpEl = document.getElementById('pullUp');
 	pullUpOffset = pullUpEl.offsetHeight;
-	
+
 	myScroll = new iScroll('wrap', {
 			useTransition: true,
 		topOffset: pullDownOffset,
@@ -105,6 +105,11 @@ function loaded() {
 			}
 		},
 		onScrollMove: function () {
+			console.log('pullDownOffset='+pullDownOffset); //pullDownOffset初始值为40
+			console.log('pullUpOffset='+pullUpOffset); // pullUpOffset初始值为40
+			console.log('this.y='+this.y); //滑动开始时this.y=-40，向上滑动y值继续变小，向下滑动值y变大，但始终小于398
+// 			console.log('this.x='+this.x);
+			console.log('this.maxScrollY='+this.maxScrollY); //初始值为398
 			if (this.y > 5 && !pullDownEl.className.match('flip')) {
 				pullDownEl.className = 'flip';
 				pullDownEl.querySelector('.pullDownLabel').innerHTML = '释放即可加载...';
@@ -126,16 +131,16 @@ function loaded() {
 		onScrollEnd: function () {
 			if (pullDownEl.className.match('flip')) {
 				pullDownEl.className = 'loading';
-				pullDownEl.querySelector('.pullDownLabel').innerHTML = '加载中...';				
+				pullDownEl.querySelector('.pullDownLabel').innerHTML = '加载中...';
 				pullDownAction();	// 执行自定义函数（Ajax调用等）
 			} else if (pullUpEl.className.match('flip')) {
 				pullUpEl.className = 'loading';
-				pullUpEl.querySelector('.pullUpLabel').innerHTML = '加载中...';				
+				pullUpEl.querySelector('.pullUpLabel').innerHTML = '加载中...';
 				pullUpAction();	// 执行自定义函数（Ajax调用等）
 			}
 		}
 	});
-	
+
 setTimeout(function () { document.getElementById('wrap').style.left = '0'; }, 800);
 }
 
@@ -147,7 +152,7 @@ function allowFormsInIscroll(){
  [].slice.call(document.querySelectorAll('input, select, button')).forEach(function(el){
  el.addEventListener(('ontouchstart' in window)?'touchstart':'mousedown', function(e){
  e.stopPropagation();
- 
+
  })
  })
  }
@@ -184,38 +189,38 @@ function allowFormsInIscroll(){
    <div class="moBox" id="searchBox">
 		<div class="searchBox">
 			<div class="searchInner">
-			<input id="searchtitle" class="inpSearch" style="border: none;background: none;-webkit-appearance: none;box-shadow: none;" name="searchtitle" value="" type="text" placeholder="输入搜索关键字">			
-			<a href="javascript:void(0);" class="ficon ic_search" id="search"></a>			
+			<input id="searchtitle" class="inpSearch" style="border: none;background: none;-webkit-appearance: none;box-shadow: none;" name="searchtitle" value="" type="text" placeholder="输入搜索关键字">
+			<a href="javascript:void(0);" class="ficon ic_search" id="search"></a>
 			</div>
-		</div>		
+		</div>
 	</div>
-	
+
 <div id="myCarousel" class="carousel slide">
    <!-- 轮播（Carousel）指标 -->
    <ol class="carousel-indicators">
-    <?php if($counttop=="0"||$counttop=="1"):?> 
+    <?php if($counttop=="0"||$counttop=="1"):?>
     <?php elseif($counttop=="2"):?>
-      <li data-target="#myCarousel" data-slide-to="0" class="active"></li>      
+      <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
       <li data-target="#myCarousel" data-slide-to="1"></li>
-    <?php elseif($counttop=="3"):?> 
-      <li data-target="#myCarousel" data-slide-to="0" class="active"></li>      
-      <li data-target="#myCarousel" data-slide-to="1"></li> 
+    <?php elseif($counttop=="3"):?>
+      <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+      <li data-target="#myCarousel" data-slide-to="1"></li>
       <li data-target="#myCarousel" data-slide-to="2"></li>
-    <?endif?>   
-   </ol>   
+    <?endif?>
+   </ol>
    <!-- 轮播（Carousel）项目 -->
-   <div class="carousel-inner">      
+   <div class="carousel-inner">
   <?php foreach ($listtop as $key=>$value):?>
-   <?php if($value['id']==""):?>  
+   <?php if($value['id']==""):?>
    <div class="item active frame-square">
    <div class="crop" >
    <?php if($value['pic2']=="1"):?>
    <img style="height:100%;z-index:1;" src="<?=$value['pic']?>" alt="slide">
-   <?php else:?> 
+   <?php else:?>
    <img style="z-index:1;" src="<?=$value['pic']?>" alt="slide">
-   <?endif?> 
+   <?endif?>
    </div>
-   </div>    
+   </div>
    <?else:?>
       <?php if($key==0):?>
       <div class="item active frame-square">
@@ -223,24 +228,24 @@ function allowFormsInIscroll(){
       <div class="item frame-square">
       <?endif?>
       <a href="index.php?r=admin/dongtai/index&id=<?=$value['id']?>">
-      <div class="crop">       
+      <div class="crop">
       <?php if($value['pic2']=="1"):?>
       <img style="height:100%" src="<?=$value['pic']?>" alt="slide">
       <?php else:?>
       <img   style="width:100%" src="<?=$value['pic']?>" alt="slide">
-      <?endif?> 
-         <div class="banner"><?=$value['title']?></div>  
+      <?endif?>
+         <div class="banner"><?=$value['title']?></div>
       </div></a>
-      </div>    
-  <?endif?>    
-  <? endforeach?>  
+      </div>
+  <?endif?>
+  <? endforeach?>
    </div>
-</div> 	 
+</div>
  <div class="moBox">
 		<div id="listBox" class="listBox">
 			<div class="listIteam" id="empty">
 				<div class="empty">暂无</div>
-			</div>			
+			</div>
 <?php foreach ($list as $key=>$value): ?>
 <div class="contentbig">
   <a href="index.php?r=admin/dongtai/index&id=<?=$value['id']?>">
@@ -250,7 +255,7 @@ function allowFormsInIscroll(){
     <img style="height:100%" src="<?=$value['pic']?>"/>
     <?php else:?>
     <img style="width:100%"  src="<?=$value['pic']?>">
-    <?endif?> 
+    <?endif?>
     </div>
           <?php if($value['video']=="1"):?>
           <div class="img5"><img class="img3" src="../web/img/play.png"/></div>
@@ -259,7 +264,7 @@ function allowFormsInIscroll(){
     <div class="content">
         <span class="word"><?=$value['title']?></span>
         <span class="word0"><?=$value['sender']?> </span>
-        <span class="word0 right0"><?=$value['time']?></span>        
+        <span class="word0 right0"><?=$value['time']?></span>
     </div>
   </a>
 </div>
@@ -280,7 +285,7 @@ $(function(){
 	 var counttop=$("#counttop").val();
 	    //alert(count);
 	    if(count==0){
-	        $("#empty").show();	     
+	        $("#empty").show();
 	    }else{
 	    	$("#empty").hide();
 	    }
@@ -292,7 +297,7 @@ $(function(){
 	    if(counttop==0){
 		    $("#myCarousel").hide();
 		}
-	$("#myCarousel").carousel('cycle');	 
+	$("#myCarousel").carousel('cycle');
 });
 $('#myCarousel').hammer().on('swipeleft', function(){
 $(this).carousel('next');
@@ -309,29 +314,29 @@ document.getElementById('searchtitle').addEventListener('input', function(e){
 	    //alert(JSON.stringify(data));
 	    	var list=eval(data);
 		//var relation;
-		$("#listBox").empty();	
-		if(list.length){           //如果获得了数据			
+		$("#listBox").empty();
+		if(list.length){           //如果获得了数据
 			for (i=0; i<list.length; i++) {
 				iteam = document.createElement('div');
-				iteam.className = 'contentbig';	
-				 if(list[i].video=="1"){ 
+				iteam.className = 'contentbig';
+				 if(list[i].video=="1"){
 					 var video="<div class='img5'><img class='img3' src='../web/img/play.png'/></div>";
 				 }else{
 					 var video="";
-				 } 	
-				 if(list[i].pic2=="1"){ 
+				 }
+				 if(list[i].pic2=="1"){
 					 var pic="<img style='height:100%' src='"+list[i].pic+"'/>";
 				 }else{
 					 var pic="<img style='width:100%' src='"+list[i].pic+"'/>";;
-				 } 	
-			    iteam.innerHTML ="<a href='index.php?r=admin/dongtai/index&id="+list[i].id+"'><div class='img2 frame-square0'> <div class='crop0'>"+pic+"</div>"+video+"</div><div class='content'><span class='word'>"+list[i].title+"</span><span class='word0'>"+list[i].sender+"</span><span class='word0 right0'>"+list[i].time+"</span></div></a>";							
-				$("#listBox").append(iteam);					
+				 }
+			    iteam.innerHTML ="<a href='index.php?r=admin/dongtai/index&id="+list[i].id+"'><div class='img2 frame-square0'> <div class='crop0'>"+pic+"</div>"+video+"</div><div class='content'><span class='word'>"+list[i].title+"</span><span class='word0'>"+list[i].sender+"</span><span class='word0 right0'>"+list[i].time+"</span></div></a>";
+				$("#listBox").append(iteam);
 				}
 			myScroll.refresh();
 		}else{              //如果没有数据，提示空
 			iteam = document.createElement('div');
-			iteam.className = 'listIteam';			
-			iteam.innerHTML = '<div class="empty">暂无</div>';				
+			iteam.className = 'listIteam';
+			iteam.innerHTML = '<div class="empty">暂无</div>';
 //				$("#listBox").empty();
 // 			$("#pullUp").hide();
 			$("#listBox").append(iteam);
@@ -339,26 +344,26 @@ document.getElementById('searchtitle').addEventListener('input', function(e){
 //				alert("fail");
 		}
 	},'json');
-	myScroll.refresh();	
+	myScroll.refresh();
 });
 
-function getLocalTime(nS) {   
-// 	alert(nS);	
+function getLocalTime(nS) {
+// 	alert(nS);
 	var date = new Date(nS*1000);
 	Y = date.getFullYear() + '-';
 	M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
 	D = (date.getDate()+1 < 10 ? '0'+(date.getDate()+1) : date.getDate()+1)  + ' ';
 	h =  (date.getHours()+1 < 10 ? '0'+(date.getHours()+1) : date.getHours()+1) + ':';
 	m = (date.getMinutes()+1 < 10 ? '0'+(date.getMinutes()+1) : date.getMinutes()+1)  + ':';
-	s =  (date.getSeconds()+1 < 10 ? '0'+(date.getSeconds()+1) : date.getSeconds()+1); 
+	s =  (date.getSeconds()+1 < 10 ? '0'+(date.getSeconds()+1) : date.getSeconds()+1);
 // 	alert(Y+M+D+h+m+s);
-	return Y+M+D+h+m+s;      
+	return Y+M+D+h+m+s;
  }
 $("#searchtitle").keyup(function(){
  	//alert(123);
 });
 	$("div[id^='contentlist']").each(function(){
-	    $(this).click(function(){    
+	    $(this).click(function(){
 	      	var imgid = $(this).attr("id");
 	        var  imgidlist=imgid.split("_");
 	        $(this).find("i[id^=icon_new]").hide();
