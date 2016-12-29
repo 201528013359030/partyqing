@@ -19,7 +19,7 @@ document.write("<p>来自 intro 段落的文本：" + x.innerHTML + "</p>");
 <?=Html::cssFile('@web/css/announcemy.css')?>
 <?=Html::cssFile('@web/css/bootstrapmy.css')?>
 <?=Html::jsFile('@web/js/iscroll.js')?>
-<?=Html::jsFile('@web/js/jquery.js')?>
+<?=Html::jsFile('@web/js/jquery-2.1.3.min.js')?>
 <?=Html::jsFile('@web/js/bootstrap.js')?>
 
 
@@ -30,6 +30,13 @@ html,body{
 	width:100%;
 	overflow-x:hidden;
 }
+ input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+	-webkit-appearance: none;
+	appearance: none;
+	margin: 0;
+}
+
 .party-title{
 	background:#eeeeee;
 	font-family:"FontAwesome";
@@ -84,6 +91,7 @@ html,body{
 	float:left;
 	font-family:"FontAwesome";
 	font-size:15px;
+	padding-top:7px;
 	color:#0e0e0e;
 	width:120px;
 }
@@ -93,13 +101,13 @@ html,body{
 	border-bottom:solid 1px #0a0a0a;
 }
 .income-right input{
-	width:50%;
+	width:70%;
 	border:none;
 	padding:0;
 	margin:0;
 	outline:none;
 	font-family:"FontAwesome";
-	font-size:15px;
+	font-size:22px;
 	text-align:right;
 }
 .income-right2{
@@ -174,24 +182,24 @@ html,body{
 <div class="income-box">
 	<label for="income" class="income-title" id="incomelabel">
 		<div class="income-left">
-			<span>收入金额 (税后)</span>
+			<span>月收入 (税后)</span>
 		</div>
 		<div class="income-right">
-			<input type="text" value="0.0" name="income" class="income" id="income" onfocus="document.getElementById('income').value = null;"  onkeyup="clearNoNum(this);">
-			<span class="income-right2">元/人民币</span>
+			<input type="number" pattern="[0-9]*" value="0.0" name="income" class="income" id="income"  onkeyup="clearNoNum(this);">
+			<span class="income-right2">元</span>
 		</div>
 	</label>
 </div>
 <div class="income-box pay-box">
-	<div class="income-left">
-		<label for="income" class="income-title" id="paylabel">
-			<span>每月需缴党费为</span>
-		</label>
-	</div>
-	<div class="income-right">
-		<input type="text" value="0.0" name="pay" class="pay" id="pay" readonly="readonly">
-		<span class="income-right2">元/人民币</span>
-	</div>
+	<label for="income" class="income-title" id="paylabel">
+		<div class="income-left">
+				<span>需缴党费为</span>
+		</div>
+		<div class="income-right">
+			<input type="text" value="0.0" name="pay" class="income" id="pay" readonly="readonly">
+			<span class="income-right2">元</span>
+		</div>
+	</label>
 </div>
 
 <p class="type-content">
@@ -220,7 +228,7 @@ html,body{
 领取当地最低生活保障金的党员每月交纳党费0.2元。
 </p>
 <p class="choose-MY">
-实行年薪制人员中的党员，每月以当月实际领取的薪酬收入为计算基数，参照第一条、第二条规定交纳党费
+对于实行年薪制人员中的党员，每月以当月实际领取的薪酬收入为计算基数，年终兑现绩效薪酬的当月按本月实际领取薪酬的总数为计算基数
 </p>
 <br/>
 <button class="income-pay-calculate" id="income-pay-calculate">计算</button>
@@ -252,6 +260,30 @@ $('.incomelabel').click(function(){
 		$('.choose-MY').css('display','none');
 		}
 	})
+// $('#income').focus(function(){
+// 	$(this).val(null);
+// 	window.scrollTo(0,100)
+// 	})
+$('#income').focus(function(){
+	$(this).val(null);
+	document.getElementById('pay').value = 0.0;
+	})
+
+	//手机端弹出数字键之后，调整焦点输入框到屏幕最上方
+	var clientHeight = document.body.clientHeight;
+    var _focusElem = null; //输入框焦点
+    //利用捕获事件监听输入框等focus动作
+    document.body.addEventListener("focus", function(e) {
+        _focusElem = e.target || e.srcElement;
+    }, true);
+    //因为存在软键盘显示而屏幕大小还没被改变，所以以窗体（屏幕显示）大小改变为准
+    window.addEventListener("resize", function() {
+        if (_focusElem && document.body.clientHeight < clientHeight) {
+            //焦点元素滚动到可视范围的底部(false为底部)
+            _focusElem.scrollIntoView(true);
+        }
+    });
+
 $('.income').keyup(function(){
 	$('.income-pay-calculate').css('color','white').css('background','#ce2123')
 	})
