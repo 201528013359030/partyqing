@@ -270,7 +270,7 @@ $('#income').focus(function(){
 	})
 
 	//手机端弹出数字键之后，调整焦点输入框到屏幕最上方
-	var clientHeight = document.body.clientHeight;
+var clientHeight = document.body.clientHeight;
     var _focusElem = null; //输入框焦点
     //利用捕获事件监听输入框等focus动作
     document.body.addEventListener("focus", function(e) {
@@ -283,6 +283,7 @@ $('#income').focus(function(){
             _focusElem.scrollIntoView(true);
         }
     });
+
 
 $('.income').keyup(function(){
 	$('.income-pay-calculate').css('color','white').css('background','#ce2123')
