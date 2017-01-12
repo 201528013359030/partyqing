@@ -1,0 +1,73 @@
+<div class="pageloading" style="display:block;"><img src="../images/loading.gif"><p>加载中</p></div>
+<div id="page_innerContent" class="page_innerContent" style="display: none;">
+	<div class="weui_search_bar weui_search_focusing weui_searchFix" id="search_bar">
+		<div class="btn-group">
+		  	<button type="button" class="weui_btn weui_btn_mini weui_btn_default" data-toggle="dropdown">
+		   		<span id="J_searchType" data-status="0">未处理</span> <span class="ui-icon-unfold"></span>
+		  	</button>
+		  	<ul class="dropdown-menu" role="menu">
+			    <li><a href="javascript:void(0);" class="dropMenuIteam" data-status="0">未处理</a></li>
+			    <li class="divider"></li>
+			    <li><a href="javascript:void(0);" class="dropMenuIteam" data-status="1">已处理</a></li>
+		  	</ul>	
+		</div>
+				
+		<div class="weui_search_outer">
+			<div class="weui_search_inner">
+				<i class="weui_icon_search"></i>
+				<input type="search" class="weui_search_input" id="search_input" placeholder="请输入关键字">
+				<a href="javascript:" class="weui_icon_clear" id="search_clear"></a>
+			</div>
+			<label for="search_input" class="weui_search_text" id="search_text">
+		      <i class="weui_icon_search"></i>
+		      <span>请输入关键字</span>
+		    </label>
+	   	</div>
+		<a href="javascript:void(0);" class="weui_search_cancel" id="search_cancel">取消</a>
+	</div>
+	<div id="tab1" class="weui_tab_bd_item weui_tab_bd_item_active tabSearch">
+			
+		<div class="weui-pull-to-refresh-layer">
+			<div class="pull-to-refresh-arrow"></div>
+			<div class="pull-to-refresh-preloader"></div>
+			<div class="down">下拉刷新</div>
+			<div class="up">释放刷新</div>
+			<div class="refresh">正在刷新...</div>
+		</div>
+		
+		<div class="refresh-top-inner">
+			<div id="J_requestSearch" class="weui_cells weui_cells_access noMgTop nobdbtm nobdTop">
+				
+			</div>
+		</div>
+		
+		<div class="weui-infinite-scroll resultEnd" style="display:block;">
+			<div class="infinite-preloader"></div>
+			正在加载...
+		</div>
+		<div class="resultEnd_nodata text_center ui-txt-muted" style="display:none;">
+			&nbsp;
+		</div>
+	
+	</div>
+	
+</div>
+
+<div id="tpl_request" style="display: none;">
+	<div class="app_iteam">
+		<a href="#content_{qID}" class="weui_cell app_cell">
+		    <div class="weui_cell_bd">					    	
+		    	<h4 class="weui_cell_title ui-nowrap-multi ui-whitespace">{title}</h4>
+		    	<p class="weui_cell_desc">
+			      	<span><i class="ui-icon-history app_cell_icon"></i>{createTime}</span> &nbsp;&nbsp;
+		    	</p>
+		    </div>
+		    <div class="weui_cell_ft"></div>
+		</a>
+	</div>
+</div>
+
+
+
+
+

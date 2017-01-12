@@ -1,0 +1,114 @@
+<div class="pageloading" style="display:block;"><img src="../images/loading.gif"><p>加载中</p></div>
+<div id="page_innerContent" class="page_innerContent" style="display: none;">
+	<div id="J_model">
+		<div class="content-padded conTitle clearfix">
+			&nbsp;<br>
+			<span class="small">&nbsp;</span>		
+			<span class="small"><i class="ui-icon-history smIcon"></i>&nbsp;</span>
+			<span class="small">&nbsp;</span>
+		</div>
+		<div class="content-padded bg_sesion clear">
+			<div class="content" style="min-height: 100px;">
+				&nbsp;
+			</div>
+		</div>
+	</div>
+	<div class="row-tab-thin"></div>
+	<div id="J_progress" class="weui_cells " style="display: none;">
+		<div class="weui_panel_hd"><b>处理进度</b></div>		
+	</div>
+	<div class="row-tab-thin"></div>
+	<div id="J_answer" class="content-padded bg_sesion clear replayBox" style="display: none;"></div>
+	<div class="row-tab-thin"></div>
+	<div id="requestForm" class="content-padded requestForm" style="display: none;">
+		<textarea id="J_textarea" class="weui_textarea" placeholder="请输入内容" onpropertychange="this.style.height=this.scrollHeight + 'px'" oninput="this.style.height=this.scrollHeight + 'px'"></textarea>
+		<a id="J_btn" href="javascript:;" class="weui_btn weui_btn_mini weui_btn_blue">提交</a>
+		<a id="J_btnCancel" href="javascript:;" class="weui_btn weui_btn_mini weui_btn_default">取消</a>	
+	</div>
+	
+	<div id="customOp" class="content-padded" style="display: none;">
+		<a href="javascript:void(0);" class="weui_btn weui_btn_primary J_btnUpdate" data-name="append">我要追问</a>
+	</div>
+	<div id="adminOp" class="content-padded" style="display: none;">
+		<div class="weui-row">
+			<div class="weui-col-50">
+				<a href="javascript:;" class="weui_btn weui_btn_warn J_btnUpdate" data-name="progress">处理进度</a>
+			</div>
+			<div class="weui-col-50">
+				<a href="javascript:void(0);" class="weui_btn weui_btn_primary J_btnUpdate" data-name="answer">我来解答问题</a>
+			</div>
+		</div>
+	</div>
+	
+		
+</div>
+
+<div id="tpl_model" style="display: none;">
+	<div class="content-padded conTitle clearfix">
+		<b>{title}</b><br>		
+		<span class="small">{senderName}</span>	<span class="small clear">{company}</span>
+		<br>
+		<span class="small"><i class="ui-icon-history smIcon"></i>{createTime}</span>
+		<span class="small">{status}</span>
+		
+			
+	</div>
+	<div class="content-padded bg_sesion clear">
+		<div class="content">
+			{content}
+		</div>
+		<div id="J_attachBox" class="attachBox">{attach}</div>
+		<div id="J_askMore" class="askMore"></div>
+		
+	</div>
+</div>
+
+<div id="tpl_askMore" style="display: none;">
+	<div class="weui-row">
+		<div class="weui-col-20"><span class="roundLable">追问</span></div>
+		<div class="weui-col-80">{text}</div>
+	</div>
+</div>
+
+<div id="tpl_attachIteam" style="display: none;">
+	<a href="javascript:void(0);" data-name="{name}" data-path="{path}" data-size="{size}" class="attchIteam">
+		<div class="fl"><span class="ui-icon-order"></span> <span class="filename"> &nbsp;&nbsp;{name}</span></div>
+		<span class="fr">下载</span>
+	</a>
+</div>
+
+<div id="tpl_answer" style="display: none;">
+	<div class="replayTop"><b>解决方案</b></div>	
+	<div class="replayTit">
+		<span class="small fl">&nbsp;{name}</span>		
+		<span class="small fr"><i class="ui-icon-history smIcon"></i>{time}</span>
+	</div>
+	<div class="content clear">
+		{text}
+	</div>
+	<div id="J_answerMore" class="askMore"></div>
+</div>
+
+<div id="tpl_answerMore" style="display: none;">
+	<div class="weui-row">
+		<div class="weui-col-20"><span class="roundLable">追答</span></div>
+		<div class="weui-col-80">
+			<div class="replayTit">
+				<span class="small fl">&nbsp;{name}</span>		
+				<span class="small fr"><i class="ui-icon-history smIcon"></i>{time}</span>
+			</div>
+			{text}
+		</div>
+	</div>
+</div>
+
+<div id="tpl_progress" style="display: none;">
+	<div class="weui_cell">
+	    <div class="weui_cell_bd weui_cell_primary">
+	      <p>{text}</p>
+	      <p class="weui_cell_desc"><span><i class="ui-icon-history app_cell_icon"></i> {time}</span></p>
+	    </div>	    
+	</div>
+</div>
+
+

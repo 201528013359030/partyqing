@@ -9,10 +9,10 @@ use Client;
 class DongtailistController extends Controller
 {
 
-
 	public $layout  = false;
     public function actionIndex()
     {
+//     	die('33');
         $auth = new AuthToken();
 //         $auth->authTokenSession();  //fyq
     	$id=\Yii::$app->request->get('id');

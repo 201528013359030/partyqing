@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta id="viewport" name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0">
+<link rel="shortcut icon" href="/favicon.ico">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="format-detection" content="telephone=no">
+<title>问题反馈</title>
+<link rel="stylesheet" href="../css/lib/weui.css">
+<link rel="stylesheet" href="../css/lib/jquery-weui.css">
+<link rel="stylesheet" href="../css/apps.css">
+</head>
+<body onhashchange="miniSPA.changeUrl();">
+
+<!-- page集合的容器，里面放多个平行的.page，其他.page作为内联页面由路由控制展示 -->
+<div class="page-group">
+    <!-- 单个page ,第一个.page默认被展示-->
+    <div class="page">
+        
+        <!-- 这里是页面内容区 -->
+        <div class="content">
+            <div class="content-block">
+            	<div class="weui_tab">
+			      
+			      <div class="weui_tab_bd nopadBtm"  id="J_innerContent">
+						<div class="pageloading"><img src="../images/loading.gif"><p>加载中</p></div>
+			      </div>
+					     
+			    </div>
+            </div>
+        </div>
+    	
+    </div>
+
+</div>
+
+<!--基础script-->
+<script src="../script/lib/jquery-2.1.4.js" type="text/javascript"></script>
+<!--<script src="../script/plugins/fastclick.js" type="text/javascript"></script>-->
+<script src="../script/lib/jquery-weui.js" type="text/javascript"></script>
+<!--第三方插件-->
+
+<!--具体功能模块-->
+<script src="../script/config.js"></script>
+<script src="../script/miniSPA.js"></script>
+
+<script src="../script/plugins/native.js"></script>
+<script src="../script/appData.js"></script>
+<!--动态加载每一个页面的js-->
+<script src="../script/apps.js"></script>
+
+<script>
+console.log("main.html");
+$(document).ready(function(){
+	//FastClick.attach(document.body);
+	miniSPA.changeUrl();
+	
+});
+
+</script>
+</body>
+</html>

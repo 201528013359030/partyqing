@@ -11,7 +11,7 @@ Yii::$classMap['Response'] = '@app/libs/Rest/Client/Response.php';
 $config = [
     'id' => 'basic',
     'basePath' => dirname(__DIR__),
-    'bootstrap' => ['log'],
+    'bootstrap' => ['log','debug'],
     'modules' => [
         'webService' => [
             'class' => 'app\modules\webService\api',
@@ -22,6 +22,9 @@ $config = [
         'help' => [
             'class' => 'app\modules\help\index',
         ],
+    	'debug' => [
+    		'class' => 'yii\debug\Module',
+    	],
     ],
     'defaultRoute'=>'admin/index/login',//默认路由，控制器+方法
     'components' => [
@@ -44,7 +47,7 @@ $config = [
             'enableAutoLogin' => true,
             'loginUrl'=>['admin/index/login'],//定义后台默认登录界面[权限不足跳到该页]
         ],
-        
+
         'errorHandler' => [
     //        'errorAction' => 'site/error',
             'errorAction' => 'error/index',

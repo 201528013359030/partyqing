@@ -1,0 +1,77 @@
+<div class="pageloading" style="display:block;"><img src="../images/loading.gif"><p>加载中</p></div>
+<div id="page_innerContent" class="page_innerContent heightAuto" style="display: none;">
+	
+	<div class="weui_cells weui_cells_form">
+		<div class="weui_cell">
+			<div class="weui_cell_hd"><label class="weui_label">企业名称</label></div>
+			<div class="weui_cell_bd weui_cell_primary">
+				<input id="companyName" class="weui_input" type="text" placeholder="请输入单位名称">
+			</div>
+		</div>
+		<div class="weui_cell">
+	        <div class="weui_cell_hd"><label for="name" class="weui_label">反馈类型</label></div>
+	        <div class="weui_cell_bd weui_cell_primary">
+	          <input class="weui_input" id="sel-questionType" type="text" value="" readonly="" placeholder="请选择反馈类型">
+	        </div>
+	    </div>
+	
+		<div class="weui_cell">
+			<div class="weui_cell_hd"><label class="weui_label">标题</label></div>
+			<div class="weui_cell_bd weui_cell_primary">
+				<input id="title" class="weui_input" type="text" placeholder="例如：关于xxx的问题">
+			</div>
+		</div>
+		<div class="weui_cell weui_cell_tops">
+			<div class="weui_cell_hd"><label for="home-city" class="weui_label">详细说明</label></div>
+			<div class="weui_cell_bd weui_cell_primary">
+				<textarea id="content" class="weui_textarea" placeholder="请详细描述您遇到的问题" onpropertychange="this.style.height=this.scrollHeight + 'px'" oninput="this.style.height=this.scrollHeight + 'px'"></textarea>
+			</div>
+		</div>
+		
+		<div class="weui_cell">
+			<div class="weui_cell_hd"><label class="weui_label">姓名</label></div>
+			<div class="weui_cell_bd weui_cell_primary">
+				<input id="userName" class="weui_input" type="text" placeholder="请输入提问者姓名">
+			</div>
+		</div>	
+		<div class="weui_cell">
+			<div class="weui_cell_hd"><label class="weui_label">联系方式</label></div>
+			<div class="weui_cell_bd weui_cell_primary">
+				<input id="contact" class="weui_input" type="text" placeholder="请输入手机号码">
+			</div>
+		</div>
+		
+	</div>
+	
+	<div class="weui_cells_title">可上传附件</div>
+	<div class="weui_cells weui_cells_form">
+		<div class="weui_cell">
+			<div class="weui_cell_hd"><label class="weui_label">附件</label></div>
+			<div class="weui_cell_bd weui_cell_primary">
+				<div id="J_uploadAttach" class="inpBox">
+					<div class="btnAtta">
+						<i class="ui-icon-gototop ui-icon "></i>
+						<span class="ic_text">上传附件</span>									
+					</div>
+				</div>
+				
+			</div>
+		</div>
+		<div id="J_attachList"><!--显示附件--></div>
+	</div>
+	
+	<div class="content-padded">
+	<button id="J_requestUpdate" class="weui_btn weui_btn_primary">提交</button>
+	</div>
+
+</div>
+
+<div id="tpl_attach" style="display:none;">
+	<a href="javascript:;" class="weui_cell J_delAttach" data-name="{name}" data-size="{size}" data-path="{path}" >
+	    <div class="weui_cell_bd weui_cell_primary">
+	      <p class="ui-nowrap-flex ui-whitespace">{name}</p>
+	    </div>
+	    <div class="weui_icon_cancel"></div>
+	</a>
+</div>
+
