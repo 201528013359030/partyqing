@@ -32,16 +32,12 @@ class PartyduesController extends \yii\rest\Controller
 		$info =json_decode($info['info'],true);
 
 		$uid = isset($info['uid']) ? $info['uid'] : null;
-
-
+		$auth_token =isset($info['auth_token'])?$info['auth_token']:null;
 
 		$session['user.uid'] = $uid;
-		$session['page'] = 0;
-		$return['result']['c']=0;
 		$return['result']['c'] = 0;
 		$return['result']['m'] = "";
 		$return['result']['d'] = "";
-
 
 		if(!$uid){
 			$return['result']['c'] = -1;
@@ -56,19 +52,22 @@ class PartyduesController extends \yii\rest\Controller
 		$result = $connection->createCommand($sql)->queryOne();
 
 // 		var_dump($result);
-// 		die('3');
 
-		$return['result']['d'] = $result['prtyFee'];
-		if($result['time']==date("Y-m")){
-			if(!$return['result']['d']){
-				$return['result']['d'] = $this->duescount($result['getMoney'],$result['memberType']);
-				$sql1 = "update djleapartyfee set prtyFee = '".$return['result']['d']."' where id= ".$result['result']['id'];
+// 		die(date("Y-m"));
+
+		$date = date_format(date_create($result['time']),"Y-m"); //返回一个新的 DateTime 对象，然后格式化该日期：
+
+		$return['result']['d'] = $result;
+		if($date == date("Y-m")){
+			if(!$return['result']['d']['prtyFee']){
+				$return['result']['d']['prtyFee'] = $this->duescount($result['getMoney'],$result['memberType']);
+				$sql1 = "update djleapartyfee set prtyFee = '".$return['result']['d']['prtyFee']."' where id= ".$result['result']['id'];
 				$result = $connection->createCommand($sql1);
 				$result->execute();
 			}
 
 		}else{
-			$return['result']['d'] = "-1";
+			$return['result']['d']['prtyFee'] = "-1";
 		}
 
 // 		die('4');
@@ -84,19 +83,25 @@ class PartyduesController extends \yii\rest\Controller
 		$request = \Yii::$app->request;
 		$session = \Yii::$app->session;
 
+		$info = $request->post();
+
+// 		var_dump($info['info']);
+		$info =json_decode($info['info'],true);
+
+		$uid = isset($info['uid']) ? $info['uid'] : null;
+		$auth_token =isset($info['auth_token'])?$info['auth_token']:null;
+		$page = isset($info['page'])?$info['page']:"0";
+
 		$return['c'] = 0;
 		$return['m'] = "";
 		$return['d'] = "";
 
-		$uid = $session['user.uid'];
-
-		if(!uid){
+		if(!$uid){
 			$return['c'] = -1;
 			$return['m'] = "uid为空";
 			return $return ;
 		}
-		$page = $session['page'];
-		$session['page'] = $page +1;
+
 
 		$limit = 15;
 
@@ -105,16 +110,31 @@ class PartyduesController extends \yii\rest\Controller
 		$connection = \Yii::$app->db;
 		$connection->open();
 
-		$sql = "select * from djleapartyfee where uid = '".$uid."' order by time asc offset '".$offset."' limit '".$limit;
-
+		$sql = "select * from djleapartyfee where uid = '".$uid."' order by time desc limit ".$limit." offset ".$offset; //查询结果按时间倒序
 		$result = $connection->createCommand($sql)->queryAll();
 
-		$return['d'] = $result;
+		$sql2 = "select name from organization where oid = '".$result[0]['branchId']."'";
+		$branch = $connection->createCommand($sql2)->queryAll();
 
-		return $return;
+		if($result){
+			for( $i=0;$i < count($result);$i++){
+				$result[$i]['branch'] = $branch[0]['name'];
+			}
+		}
+// 		$result['branch'] = $branch;
+
+		$return['d'] = $result;
+		$session['page'] = $page +1;
+
+		$return1['result'] = $return;
+
+		return $return1;
 
 	}
 
+	/*
+	 * 根据页面输入信息进行党费计算
+	 */
 	public function duescount($money,$type)
 	{
 		$fee = 0;
