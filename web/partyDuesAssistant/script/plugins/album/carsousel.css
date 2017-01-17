@@ -1,0 +1,47 @@
+
+/**
+ *  @ 图片弹出样式
+ *  pdf查看器
+ *  */
+.carsousel_box{margin-left:10px;}
+.carsousel{ font-size:0;}
+.carsousel li{width:100%; /*height:100px;*/ overflow: hidden; display:inline-block; vertical-align:top; *display:inline; *zoom:1;/* margin-bottom:6px; */background-color:#eee; }
+
+.loading{  display: block;  min-height: 50px;
+  background: url(loading.gif) no-repeat center center;
+  -webkit-background-size: 19px auto;
+  background-size: 19px auto;}
+
+.jslider *{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;}
+.jslider{position:absolute;top:0;left:0;right:0;bottom:0;background-color:#000; }
+.jslider .jslider-cont{}
+.jslider .jwrap{float:left;z-index:1;overflow:hidden;text-align:center;}
+.jslider .scroller{z-index:1;}
+.jslider .scroller img{/*max-width:100%;*/ width:100%; vertical-align:middle;opacity:0;-webkit-transition:opacity .3s ease-out;}
+
+.jslider .controlBar{ position: fixed; top: 0; left: 0; z-index: 99; width:100%; background:rgba(128,128,128,.4);}
+.jslider .controlBar a{ display:block;width:48px;height:48px;}
+.jslider .controlBar #goNext{position: absolute; top:100px; right: 0; background: url(right.png); background-size: 100%;}
+.jslider .controlBar #goPrev{position: absolute; top:100px; left: 0;  background: url(left.png); background-size: 100%;}
+
+.jslider .ctrlBar{position:absolute;bottom:20px;left:0;z-index:99;width:100%; height:48px; line-height:48px;text-align:center;color:#666;}
+.jslider .ctrlBar .curPage,
+.jslider .ctrlBar .pageCount{text-shadow:0 1px 1px rgba(0,0,0,.35);}
+/*.jslider .ctrlBar a{display:block;width:72px;height:30px;line-height:30px;text-align:center;font-size:16px;color:#666;background:rgba(128,128,128,.4);-webkit-box-shadow:0 0 1px rgba(0,0,0,.3) inset;box-shadow:0 0 1px rgba(0,0,0,.3) inset;border-radius:2px;-webkit-border-radius:2px;}*/
+
+.jslider .ctrlBar a{display:block;width:48px;height:48px; background: url(close.png); background-size: 100%;}
+
+.jslider .jclose{float:left; margin:0 0 0 15px; position:absolute; left: 0; top: 0; }
+.jslider .ctrlZan{float:right;margin:0 15px 0 0;}
+.jslider .ctrlZan .jnum{font-size:15px;}
+.jslider .ctrlZan .ficon{float:left;margin:3px 0 0 10px;}
+.jslider .ctrlZan span{width:35px;display:block;height:30px;text-align:center;float:left;}
+
+#get_navigator{ min-height: 4.75rem; background-color:#FF6227;}
+#get_navigator nav.top-bar{ position: fixed; top: 0; left: 0; width:100%; z-index: 1000;}
+#Jcustom-record{ min-height: 3rem; position: fixed; top: 0; left: 0; width:100%; z-index: 1000;}
+#Jtabs-content{ margin-top: 3rem;}
+.custom-backup-pop{ /*max-height: 8rem;*/ overflow-y:auto;}
+/**
+ *  end 图片弹出样式
+*/

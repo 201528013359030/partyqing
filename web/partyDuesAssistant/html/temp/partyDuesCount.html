@@ -1,0 +1,209 @@
+<style type="text/css">
+html,body{
+	margin:0;
+	padding:0;
+	width:100%;
+	overflow-x:hidden;
+}
+ input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+	-webkit-appearance: none;
+	appearance: none;
+	margin: 0;
+}
+
+.party-title{
+	background:#eeeeee;
+	font-family:"FontAwesome";
+	font-size:20px;
+	color:#303030;
+	margin:0;
+	padding:0;
+	padding:10px 0 10px 10px;
+	margin-bottom:15px;
+}
+.party-title2{
+	background:#eeeeee;
+	font-family:"FontAwesome";
+	font-size:20px;
+	color:#303030;
+	margin:0;
+	padding:0;
+	padding:10px 0 10px 10px;
+	margin:15px 0;
+}
+.typelabel, .incomelabel {
+	font-family:"FontAwesome";
+	font-size:15px;
+	display: inline-block;
+	vertical-align: top;
+	padding: 3px 12px;
+	margin-right: 10px;
+	color: #0e0e0e;
+	border:dashed 1px #a1a1a1;
+	margin:6px 6px;
+	border-radius:20px;
+}
+.typelabel.curr, .incomelabel.curr {
+	background: #ce2123;
+	font-family:"FontAwesome";
+	font-size:15px;
+	display: inline-block;
+	vertical-align: top;
+	padding: 3px 12px;
+	margin-right: 10px;
+	color: #fff;
+	border:solid 1px #FC4D46;
+	margin:6px 6px;
+	border-radius:20px;
+}
+.income-box{
+	width:100%;
+	overflow:hidden;
+	padding:10px 20px;
+}
+.income-left{
+	float:left;
+	font-family:"FontAwesome";
+	font-size:15px;
+	padding-top:7px;
+	color:#0e0e0e;
+	width:120px;
+}
+.income-right{
+	float:left;
+	width:50%;
+	border-bottom:solid 1px #0a0a0a;
+}
+.income-right input{
+	width:70%;
+	border:none;
+	padding:0;
+	margin:0;
+	outline:none;
+	font-family:"FontAwesome";
+	font-size:22px;
+	text-align:right;
+}
+.income-right2{
+	font-family:"FontAwesome";
+	font-size:15px;
+	color:#999999;
+}
+.income-pay-calculate{
+	display:block;
+	width:92%;
+	height:46px;
+	font-family:"FontAwesome";
+	font-size:20px;
+	background:#b3b3b3;
+	color:#707070;
+	border:none;
+	padding:0;
+	margin:auto;
+	border-radius:6px;
+	margin-bottom:10px;
+}
+
+.type-content{
+	padding:0 10px;
+	font-family:"FontAwesome";
+	font-size:14px;
+	line-height:19px;
+	color:#202020;
+	display:none;
+}
+.choose-MY{
+	padding:0 10px;
+	font-family:"FontAwesome";
+	font-size:14px;
+	line-height:19px;
+	color:#202020;
+	display:none;
+}
+.pay-box{
+	display:none;
+}
+</style>
+</head>
+<body>
+<p class="party-title">党员类型</p>
+<input type="radio" value="0" name="partymembertype" class="type" id="partymember0" checked="false" style="display:none" />
+<label for="man" class="typelabel" id="typelabel0" onclick="setAttribute0();" > <span>在职党员</span> </label>
+<input type="radio" value="1" name="partymembertype" class="type" id="partymember1" checked="false" style="display:none"/>
+<label for="man2" class="typelabel" id="typelabel1" onclick="setAttribute1()"> <span>离退休干部、职工中党员</span> </label>
+<input type="radio" value="2" name="partymembertype" class="type" id="partymember2" checked="false" style="display:none"/>
+<label for="man2" class="typelabel" id="typelabel2" onclick="setAttribute2()"> <span>农民党员</span> </label>
+<input type="radio" value="3" name="partymembertype" class="type" id="partymember3" checked="false" style="display:none"/>
+<label for="man2" class="typelabel" id="typelabel3" onclick="setAttribute3()"> <span>学生党员</span> </label>
+<input type="radio" value="4" name="partymembertype" class="type" id="partymember4" checked="false" style="display:none"/>
+<label for="man2" class="typelabel" id="typelabel4" onclick="setAttribute4()"> <span>下岗失业党员</span> </label>
+<input type="radio" value="5" name="partymembertype" class="type" id="partymember5" checked="false" style="display:none"/>
+<label for="man2" class="typelabel" id="typelabel5" onclick="setAttribute5()"> <span>依靠抚恤或救济生活党员</span> </label>
+<input type="radio" value="6" name="partymembertype" class="type" id="partymember6" checked="false" style="display:none"/>
+<label for="man2" class="typelabel" id="typelabel6" onclick="setAttribute6()"> <span>领取当地最低生活保障的党员</span> </label>
+<div class="incomestylee-choose">
+	<p class="party-title2">收入方式</p>
+	<input type="radio" value="0" name="incomestyle" class="incomestyle" id="incomebymonth" checked="false" style="display:none" />
+	<label for="incomebymonth" class="incomelabel" id="incomelabel0" onclick="setAttribute7()">
+		<span>按月 (税后)</span>
+	</label>
+	<input type="radio" value="1" name="incomestyle" class="incomestyle" id="incomebyyear" checked="false" style="display:none"/>
+	<label for="incomebyyear" class="incomelabel" id="incomelabel1" onclick="setAttribute8()">
+		<span>按年 (税后)</span>
+	</label>
+</div>
+<p class="party-title2">需缴党费计算</p>
+<div class="income-box">
+	<label for="income" class="income-title" id="incomelabel">
+		<div class="income-left">
+			<span>月收入 (税后)</span>
+		</div>
+		<div class="income-right">
+			<input type="number" pattern="[0-9]*" value="0.0" name="income" class="income" id="income"  onkeyup="clearNoNum(this);">
+			<span class="income-right2">元</span>
+		</div>
+	</label>
+</div>
+<div class="income-box pay-box">
+	<label for="income" class="income-title" id="paylabel">
+		<div class="income-left">
+				<span>需缴党费为</span>
+		</div>
+		<div class="income-right">
+			<input type="text" value="0.0" name="pay" class="income" id="pay" readonly="readonly">
+			<span class="income-right2">元</span>
+		</div>
+	</label>
+</div>
+
+<p class="type-content">
+党员交纳党费的比例为：<br/>
+每月工资收入(税后)在3000元以下(含3000元)者，交纳月工资收入的0.5%;<br/>
+3000元以上至5000元(含 5000元)者，交纳1%;<br/>
+5000元以上至10000元(含10000元)者，交纳1.5%;<br/>
+10000元以上者，交纳2%。
+</p>
+<p class="type-content">
+离退休干部、职工中的党员，每月以实际领取的离退休费总额或养老金总额为计算基数，5000元以下(含5000元)的按0.5%交纳党费，5000元以上的按1%交纳党费。。
+</p>
+<p class="type-content">
+农民党员每月交纳党费0.2元-1元。
+</p>
+<p class="type-content">
+学生党员每月交纳党费0.2元。
+</p>
+<p class="type-content">
+下岗失业的党员每月交纳党费0.2元。
+</p>
+<p class="type-content">
+依靠抚恤或救济生活的党员每月交纳党费0.2元。
+</p>
+<p class="type-content">
+领取当地最低生活保障金的党员每月交纳党费0.2元。
+</p>
+<p class="choose-MY">
+对于实行年薪制人员中的党员，每月以当月实际领取的薪酬收入为计算基数，年终兑现绩效薪酬的当月按本月实际领取薪酬的总数为计算基数
+</p>
+<br/>
+<button class="income-pay-calculate" id="income-pay-calculate">计算</button>

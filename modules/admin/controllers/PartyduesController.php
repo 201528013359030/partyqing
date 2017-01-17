@@ -10,6 +10,7 @@ use yii\widgets\Breadcrumbs;
  * @党费助手
  *
  */
+header("Access-Control-Allow-Origin: *"); # 跨域处理
 class PartyduesController extends \yii\rest\Controller
 {
 	public $layout  = false;
@@ -20,15 +21,10 @@ class PartyduesController extends \yii\rest\Controller
 	 */
 	public function actionDuescount()
 	{
-// 		$content=\Yii::$app->request->get('content');
-
-// 		die('3');
 		$request = \Yii::$app->request;
 		$session = \Yii::$app->session;
 
 		$info = $request->post();
-
-// 		var_dump($info['info']);
 		$info =json_decode($info['info'],true);
 
 		$uid = isset($info['uid']) ? $info['uid'] : null;
@@ -51,27 +47,26 @@ class PartyduesController extends \yii\rest\Controller
 		$sql ="select * from djleapartyfee where uid = '".$uid."' order by time desc limit 1" ;
 		$result = $connection->createCommand($sql)->queryOne();
 
-// 		var_dump($result);
-
-// 		die(date("Y-m"));
-
+		if(!$result){
+			$return['result']['d'] = "-1";
+			return $return;
+		}
 		$date = date_format(date_create($result['time']),"Y-m"); //返回一个新的 DateTime 对象，然后格式化该日期：
 
 		$return['result']['d'] = $result;
 		if($date == date("Y-m")){
 			if(!$return['result']['d']['prtyFee']){
 				$return['result']['d']['prtyFee'] = $this->duescount($result['getMoney'],$result['memberType']);
-				$sql1 = "update djleapartyfee set prtyFee = '".$return['result']['d']['prtyFee']."' where id= ".$result['result']['id'];
+// 				die($return['result']['d']['prtyFee']);
+				$sql1 = "update djleapartyfee set prtyFee = '".$return['result']['d']['prtyFee']."' where id= ".$result['id'];
 				$result = $connection->createCommand($sql1);
-				$result->execute();
+				if($result->execute()== 0){
+					$return['result']['d']['prtyFee'] = "-2"; //更新当月应缴党费信息失败
+				}
 			}
-
 		}else{
-			$return['result']['d']['prtyFee'] = "-1";
+			$return['result']['d']['prtyFee'] = "-1"; //没有当月应缴党费信息
 		}
-
-// 		die('4');
-
 		return $return;
 	}
 
@@ -92,13 +87,13 @@ class PartyduesController extends \yii\rest\Controller
 		$auth_token =isset($info['auth_token'])?$info['auth_token']:null;
 		$page = isset($info['page'])?$info['page']:"0";
 
-		$return['c'] = 0;
-		$return['m'] = "";
-		$return['d'] = "";
+		$return['result']['c'] = 0;
+		$return['result']['m'] = "";
+		$return['result']['d'] = "";
 
-		if(!$uid){
-			$return['c'] = -1;
-			$return['m'] = "uid为空";
+	if(!$uid){
+			$return['result']['c'] = -1;
+			$return['result']['m'] = "uid为空";
 			return $return ;
 		}
 
@@ -113,6 +108,11 @@ class PartyduesController extends \yii\rest\Controller
 		$sql = "select * from djleapartyfee where uid = '".$uid."' order by time desc limit ".$limit." offset ".$offset; //查询结果按时间倒序
 		$result = $connection->createCommand($sql)->queryAll();
 
+		if(!$result){
+			$return['result']['d'] = "-1";
+			return $return;
+		}
+
 		$sql2 = "select name from organization where oid = '".$result[0]['branchId']."'";
 		$branch = $connection->createCommand($sql2)->queryAll();
 
@@ -123,12 +123,9 @@ class PartyduesController extends \yii\rest\Controller
 		}
 // 		$result['branch'] = $branch;
 
-		$return['d'] = $result;
-		$session['page'] = $page +1;
+		$return['result']['d']= $result;
 
-		$return1['result'] = $return;
-
-		return $return1;
+		return $return;
 
 	}
 
@@ -137,7 +134,7 @@ class PartyduesController extends \yii\rest\Controller
 	 */
 	public function duescount($money,$type)
 	{
-		$fee = 0;
+		$fee = 0.0;
 		switch ($type)
 		{
 			case '01':
@@ -165,14 +162,19 @@ class PartyduesController extends \yii\rest\Controller
 
 
 			case '04':
-				$fee = "每月交纳党费0.2元-1元"; break;
+				$fee = "0.2-1"; break;
 
 			case '05':
+			case '06':
+			case '07':
+			case '08':
 				$fee = 0.2; break;
-
-
 		}
 
+		if(!is_string($fee)){
+			$fee = ceil($fee*10);//保留一位小时，向上取整
+			$fee = $fee/10;
+		}
 		return $fee;
 	}
 

@@ -1,0 +1,38 @@
+<style>
+    .gray-box{
+        font-family:"微软雅黑";
+        width:100%;
+        height:100%;
+        background:#eeeeee;
+        overflow-x:hidden;
+        overflow-y:auto;
+    }
+
+</style>
+<div class="gray-box" >
+    <div class="party-dues-assistant-title-box">
+        <div class="party-dues-assistant-title">本月应缴党费</div>
+    </div>
+    <div class="party-dues-assistant-content">
+        <div class="party-dues-assistant-noData" id = "party-dues-assistant-noData-id" style = "display:none">暂无本月应缴费数据~</div>
+        <div class="party-dues-assistant-data" id = "party-dues-assistant-data-id" style="display:none">
+            <div class="party-dues-assistant-time" id ="party-dues-assistant-time-id" >
+            </div>
+            <div class="party-dues-assistant-money" id="party-dues-assistant-money-id" ">
+                <span id ="party-dues-assistant-money-span-id"></span>&nbsp元
+            </div>
+          
+        </div>
+    </div>
+    <div class="party-dues-assistant-btn weui-row weui-no-gutter">
+        <a class="weui-col-50" href="#partyDuesHistory">
+            <img src="../images/icon/party-dues-assistant-btn1.png">
+            <span>缴费记录</span>
+        </a>
+        <a class="weui-col-50" href="#partyDuesCount" style="border-left:solid 1px #e6e6e6;">
+            <img src="../images/icon/party-dues-assistant-btn2.png">
+            <span>党费计算</span>
+        </a>
+    </div>
+    <img class="party-dues-assistant-home" src="../images/icon/party-dues-assistant-home.png">
+</div>
