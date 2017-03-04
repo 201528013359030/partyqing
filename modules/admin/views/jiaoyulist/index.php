@@ -14,7 +14,7 @@ use yii\web\View;
 <meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
 <meta name="viewport"
 	content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>廉洁教育</title>
+<title>警示教育</title>
 <?=Html::cssFile('@web/css/announcemy.css')?>
 <?//=Html::cssFile('@web/css/lanrenzhijia.css')?>
 <?=Html::jsFile('@web/js/iscroll.js')?>
@@ -112,36 +112,36 @@ use yii\web\View;
 	top: 0px;;
 }
 .wordl{
-display:inline-block;	
+display:inline-block;
 margin-top:13px;
 color:#ffacad;
 font-weight:bold;
 }
 .wordr{
-display:inline-block;	
+display:inline-block;
 margin-top:13px;
 color:#ffacad;
-font-weight:bold;	
+font-weight:bold;
 }
 .left{
 display:inline-block;
 float:left;
 height:50px;
 width:49.9%;
-background-color:#fff;	
+background-color:#fff;
 text-align:center;
 border-style:solid;
 border-color:#ffacad;
 border-width:1px;
-border-radius:5px;		
+border-radius:5px;
 }
 .right{
 display:inline-block;
 float:right;
 width:49.9%;
-height:50px;	
-background-color:#fff;	
-text-align:center;	
+height:50px;
+background-color:#fff;
+text-align:center;
 border-style:solid;
 border-color:#ffacad;
 border-width:1px;
@@ -159,58 +159,58 @@ generatedCount = 0;
 
 //下拉加载数据  模拟加载了几个死数据
 function pullDownAction () {
-location.reload();  
+location.reload();
 }
-function getLocalTime(nS) {   
+function getLocalTime(nS) {
 var date = new Date(nS*1000);
 Y = date.getFullYear() + '-';
 M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
 D = (date.getDate()+1 < 10 ? '0'+(date.getDate()+1) : date.getDate()+1)  + ' ';
 h =  (date.getHours()+1 < 10 ? '0'+(date.getHours()+1) : date.getHours()+1) + ':';
 m = (date.getMinutes()+1 < 10 ? '0'+(date.getMinutes()+1) : date.getMinutes()+1)  + ':';
-s =  (date.getSeconds()+1 < 10 ? '0'+(date.getSeconds()+1) : date.getSeconds()+1); 
+s =  (date.getSeconds()+1 < 10 ? '0'+(date.getSeconds()+1) : date.getSeconds()+1);
 //	alert(Y+M+D+h+m+s);
-return Y+M+D+h+m+s;  
- 
-}      
+return Y+M+D+h+m+s;
+
+}
 
 function pullUpAction () {
-		setTimeout(function () {	
+		setTimeout(function () {
 		var el, iteam, i,pageSize;
 		el = document.getElementById('listBox');
 		//alert($("#searchtitle").val());
 		$.get("index.php?r=admin/jiaoyulist/getdata",{searchcontent:$("#searchtitle").val(),s:<?=$s?>,zhuantiid:<?=$zhuantiid?>
 		},function(data){
-	 		//alert(JSON.stringify(data));	
+	 		//alert(JSON.stringify(data));
 			var list=eval(data);
-			if(list.length){				
+			if(list.length){
 				for (i=0; i<list.length; i++) {
 					iteam = document.createElement('div');
-					iteam.className = 'contentbig';        
-					 if(list[i].video=="1"){ 
+					iteam.className = 'contentbig';
+					 if(list[i].video=="1"){
 						 var video="<div class='img5'><img class='img3' src='../web/img/play.png'/></div>";
 					 }else{
 						 var video="";
-					 }   	
-					iteam.innerHTML ="<a href='index.php?r=admin/jiaoyu/index&id="+list[i].id+"'><div class='img2'><img class='img1' src='"+list[i].pic+"'/>"+video+"</div><div class='content'><span class='word'>"+list[i].title+"</span><span class='word0'>"+list[i].sender+"</span><span class='word0 right0'>"+list[i].time+"</span></div></a>";						
+					 }
+					iteam.innerHTML ="<a href='index.php?r=admin/jiaoyu/index&id="+list[i].id+"'><div class='img2'><img class='img1' src='"+list[i].pic+"'/>"+video+"</div><div class='content'><span class='word'>"+list[i].title+"</span><span class='word0'>"+list[i].sender+"</span><span class='word0 right0'>"+list[i].time+"</span></div></a>";
 					el.appendChild(iteam, el.childNodes[0]);
 				}
-				myScroll.refresh();	 
+				myScroll.refresh();
 			}else{                                 //没有更多数据
 				pullUpEl = document.getElementById('pullUp');
-				pullUpEl.querySelector('.pullUpLabel').innerHTML = '已没有更多数据...'; 
-			}    
-		},'json');	
+				pullUpEl.querySelector('.pullUpLabel').innerHTML = '已没有更多数据...';
+			}
+		},'json');
 		myScroll.refresh();		// 当内容完事儿，记得刷新(ie: on ajax completion)
-	}, 1000);				
+	}, 1000);
 }
 
 function loaded() {
 	pullDownEl = document.getElementById('pullDown');
 	pullDownOffset = pullDownEl.offsetHeight;
-	pullUpEl = document.getElementById('pullUp');	
+	pullUpEl = document.getElementById('pullUp');
 	pullUpOffset = pullUpEl.offsetHeight;
-	
+
 	myScroll = new iScroll('wrap', {
 			useTransition: true,
 		topOffset: pullDownOffset,
@@ -245,16 +245,16 @@ function loaded() {
 		onScrollEnd: function () {
 			if (pullDownEl.className.match('flip')) {
 				pullDownEl.className = 'loading';
-				pullDownEl.querySelector('.pullDownLabel').innerHTML = '加载中...';				
+				pullDownEl.querySelector('.pullDownLabel').innerHTML = '加载中...';
 				pullDownAction();	// 执行自定义函数（Ajax调用等）
 			} else if (pullUpEl.className.match('flip')) {
 				pullUpEl.className = 'loading';
-				pullUpEl.querySelector('.pullUpLabel').innerHTML = '加载中...';				
+				pullUpEl.querySelector('.pullUpLabel').innerHTML = '加载中...';
 				pullUpAction();	// 执行自定义函数（Ajax调用等）
 			}
 		}
 	});
-	
+
 setTimeout(function () { document.getElementById('wrap').style.left = '0'; }, 800);
 }
 
@@ -266,7 +266,7 @@ function allowFormsInIscroll(){
  [].slice.call(document.querySelectorAll('input, select, button')).forEach(function(el){
  el.addEventListener(('ontouchstart' in window)?'touchstart':'mousedown', function(e){
  e.stopPropagation();
- 
+
  })
  })
  }
@@ -318,35 +318,35 @@ function allowFormsInIscroll(){
 }
 </style>
 <!--<a class="left" id="left1" href="index.php?r=admin/jiaoyulist/index&s=1&zhuantiid=<?//=$zhuantiid?>"><span id="left2" class="wordl">全部课程</span></a>
-<a class="right" id="right1" href="index.php?r=admin/jiaoyulist/index&s=2&zhuantiid=<?//=$zhuantiid?>"><span id="right2" class="wordr">我的课程</span></a>	
+<a class="right" id="right1" href="index.php?r=admin/jiaoyulist/index&s=2&zhuantiid=<?//=$zhuantiid?>"><span id="right2" class="wordr">我的课程</span></a>
   -->
 <a class="left" id="left1" href="javascript:void(0);"><span id="left2" class="wordl">全部课程</span></a>
-<a class="right" id="right1" href="javascript:void(0);"><span id="right2" class="wordr">我的课程</span></a>	
+<a class="right" id="right1" href="javascript:void(0);"><span id="right2" class="wordr">我的课程</span></a>
 
 						<div id="wrap" class="wrap">
 							<div id="scroller">
 								<div id="pullDown" style="height:80px;">
 									<span class="pullDownIcon"></span>
 									<span class="pullDownLabel">下拉即可加载...</span>
-							
-								</div>							
+
+								</div>
 								<div class="moBox" id="searchBox" style="margin-top:10px">
 									<div class="searchBox">
 										<div class="searchInner">
 											<input id="searchtitle" class="inpSearch"
 												style="border: none; background: none; -webkit-appearance: none; box-shadow: none;"
 												name="searchtitle" value="" type="text"
-												placeholder="输入搜索关键字" /> 
+												placeholder="输入搜索关键字" />
 												<a href="javascript:void(0);" class="ficon ic_search" id="search"></a>
 										</div>
 									</div>
 								</div>
-								<div id="myCarousel" class="carousel slide">					
+								<div id="myCarousel" class="carousel slide">
 									<div class="moBox">
 										<div id="listBox" class="listBox">
 											<div class="listIteam" id="empty">
 												<div class="empty">暂无</div>
-											</div>			
+											</div>
                              			<?php foreach ($list as $key=>$value): ?>
                            					<div class="contentbig">
 												<a href="index.php?r=admin/jiaoyu/index&id=<?=$value['id']?>">
@@ -359,8 +359,8 @@ function allowFormsInIscroll(){
                                			<?endif?>
                           							</div>
 													<div class="content">
-														<span class="word"><?=$value['title']?></span> 
-														<span class="word0"><?=$value['sender']?> </span> 
+														<span class="word"><?=$value['title']?></span>
+														<span class="word0"><?=$value['sender']?> </span>
 														<span class="word0 right0"><?=$value['time']?></span>
 													</div>
 												</a>
@@ -417,25 +417,25 @@ document.getElementById('searchtitle').addEventListener('input', function(e){
 	    //alert(JSON.stringify(data));
 		var list=eval(data);
 		//var relation;
-		$("#listBox").empty();	
-		if(list.length){           //如果获得了数据			
+		$("#listBox").empty();
+		if(list.length){           //如果获得了数据
 			for (i=0; i<list.length; i++) {
 				iteam = document.createElement('div');
-				iteam.className = 'contentbig';	
-				 if(list[i].video=="1"){ 
+				iteam.className = 'contentbig';
+				 if(list[i].video=="1"){
 					 var video="<div class='img5'><img class='img3' src='../web/img/play.png'/></div>";
 				 }else{
 					 var video="";
-				 } 	
-			    iteam.innerHTML ="<a href='index.php?r=admin/jiaoyu/index&id="+list[i].id+"'><div class='img2'><img class='img1' src='"+list[i].pic+"'/>"+video+"</div><div class='content'><span class='word'>"+list[i].title+"</span><span class='word0'>"+list[i].sender+"</span><span class='word0 right0'>"+list[i].time+"</span></div></a>";							
-				$("#listBox").append(iteam);					
+				 }
+			    iteam.innerHTML ="<a href='index.php?r=admin/jiaoyu/index&id="+list[i].id+"'><div class='img2'><img class='img1' src='"+list[i].pic+"'/>"+video+"</div><div class='content'><span class='word'>"+list[i].title+"</span><span class='word0'>"+list[i].sender+"</span><span class='word0 right0'>"+list[i].time+"</span></div></a>";
+				$("#listBox").append(iteam);
 				}
 			myScroll.refresh();
 		}else{              //如果没有数据，提示空
 // 			alert(123);
 			iteam = document.createElement('div');
-			iteam.className = 'listIteam';			
-			iteam.innerHTML = '<div class="empty">暂无</div>';				
+			iteam.className = 'listIteam';
+			iteam.innerHTML = '<div class="empty">暂无</div>';
 //				$("#listBox").empty();
 // 			$("#pullUp").hide();
 			$("#listBox").append(iteam);
@@ -443,26 +443,26 @@ document.getElementById('searchtitle').addEventListener('input', function(e){
 //				alert("fail");
 		}
 	},'json');
-	myScroll.refresh();	
+	myScroll.refresh();
 });
 
-function getLocalTime(nS) {   
-// 	alert(nS);	
+function getLocalTime(nS) {
+// 	alert(nS);
 	var date = new Date(nS*1000);
 	Y = date.getFullYear() + '-';
 	M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
 	D = (date.getDate()+1 < 10 ? '0'+(date.getDate()+1) : date.getDate()+1)  + ' ';
 	h =  (date.getHours()+1 < 10 ? '0'+(date.getHours()+1) : date.getHours()+1) + ':';
 	m = (date.getMinutes()+1 < 10 ? '0'+(date.getMinutes()+1) : date.getMinutes()+1)  + ':';
-	s =  (date.getSeconds()+1 < 10 ? '0'+(date.getSeconds()+1) : date.getSeconds()+1); 
+	s =  (date.getSeconds()+1 < 10 ? '0'+(date.getSeconds()+1) : date.getSeconds()+1);
 // 	alert(Y+M+D+h+m+s);
-	return Y+M+D+h+m+s;      
+	return Y+M+D+h+m+s;
  }
 $("#searchtitle").keyup(function(){
  	//alert(123);
 });
 	$("div[id^='contentlist']").each(function(){
-	    $(this).click(function(){    
+	    $(this).click(function(){
 	      	var imgid = $(this).attr("id");
 	        var  imgidlist=imgid.split("_");
 	        $(this).find("i[id^=icon_new]").hide();

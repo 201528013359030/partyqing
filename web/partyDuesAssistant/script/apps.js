@@ -166,7 +166,8 @@ partyDuesCount.init = function(){
     			}
     		}
 //     	document.getElementById('pay').value = p.toFixed(1);
-    	p=Math.ceil(p*10);//向上取整
+    	
+    	p=Math.ceil(p/0.1);//向上取整
     	p=p*1.0/10;
     	document.getElementById('pay').value = p;
     	});

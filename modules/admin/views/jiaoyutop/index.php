@@ -14,7 +14,7 @@ use yii\web\View;
 <meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
 <meta name="viewport"
 	content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>廉政教育</title>
+<title>警示教育</title>
 <?=Html::cssFile('@web/css/announcemy.css')?>
 <?=Html::jsFile('@web/js/jquery.js')?>
 <style>
@@ -30,13 +30,13 @@ use yii\web\View;
 <?php if(empty($data)):?>
 <div class="listIteam" id="empty">
 <div class="empty">暂无</div>
-</div>	
+</div>
 <?php else:?>
 <img style="width:23px;margin-right:10px" src="../web/img/jiangbei.png">学习时长排行榜TOP100
 </div>
 <?php endif?>
  <?php foreach ($data as $key=>$value): ?>
-<div class="content">	
+<div class="content">
 <?php if($key==0):?>
 <img class="pic0" src="../web/img/jiangpai_01.png">
 <?php elseif($key==1):?>

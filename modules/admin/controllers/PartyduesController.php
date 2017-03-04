@@ -44,8 +44,10 @@ class PartyduesController extends \yii\rest\Controller
 		$connection = \Yii::$app->db;
 		$connection->open();
 
-		$sql ="select * from djleapartyfee where uid = '".$uid."' order by time desc limit 1" ;
+		$sql ="select * from djleapartyfee where uid = '".$uid."' and time like '%".date("Y-m")."%' order by time desc " ;
 		$result = $connection->createCommand($sql)->queryOne();
+
+
 
 		if(!$result){
 			$return['result']['d'] = "-1";
@@ -113,11 +115,13 @@ class PartyduesController extends \yii\rest\Controller
 			return $return;
 		}
 
-		$sql2 = "select name from organization where oid = '".$result[0]['branchId']."'";
-		$branch = $connection->createCommand($sql2)->queryAll();
+// 		$sql2 = "select name from organization where oid = '".$result[0]['branchId']."'";
+// 		$branch = $connection->createCommand($sql2)->queryAll();
 
 		if($result){
 			for( $i=0;$i < count($result);$i++){
+				$sql2 = "select name from organization where oid = '".$result[$i]['branchId']."'";
+				$branch = $connection->createCommand($sql2)->queryAll();
 				$result[$i]['branch'] = $branch[0]['name'];
 			}
 		}
@@ -137,7 +141,7 @@ class PartyduesController extends \yii\rest\Controller
 		$fee = 0.0;
 		switch ($type)
 		{
-			case '01':
+			case '1':
 
 					if($money <= 3000){
 						$fee = $money * 0.005;
@@ -151,7 +155,7 @@ class PartyduesController extends \yii\rest\Controller
 
 				 break;
 
-			case '02':
+			case '2':
 
 					if($money <= 5000){
 						$fee = $money * 0.005;
@@ -161,18 +165,18 @@ class PartyduesController extends \yii\rest\Controller
 					break;
 
 
-			case '04':
+			case '4':
 				$fee = "0.2-1"; break;
 
-			case '05':
-			case '06':
-			case '07':
-			case '08':
+			case '5':
+			case '6':
+			case '7':
+			case '8':
 				$fee = 0.2; break;
 		}
-
+		//保留一位小数，向上取整
 		if(!is_string($fee)){
-			$fee = ceil($fee*10);//保留一位小时，向上取整
+			$fee = ceil($fee/0.1);
 			$fee = $fee/10;
 		}
 		return $fee;
@@ -181,7 +185,12 @@ class PartyduesController extends \yii\rest\Controller
 
 	public function actionIndex()
 	{
-		$content=\Yii::$app->request->get('content');
+		$money = \Yii::$app->request->post('money');
+		$type = \Yii::$app->request->post('type');
+
+		$fee = $this->duescount($money, $type);
+		echo $fee;
+		die('   32');
 
 
 		return $this->render('duescount',['content'=>$content]);

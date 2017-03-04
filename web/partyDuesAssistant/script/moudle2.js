@@ -46,22 +46,8 @@ function setPartyDuesIteam(uid,auth_token){
 		month, //月份
 		ytime; //拼接年月串
 	
-	console.log("type: "+typeof getList+" getList content: "+JSON.stringify(getList));
+	console.log("type: "+typeof getList+" content: "+JSON.stringify(getList));
 	
-	if(getList == "-1"){
-//		$("#party-dues-assistant-noData-id").html("暂无当前用户信息")
-//		$("#party-dues-assistant-noData-id").attr({"class":"empty"});
-//		$("#party-dues-assistant-noData-id").attr({"style":"display:block"});
-//		$(".party-dues-assistant-home").attr({"style":"display:none"});
-//		$(".party-dues-assistant-btn").attr("style","display:none");
-		$("#party-dues-assistant-noData-id").attr({"style":"display:block"});
-		return;
-	}
-	if(getList['prtyFee'] == "-2"){
-		$("#party-dues-assistant-noData-id").html("更新当月应缴党费信息失败!")
-		$("#party-dues-assistant-noData-id").attr({"style":"display:block"});
-		return;
-	}
 	if(getList['prtyFee'] == "-1"){
 		$("#party-dues-assistant-noData-id").attr({"style":"display:block"});
 	}else{
@@ -105,16 +91,7 @@ function getPartyDuesHistory(uid,auth_token,page){
 	
 	console.log("type: "+typeof getList+" content: "+JSON.stringify(getList));
 	
-	if(getList == "-1"){
-//		$("#party-dues-h-listGroup").html("对不起，当前用户："+NATIVE_UID+" 党费记录信息不存在!");
-		$("#party-dues-h-listGroup").html("暂无")
-		$("#party-dues-h-listGroup").attr({"class":"empty"});
-		$("#party-dues-h-listGroup").attr({"style":"text-align:center"});
-		$(".resultEnd").hide();
-		$(".resultEnd_nodata").show();
-		flag_home = false;
-		return;
-	}
+	
 	
 	//生成页面
 	var tpl_list = $("#gray-box-iteam").html();
@@ -129,59 +106,29 @@ function getPartyDuesHistory(uid,auth_token,page){
 	 var week ; //周几
 	 var ytime ;
 	 var mtime ;
-	 var prtyFee;
-	 if(getList[0]['memberType'] == '4'){
-	 
-		 for( var i=0; i<getList.length; i++ ){
-				
-			  date = new Date(getList[i]['time']);//生成时间戳
-			  year = date.getYear()+1900; //提取年份
-			  month = ("0"+(date.getMonth()+1)).substr(-2); //提取月份
-			  day =("0"+date.getDate()).substr(-2); //提取某天唯一月中的第几天
-			  week = weeks[date.getDay()]; //提取某天为周几
-			  ytime = year+"年"+month+"月";
-			  mtime = month+"-"+day;
-			  console.log(getList[i]['time']+" "+"date："+date+" "+(year)+" "+(month)+" "+day+" "+week+" "+ytime+" "+mtime);
-			  
-			var html_iteam = tpl_list
-				.replace( /\{ytime\}/g,ytime )
-				.replace( /\{week\}/g,week )
-				.replace( /\{mtime\}/g,mtime )
-				.replace( /\{prtyfee\}/g,getList[i].prtyFee )
-				.replace( /\{branch\}/g,getList[i].branch )
-				.replace( /\{getMoney\}/g,getList[i].getMoney );
-			
-//			alert(html_iteam);
-			
-			html.push(html_iteam); //push()	向数组的末尾添加一个或更多元素，并返回新的长度。 --fyq
-		}
-		 
-	 }else{
-		 
-			for( var i=0; i<getList.length; i++ ){
-				
-				  date = new Date(getList[i]['time']);//生成时间戳
-				  year = date.getYear()+1900; //提取年份
-				  month = ("0"+(date.getMonth()+1)).substr(-2); //提取月份
-				  day =("0"+date.getDate()).substr(-2); //提取某天唯一月中的第几天
-				  week = weeks[date.getDay()]; //提取某天为周几
-				  ytime = year+"年"+month+"月";
-				  mtime = month+"-"+day;
-				  console.log(getList[i]['time']+" "+"date："+date+" "+(year)+" "+(month)+" "+day+" "+week+" "+ytime+" "+mtime);
-				  
-				var html_iteam = tpl_list
-					.replace( /\{ytime\}/g,ytime )
-					.replace( /\{week\}/g,week )
-					.replace( /\{mtime\}/g,mtime )
-					.replace( /\{prtyfee\}/g,"-"+getList[i].prtyFee )
-					.replace( /\{branch\}/g,getList[i].branch )
-					.replace( /\{getMoney\}/g,getList[i].getMoney );
-				
-		//		alert(html_iteam);
-				
-				html.push(html_iteam); //push()	向数组的末尾添加一个或更多元素，并返回新的长度。 --fyq
-			}
-	 }
+	for( var i=0; i<getList.length; i++ ){
+		
+		  date = new Date(getList[i]['time']);//生成时间戳
+		  year = date.getYear()+1900; //提取年份
+		  month = ("0"+(date.getMonth()+1)).substr(-2); //提取月份
+		  day =("0"+date.getDate()).substr(-2); //提取某天唯一月中的第几天
+		  week = weeks[date.getDay()]; //提取某天为周几
+		  ytime = year+"年"+month+"月";
+		  mtime = month+"-"+day;
+		  console.log(getList[i]['time']+" "+"date："+date+" "+(year)+" "+(month)+" "+day+" "+week+" "+ytime+" "+mtime);
+		  
+		var html_iteam = tpl_list
+			.replace( /\{ytime\}/g,ytime )
+			.replace( /\{week\}/g,week )
+			.replace( /\{mtime\}/g,mtime )
+			.replace( /\{prtyfee\}/g,"-"+getList[i].prtyFee )
+			.replace( /\{branch\}/g,getList[i].branch )
+			.replace( /\{getMoney\}/g,getList[i].getMoney );
+		
+//		alert(html_iteam);
+		
+		html.push(html_iteam); //push()	向数组的末尾添加一个或更多元素，并返回新的长度。 --fyq
+	}
 	
 	//append()	向匹配元素集合中的每个元素结尾插入由参数指定的内容。 --fyq
 	//join()	把数组的所有元素放入一个字符串。元素通过指定的分隔符进行分隔。 --fyq
